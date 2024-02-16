@@ -9,9 +9,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.lib.Conversions;
-import frc.lib.SwerveModuleConstants;
-import frc.lib.doubleNeoConstants;
+import frc.lib.util.Conversions;
+import frc.lib.util.SwerveModuleConstants;
+import frc.lib.doubleNeo.doubleNeoConstants;
 import frc.robot.Robot;
 import frc.robot.interfaces.SwerveModule;
 

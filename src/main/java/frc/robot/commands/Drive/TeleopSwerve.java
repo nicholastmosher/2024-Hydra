@@ -1,6 +1,6 @@
 package frc.robot.commands.Drive;
 
-import frc.lib.doubleNeoConstants;
+import frc.lib.doubleNeo.doubleNeoConstants;
 import frc.robot.subsystems.Swerve;
 
 import java.util.function.BooleanSupplier;

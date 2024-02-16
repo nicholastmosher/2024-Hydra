@@ -1,6 +1,8 @@
 package frc.robot.commands.Arm;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.Constants;
 import frc.robot.subsystems.Arm;
 
 public class IntakePosition extends Command {
@@ -14,7 +16,8 @@ public class IntakePosition extends Command {
 
     @Override
     public void execute() {
-        arm.setIntake();
+        Rotation2d angle = Rotation2d.fromDegrees(Constants.Arm.desiredIntakeAngle);
+        arm.setAngle(angle);
     }
 
     @Override
