@@ -8,7 +8,17 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.Robot;
-import frc.robot.commands.*;
+import frc.robot.commands.Arm.IntakePosition;
+import frc.robot.commands.Arm.ShootPosition;
+import frc.robot.commands.Drive.TeleopSwerve;
+import frc.robot.commands.Intake.IntakeNote;
+import frc.robot.commands.Shooter.IndexNote;
+import frc.robot.commands.Shooter.ShootNote;
+import frc.robot.commands.Debug.DiagnoseDrive;
+import frc.robot.commands.Debug.DiagnoseSteering;
+import frc.robot.commands.Debug.TestSwerveDriveMotors;
+import frc.robot.commands.Debug.TestSwerveSteerMotors;
+import frc.robot.interfaces.RobotContainer;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 
@@ -45,7 +55,7 @@ public class RobotContainerDebug implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
 
-        commandSwerve.onTrue(new DiagnoseSwerve(mSwerve));
+        //commandSwerve.onTrue(new DiagnoseSwerve(mSwerve));
 //        commandDrive.onTrue(new DiagnoseDrive(mSwerveTest));
 //        commandSteer.onTrue(new DiagnoseSteering(mSwerveTest));
 //        commandSteer.onTrue(new SwerveAssignSteer(motorTest));
