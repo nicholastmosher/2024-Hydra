@@ -1,6 +1,5 @@
-package frc.lib;
+package frc.lib.krakentalon;
 
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
@@ -10,9 +9,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.ModuleConstants;
-import frc.lib.SwerveModuleConstants;
+import frc.lib.util.SwerveModuleConstants;
 
-public class doubleNeoConstants {
+public class krakenTalonConstants {
     public static double stickDeadband = 0.1;
 
 

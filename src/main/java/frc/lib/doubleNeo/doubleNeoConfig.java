@@ -1,4 +1,4 @@
-package frc.lib;
+package frc.lib.doubleNeo;
 
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import frc.lib.ModuleConstants;
 
 
 public class doubleNeoConfig {

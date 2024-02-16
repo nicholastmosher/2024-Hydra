@@ -1,6 +1,9 @@
 package frc.lib;
 
-public final class Constants extends doubleNeoConstants{
+import frc.lib.doubleNeo.doubleNeoConstants;
+import frc.lib.krakentalon.krakenTalonConstants;
+
+public final class Constants extends krakenTalonConstants {
 
 
     public static final class Intake {

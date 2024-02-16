@@ -1,11 +1,9 @@
 package frc.robot.subsystems;
 
 import frc.lib.Constants;
-import frc.lib.doubleNeoConstants;
+import frc.lib.doubleNeo.doubleNeoConstants;
 import frc.robot.interfaces.SwerveModule;
-import frc.robot.swervemodules.SwerveModuleDoubleNeo;
 import frc.robot.swervemodules.SwerveModuleKrakenFalcon;
-import frc.robot.swervemodules.SwerveModuleDoubleTalon;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -20,7 +18,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.swervemodules.SwerveModuleKrakenFalcon;
 
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;

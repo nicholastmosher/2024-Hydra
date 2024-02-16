@@ -23,13 +23,8 @@ public class Arm extends SubsystemBase {
 
     }
 
-    public void setShoot() {
-        Rotation2d angle = new Rotation2d(Constants.Arm.desiredShooterAngle);
-
-    }
-
-    public void setIntake() {
-        Rotation2d angle = new Rotation2d(Constants.Arm.desiredIntakeAngle);
+    public void setAngle(Rotation2d angle) {
+        armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
     }
 
     public boolean endConditionIntake() {
@@ -45,12 +40,6 @@ public class Arm extends SubsystemBase {
     public void stopSet() {
         armMotor.stopMotor();
     }
-
-    private void setAngle(Rotation2d angle) {
-        armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
-    }
-
-
 
     private void configArmMotor() {
         armPID.setOutputRange(Constants.Arm.minAngle, Constants.Arm.maxAngle);

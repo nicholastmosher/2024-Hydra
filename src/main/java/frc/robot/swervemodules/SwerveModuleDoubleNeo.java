@@ -4,8 +4,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.lib.ModuleState;
-import frc.lib.SwerveModuleConstants;
+import frc.lib.util.ModuleState;
+import frc.lib.util.SwerveModuleConstants;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
@@ -14,7 +14,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.FaultID;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import frc.lib.doubleNeoConfig;
+import frc.lib.doubleNeo.doubleNeoConfig;
 import frc.robot.interfaces.SwerveModule;
 
 /**
