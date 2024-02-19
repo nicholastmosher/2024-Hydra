@@ -2,8 +2,11 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.Constants;
 
@@ -43,6 +46,7 @@ public class Arm extends SubsystemBase {
 
     private void configArmMotor() {
         armPID.setOutputRange(Constants.Arm.minAngle, Constants.Arm.maxAngle);
+        armPID.setFeedbackDevice(armMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle));
     }
 
     private void configFollowerMotor() {

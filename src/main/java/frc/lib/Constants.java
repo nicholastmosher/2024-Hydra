@@ -14,6 +14,7 @@ public final class Constants extends krakenTalonConstants {
     public static final class Arm {
         public static final int armMotor = 33;
         public static final int armFollowerMotor = 34;
+
         public static final double kP = 1.0;
         public static final double kI = 0.0;
         public static final double kD = 0.0;
