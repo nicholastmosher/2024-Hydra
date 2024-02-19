@@ -1,9 +1,6 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
@@ -16,6 +13,8 @@ public class Arm extends SubsystemBase {
 
     private final SparkPIDController armPID;
 
+    private final AbsoluteEncoder armEncoder;
+
     public Arm() {
         armMotor = new CANSparkMax(Constants.Arm.armMotor, CANSparkLowLevel.MotorType.kBrushless);
         armPID = armMotor.getPIDController();
@@ -23,6 +22,8 @@ public class Arm extends SubsystemBase {
 
         armFollowerMotor = new CANSparkMax(Constants.Arm.armFollowerMotor, CANSparkLowLevel.MotorType.kBrushless);
         configFollowerMotor();
+
+        armEncoder = armMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
 
     }
 
@@ -32,12 +33,12 @@ public class Arm extends SubsystemBase {
 
     public boolean endConditionIntake() {
         Rotation2d angle = new Rotation2d(Constants.Arm.desiredIntakeAngle);
-        return armMotor.getEncoder().getPosition() > (angle.getDegrees() + 1) && armMotor.getEncoder().getPosition() < (angle.getDegrees() - 1);
+        return armEncoder.getPosition() > (angle.getDegrees() + 1) && armEncoder.getPosition() < (angle.getDegrees() - 1);
     }
 
     public boolean endConditionShoot() {
         Rotation2d angle = new Rotation2d(Constants.Arm.desiredShooterAngle);
-        return armMotor.getEncoder().getPosition() > (angle.getDegrees() + 1) && armMotor.getEncoder().getPosition() < (angle.getDegrees() - 1);
+        return armEncoder.getPosition() > (angle.getDegrees() + 1) && armEncoder.getPosition() < (angle.getDegrees() - 1);
     }
 
     public void stopSet() {
@@ -46,7 +47,7 @@ public class Arm extends SubsystemBase {
 
     private void configArmMotor() {
         armPID.setOutputRange(Constants.Arm.minAngle, Constants.Arm.maxAngle);
-        armPID.setFeedbackDevice(armMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle));
+        armPID.setFeedbackDevice(armEncoder);
     }
 
     private void configFollowerMotor() {
