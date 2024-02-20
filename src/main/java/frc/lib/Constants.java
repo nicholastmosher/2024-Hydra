@@ -29,8 +29,8 @@ public final class Constants extends krakenTalonConstants {
     }
 
     public static final class Shooter {
-        public static final int shooterMotor = 35;
-        public static final int shooterFollowerMotor = 36;
+        public static final int shooterMotor = 50;
+        public static final int shooterFollowerMotor = 51;
         public static final int shooterIntakeMotor = 37;
 
         public static final double kP = 1.0;
@@ -39,7 +39,7 @@ public final class Constants extends krakenTalonConstants {
         public static final double kF = 0.0;
 
         public static final double shooterIntakeSpeed = 0.8;
-        public static final double shooterSpeed = 0.8;
+        public static final double shooterSpeed = 0.6;
     }
 
 

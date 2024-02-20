@@ -97,4 +97,14 @@ public class SwerveModuleDoubleTalon implements SwerveModule {
             mDriveMotor.setControl(driveVelocity);
         }
     }
+
+    @Override
+    public void debugSetDriveSpeed(double speed) {
+        mDriveMotor.set(speed);
+    }
+
+    @Override
+    public void debugSetSteeringSpeed(double speed) {
+        mAngleMotor.set(speed);
+    }
 }

@@ -1,5 +1,6 @@
 package frc.robot.swervemodules;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -9,6 +10,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.util.Conversions;
 import frc.lib.util.SwerveModuleConstants;
 import frc.lib.doubleNeo.doubleNeoConstants;
@@ -21,6 +23,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     private final TalonFX mAngleMotor;
     private final TalonFX mDriveMotor;
     private final CANcoder angleEncoder;
+    private final int mModule;
 
     private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(doubleNeoConstants.Swerve.driveKS, doubleNeoConstants.Swerve.driveKV, doubleNeoConstants.Swerve.driveKA);
 
@@ -33,6 +36,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
 
     public SwerveModuleKrakenFalcon(SwerveModuleConstants moduleConstants, int moduleNumber) {
         this.angleOffset = moduleConstants.angleOffset;
+        this.mModule = moduleNumber;
 
         /* Angle Encoder Config */
         angleEncoder = new CANcoder(moduleConstants.cancoderID);
@@ -57,8 +61,21 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     }
 
     @Override
+    public void debugSetDriveSpeed(double speed) {
+        mDriveMotor.set(speed);
+    }
+
+    @Override
+    public void debugSetSteeringSpeed(double speed) {
+        mAngleMotor.set(speed);
+    }
+
+    @Override
     public Rotation2d getRotation() {
-        return Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValue());
+        return Rotation2d.fromRotations(
+//                angleEncoder.getPosition().getValue()
+                angleEncoder.getAbsolutePosition().getValue()
+        );
     }
 
     @Override
@@ -83,6 +100,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
         );
     }
 
+
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if(isOpenLoop){
             driveDutyCycle.Output = desiredState.speedMetersPerSecond / doubleNeoConstants.Swerve.maxSpeed;
@@ -93,5 +111,11 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
             driveVelocity.FeedForward = driveFeedForward.calculate(desiredState.speedMetersPerSecond);
             mDriveMotor.setControl(driveVelocity);
         }
+    }
+
+    @Override
+    public void dashboardPeriodic() {
+        SmartDashboard.putNumber(String.format("CanCoder%d Angle", mModule), getRotation().getDegrees());
+        SmartDashboard.putNumber(String.format("MotorSteer%d Angle", mModule), mAngleMotor.getPosition().getValue());
     }
 }

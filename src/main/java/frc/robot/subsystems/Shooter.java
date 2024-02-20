@@ -23,27 +23,32 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         shooterMotor = new CANSparkFlex(Constants.Shooter.shooterMotor, CANSparkLowLevel.MotorType.kBrushless);
         shooterPID = shooterMotor.getPIDController();
+        shooterPID.setP(1.0);
         configShooterMotor();
+
+        shooterFollowerMotor = new CANSparkFlex(Constants.Shooter.shooterFollowerMotor, CANSparkLowLevel.MotorType.kBrushless);
+        configShooterFollowerMotor();
 
         shooterIntakeMotor = new CANSparkMax(Constants.Shooter.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
         shooterIntakePID = shooterIntakeMotor.getPIDController();
         configShooterIntakeMotor();
 
-        shooterFollowerMotor = new CANSparkFlex(Constants.Shooter.shooterFollowerMotor, CANSparkLowLevel.MotorType.kBrushless);
-        configShooterFollowerMotor();
-
     }
 
     public void indexNote() {
-        shooterIntakePID.setReference(Constants.Shooter.shooterIntakeSpeed, CANSparkBase.ControlType.kVelocity);
+        //shooterIntakePID.setReference(Constants.Shooter.shooterIntakeSpeed, CANSparkBase.ControlType.kVelocity);
+        shooterIntakeMotor.set(-0.8);
     }
 
     public void shootNote() {
-        shooterPID.setReference(Constants.Shooter.shooterSpeed, CANSparkBase.ControlType.kVelocity);
+        //shooterPID.setReference(1000, CANSparkBase.ControlType.kVelocity);
+        shooterMotor.set(Constants.Shooter.shooterSpeed);
     }
 
-    public void stop() {
-        shooterMotor.stopMotor();
+    public void stop() {shooterMotor.stopMotor();}
+
+    public void start () {
+        shooterMotor.set(0.2);
     }
 
     private void configShooterMotor() {

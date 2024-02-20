@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.Constants;
 import frc.lib.doubleNeo.doubleNeoConstants;
 import frc.robot.interfaces.SwerveModule;
@@ -29,10 +30,10 @@ public class Swerve extends SubsystemBase {
      */
     public Swerve() {
         this(new SwerveModule[]{
-                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod0.constants, 0),
                 new SwerveModuleKrakenFalcon(Constants.Swerve.Mod1.constants, 1),
-                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod2.constants, 2),
-                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod3.constants, 3)
+                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod3.constants, 3),
+                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod0.constants, 0),
+                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod2.constants, 2)
         });
     }
 
@@ -65,6 +66,14 @@ public class Swerve extends SubsystemBase {
             SwerveModule mod = mSwerveMods[i];
             mod.setDesiredState(swerveModuleStates[i], isOpenLoop);
         }
+    }
+
+    public void debugSetDriveSpeed(int module, double speed) {
+        mSwerveMods[module].debugSetDriveSpeed(speed);
+    }
+
+    public void debugSetSteeringSpeed(int module, double speed) {
+        mSwerveMods[module].debugSetSteeringSpeed(speed);
     }
 
     /* Used by SwerveControllerCommand in Auto */
@@ -130,7 +139,8 @@ public class Swerve extends SubsystemBase {
     public void periodic() {
         swerveOdometry.update(getGyroYaw(), getModulePositions());
 
-        for (SwerveModule mod : mSwerveMods) {
+        for (int i = 0; i < mSwerveMods.length; i++) {
+            SwerveModule mod = mSwerveMods[i];
             mod.dashboardPeriodic();
         }
     }

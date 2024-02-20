@@ -238,4 +238,14 @@ public class SwerveModuleDoubleNeo implements SwerveModule
                 getAngle()
         );
     }
+
+    @Override
+    public void debugSetDriveSpeed(double speed) {
+        mDriveMotor.set(speed);
+    }
+
+    @Override
+    public void debugSetSteeringSpeed(double speed) {
+        mAngleMotor.set(speed);
+    }
 }

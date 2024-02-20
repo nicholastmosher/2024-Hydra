@@ -21,4 +21,6 @@ public interface SwerveModule {
     SwerveModuleState getState();
 
     default void dashboardPeriodic() {}
+    void debugSetDriveSpeed(double speed);
+    void debugSetSteeringSpeed(double speed);
 }

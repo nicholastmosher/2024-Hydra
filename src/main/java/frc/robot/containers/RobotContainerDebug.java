@@ -8,17 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.Robot;
-import frc.robot.commands.Arm.IntakePosition;
-import frc.robot.commands.Arm.ShootPosition;
-import frc.robot.commands.Drive.TeleopSwerve;
-import frc.robot.commands.Intake.IntakeNote;
-import frc.robot.commands.Shooter.IndexNote;
-import frc.robot.commands.Shooter.ShootNote;
-import frc.robot.commands.Debug.DiagnoseDrive;
-import frc.robot.commands.Debug.DiagnoseSteering;
-import frc.robot.commands.Debug.TestSwerveDriveMotors;
-import frc.robot.commands.Debug.TestSwerveSteerMotors;
-import frc.robot.interfaces.RobotContainer;
+import frc.robot.commands.Debug.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 
@@ -33,7 +23,8 @@ public class RobotContainerDebug implements RobotContainer {
     private final Joystick driver = new Joystick(0);
     private final JoystickButton commandDrive = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton commandSteer = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton commandSwerve = new JoystickButton(driver,XboxController.Button.kY.value);
+    private final JoystickButton debugSwerveTranslation = new JoystickButton(driver,XboxController.Button.kY.value);
+    private final JoystickButton debugSwerveRotation = new JoystickButton(driver,XboxController.Button.kX.value);
 
     /* Subsystems */
     private final Swerve mSwerve = new Swerve();
@@ -55,9 +46,11 @@ public class RobotContainerDebug implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
 
-        //commandSwerve.onTrue(new DiagnoseSwerve(mSwerve));
-//        commandDrive.onTrue(new DiagnoseDrive(mSwerveTest));
-//        commandSteer.onTrue(new DiagnoseSteering(mSwerveTest));
+        debugSwerveTranslation.onTrue(new DiagnoseSwerveTranslation(mSwerve));
+        debugSwerveRotation.onTrue(new DiagnoseSwerveRotation(mSwerve));
+
+        commandDrive.onTrue(new DiagnoseDrive(mSwerve));
+        commandSteer.onTrue(new DiagnoseSteering(mSwerve));
 //        commandSteer.onTrue(new SwerveAssignSteer(motorTest));
 //        commandShoot.onTrue(new ShooterAssignPower(mShooter, 0.70));
     }

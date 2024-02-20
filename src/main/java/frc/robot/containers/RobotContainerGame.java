@@ -38,7 +38,7 @@ public class RobotContainerGame implements RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton intake = new JoystickButton(driver, XboxController.Axis.kLeftTrigger.value);
-    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Axis.kRightTrigger.value);
+    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kX.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -82,8 +82,10 @@ public class RobotContainerGame implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        intake.onTrue(new SequentialCommandGroup(armToIntake, new ParallelDeadlineGroup(indexNote, intakeNote)));
-        shoot.onTrue(new SequentialCommandGroup(armToShoot, shootNote));
+        //intake.onTrue(new SequentialCommandGroup(armToIntake, new ParallelDeadlineGroup(indexNote, intakeNote)));
+        //shoot.onTrue(new SequentialCommandGroup(armToShoot, shootNote));
+        shoot.whileTrue(new SequentialCommandGroup((indexNote).withTimeout(5).onlyIf(shoot), shootNote));
+
         
     }
 
