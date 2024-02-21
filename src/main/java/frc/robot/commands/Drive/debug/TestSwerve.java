@@ -1,4 +1,4 @@
-package frc.robot.commands.Debug;
+package frc.robot.commands.Drive.debug;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;

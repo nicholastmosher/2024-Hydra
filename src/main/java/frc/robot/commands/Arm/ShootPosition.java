@@ -27,7 +27,8 @@ public class ShootPosition extends Command {
 
     @Override
     public boolean isFinished() {
-        return arm.endConditionShoot();
+        Rotation2d angle = new Rotation2d(Constants.Arm.desiredShooterAngle);
+        return arm.endCondition(angle);
     }
 
 }

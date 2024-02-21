@@ -2,8 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.Constants;
 
@@ -31,13 +30,7 @@ public class Arm extends SubsystemBase {
         armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
     }
 
-    public boolean endConditionIntake() {
-        Rotation2d angle = new Rotation2d(Constants.Arm.desiredIntakeAngle);
-        return armEncoder.getPosition() > (angle.getDegrees() + 1) && armEncoder.getPosition() < (angle.getDegrees() - 1);
-    }
-
-    public boolean endConditionShoot() {
-        Rotation2d angle = new Rotation2d(Constants.Arm.desiredShooterAngle);
+    public boolean endCondition(Rotation2d angle) {
         return armEncoder.getPosition() > (angle.getDegrees() + 1) && armEncoder.getPosition() < (angle.getDegrees() - 1);
     }
 
@@ -52,5 +45,14 @@ public class Arm extends SubsystemBase {
 
     private void configFollowerMotor() {
         armFollowerMotor.follow(armMotor, true);
+    }
+
+    private Rotation2d getPosition() {
+        return Rotation2d.fromRotations(armEncoder.getPosition());
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Arm Position", getPosition().getDegrees());
     }
 }

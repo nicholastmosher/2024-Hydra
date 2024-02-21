@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.Constants;
 import frc.lib.doubleNeo.doubleNeoConstants;
 import frc.robot.interfaces.SwerveModule;

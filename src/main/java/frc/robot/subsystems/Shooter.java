@@ -1,15 +1,10 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.AbsoluteEncoder;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.Constants;
 
 public class Shooter extends SubsystemBase {
@@ -17,12 +12,9 @@ public class Shooter extends SubsystemBase {
     private final CANSparkFlex shooterFollowerMotor;
     private final CANSparkMax shooterIntakeMotor;
 
-    private final SparkPIDController shooterPID;
-    private final SparkPIDController shooterIntakePID;
-
     public Shooter() {
         shooterMotor = new CANSparkFlex(Constants.Shooter.shooterMotor, CANSparkLowLevel.MotorType.kBrushless);
-        shooterPID = shooterMotor.getPIDController();
+        SparkPIDController shooterPID = shooterMotor.getPIDController();
         shooterPID.setP(1.0);
         configShooterMotor();
 
@@ -30,7 +22,6 @@ public class Shooter extends SubsystemBase {
         configShooterFollowerMotor();
 
         shooterIntakeMotor = new CANSparkMax(Constants.Shooter.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
-        shooterIntakePID = shooterIntakeMotor.getPIDController();
         configShooterIntakeMotor();
 
     }
@@ -42,13 +33,13 @@ public class Shooter extends SubsystemBase {
 
     public void shootNote() {
         //shooterPID.setReference(1000, CANSparkBase.ControlType.kVelocity);
+        shooterIntakeMotor.set(Constants.Shooter.shooterIntakeSpeed);
         shooterMotor.set(Constants.Shooter.shooterSpeed);
     }
 
-    public void stop() {shooterMotor.stopMotor();}
-
-    public void start () {
-        shooterMotor.set(0.2);
+    public void stop() {
+        shooterMotor.stopMotor();
+        shooterIntakeMotor.stopMotor();
     }
 
     private void configShooterMotor() {

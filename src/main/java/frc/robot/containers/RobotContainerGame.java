@@ -82,8 +82,8 @@ public class RobotContainerGame implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        //intake.onTrue(new SequentialCommandGroup(armToIntake, new ParallelDeadlineGroup(indexNote, intakeNote)));
-        //shoot.whileTrue(new SequentialCommandGroup(armToShoot, shootNote));
+        intake.whileTrue(new SequentialCommandGroup(armToIntake, new ParallelDeadlineGroup(indexNote, intakeNote))).whileFalse(new ParallelCommandGroup(new InstantCommand(a_Arm::stopSet), new InstantCommand(s_Shooter::stop)));
+        shoot.whileTrue(new SequentialCommandGroup(armToShoot, shootNote)).whileFalse(new ParallelCommandGroup(new InstantCommand(a_Arm::stopSet), new InstantCommand(s_Shooter::stop)));
         //shoot.whileTrue(new SequentialCommandGroup((indexNote).withTimeout(5).onlyIf(shoot), shootNote));
 
         

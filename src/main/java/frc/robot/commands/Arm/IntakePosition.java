@@ -27,7 +27,8 @@ public class IntakePosition extends Command {
 
     @Override
     public boolean isFinished() {
-        return arm.endConditionIntake();
+        Rotation2d angle = new Rotation2d(Constants.Arm.desiredIntakeAngle);
+        return arm.endCondition(angle);
     }
 
 }

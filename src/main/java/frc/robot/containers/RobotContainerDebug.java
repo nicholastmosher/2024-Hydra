@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.Robot;
-import frc.robot.commands.Debug.*;
+import frc.robot.commands.Drive.debug.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 

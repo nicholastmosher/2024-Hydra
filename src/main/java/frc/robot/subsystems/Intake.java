@@ -6,6 +6,7 @@ import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.Constants;
@@ -33,6 +34,11 @@ public class Intake extends SubsystemBase {
 
     public void stopIntakeMotor() {
         intakeMotor.set(0);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("Is Intaked", endCondition());
     }
 
 }
