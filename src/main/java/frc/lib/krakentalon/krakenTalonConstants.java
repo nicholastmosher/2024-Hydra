@@ -19,10 +19,10 @@ public class krakenTalonConstants {
         public final static int pigeonID = 30;
 
         public  final static ModuleConstants drivemodule =  //TODO: This must be tuned to specific robot
-                ModuleConstants.SDS.MK4i.DoubleFalcon500(ModuleConstants.SDS.MK4i.driveRatio.L1and16t);
+                ModuleConstants.SDS.MK4i.KrakenFalcon(ModuleConstants.SDS.MK4i.driveRatio.L1and16t);
 
         public  final static ModuleConstants anglemodule =  //TODO: This must be tuned to specific robot
-                ModuleConstants.SDS.MK4i.DoubleFalcon500(ModuleConstants.SDS.MK4i.driveRatio.L1and16t);
+                ModuleConstants.SDS.MK4i.KrakenFalcon(ModuleConstants.SDS.MK4i.driveRatio.L1and16t);
 
         /* Drivetrain Constants */
         public final static double trackWidth = Units.inchesToMeters(20.75); //TODO: This must be tuned to specific robot

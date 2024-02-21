@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import frc.lib.Constants;
 //import com.ctre.phoenix6.sensors.CANCoderConfiguration;
 //import com.ctre.phoenix6.sensors.SensorInitializationStrategy;
@@ -25,6 +26,8 @@ public final class CTREConfigs {
         /* Motor Inverts and Neutral Mode */
         //swerveAngleFXConfig.MotorOutput.Inverted = Constants.Swerve.angleMotorInvert;
         swerveAngleFXConfig.MotorOutput.NeutralMode = Constants.Swerve.angleNeutralMode;
+
+        swerveAngleFXConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         /* Gear Ratio and Wrapping Config */
         swerveAngleFXConfig.Feedback.SensorToMechanismRatio = Constants.Swerve.angleGearRatio;

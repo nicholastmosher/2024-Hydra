@@ -82,6 +82,8 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     public void resetToAbsolute() {
         double absolutePosition = getRotation().getRotations() - angleOffset.getRotations();
         mAngleMotor.setPosition(absolutePosition);
+        System.out.printf("Absolute Position: %f\n", absolutePosition);
+        System.out.printf("Cancoder: %f\n", getRotation().getRotations());
     }
 
     @Override
@@ -113,9 +115,25 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
         }
     }
 
+    private Rotation2d cancoderOffset = new Rotation2d();
+    private Rotation2d motorOffset = new Rotation2d();
+    public void zeroEncoders() {
+        cancoderOffset = getRotation();
+        motorOffset = Rotation2d.fromRotations(mAngleMotor.getPosition().getValue());
+    }
+
     @Override
     public void dashboardPeriodic() {
-        SmartDashboard.putNumber(String.format("CanCoder%d Angle", mModule), getRotation().getDegrees());
-        SmartDashboard.putNumber(String.format("MotorSteer%d Angle", mModule), mAngleMotor.getPosition().getValue());
+        SmartDashboard.putNumber(String.format("CanCoder%d Angle", mModule), getRotation().getRotations());
+        SmartDashboard.putNumber(String.format("MotorSteer%d Angle", mModule), Rotation2d.fromRotations(mAngleMotor.getPosition().getValue()).getRotations());
+
+        Rotation2d adjustedCancoder = Rotation2d.fromRotations(getRotation().getRotations() - cancoderOffset.getRotations());
+        Rotation2d adjustedMotor = Rotation2d.fromRotations(mAngleMotor.getPosition().getValue() - motorOffset.getRotations());
+
+        SmartDashboard.putNumber(String.format("ZeroCanCoder%d Angle", mModule), adjustedCancoder.getRotations());
+        SmartDashboard.putNumber(String.format("ZeroMotor%d Angle", mModule), adjustedMotor.getRotations());
+
+//        SmartDashboard.putNumber(String.format("DriveMotor%d Voltage", mModule), mDriveMotor.getMotorVoltage().getValue());
+//        SmartDashboard.putNumber(String.format("AngleMotor%d Voltage", mModule), mAngleMotor.getMotorVoltage().getValue());
     }
 }

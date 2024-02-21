@@ -49,7 +49,8 @@ public class RobotContainerDebug implements RobotContainer {
         debugSwerveTranslation.onTrue(new DiagnoseSwerveTranslation(mSwerve));
         debugSwerveRotation.onTrue(new DiagnoseSwerveRotation(mSwerve));
 
-        commandDrive.onTrue(new DiagnoseDrive(mSwerve));
+        //commandDrive.onTrue(new DiagnoseDrive(mSwerve));
+        commandDrive.onTrue(new InstantCommand(() -> mSwerve.zeroEncoders()));
         commandSteer.onTrue(new DiagnoseSteering(mSwerve));
 //        commandSteer.onTrue(new SwerveAssignSteer(motorTest));
 //        commandShoot.onTrue(new ShooterAssignPower(mShooter, 0.70));

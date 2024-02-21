@@ -20,6 +20,7 @@ public interface SwerveModule {
     SwerveModulePosition getPosition();
     SwerveModuleState getState();
 
+    default void zeroEncoders(){}
     default void dashboardPeriodic() {}
     void debugSetDriveSpeed(double speed);
     void debugSetSteeringSpeed(double speed);
