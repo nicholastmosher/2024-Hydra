@@ -16,7 +16,7 @@ public class IntakePosition extends Command {
 
     @Override
     public void execute() {
-        Rotation2d angle = Rotation2d.fromDegrees(Constants.Arm.desiredIntakeAngle);
+        Rotation2d angle = Rotation2d.fromDegrees(arm.config.intakeAngle);
         arm.setAngle(angle);
     }
 
@@ -27,7 +27,7 @@ public class IntakePosition extends Command {
 
     @Override
     public boolean isFinished() {
-        Rotation2d angle = new Rotation2d(Constants.Arm.desiredIntakeAngle);
+        Rotation2d angle = new Rotation2d(arm.config.intakeAngle);
         return arm.endCondition(angle);
     }
 

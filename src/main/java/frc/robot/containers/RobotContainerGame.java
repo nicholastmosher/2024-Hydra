@@ -1,5 +1,6 @@
 package frc.robot.containers;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -8,6 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import frc.lib.Constants;
+import frc.lib.config.IntakeConfig;
 import frc.robot.Robot;
 import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.interfaces.RobotContainer;
@@ -27,8 +30,8 @@ public class RobotContainerGame implements RobotContainer {
     //private final CommandXboxController driver = new CommandXboxController(0);
 
     /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
+    private final int yAxis = XboxController.Axis.kLeftY.value;
+    private final int xAxis = XboxController.Axis.kLeftX.value;
     private final int rotationAxis = XboxController.Axis.kRightX.value;
 
     /* Driver Buttons */
@@ -39,9 +42,9 @@ public class RobotContainerGame implements RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final Arm a_Arm = new Arm();
-    private final Intake i_Intake = new Intake();
-    private final Shooter s_Shooter = new Shooter();
+    private final Arm a_Arm = new Arm(Constants.armConfig);
+    private final Intake i_Intake = new Intake(Constants.intakeConfig);
+    private final Shooter s_Shooter = new Shooter(Constants.shooterConfig);
 
     // command groups
 
@@ -49,13 +52,15 @@ public class RobotContainerGame implements RobotContainer {
     private final ShootCommandGroup Shoot = new ShootCommandGroup(a_Arm, s_Shooter);
 
 
+
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainerGame() {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis), 
-                () -> -driver.getRawAxis(strafeAxis), 
+                () -> -driver.getRawAxis(xAxis),
+                () -> -driver.getRawAxis(yAxis),
                 () -> -driver.getRawAxis(rotationAxis),
                     robotCentric
             )
@@ -86,8 +91,8 @@ public class RobotContainerGame implements RobotContainer {
      */
     @Override
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return Commands.print("No Auto");
+        System.out.println("no auto");
+        return null;
     }
 
     @Override

@@ -6,22 +6,25 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.Constants;
+import frc.lib.config.ShooterConfig;
 
 public class Shooter extends SubsystemBase {
-    private final CANSparkFlex shooterMotor;
-    private final CANSparkFlex shooterFollowerMotor;
+    private final CANSparkFlex shooterTopMotor;
+    private final CANSparkFlex shooterBottomMotor;
     private final CANSparkMax shooterIntakeMotor;
+    public ShooterConfig config;
 
-    public Shooter() {
-        shooterMotor = new CANSparkFlex(Constants.Shooter.shooterMotor, CANSparkLowLevel.MotorType.kBrushless);
-        SparkPIDController shooterPID = shooterMotor.getPIDController();
+    public Shooter(ShooterConfig config) {
+        this.config = config;
+        shooterTopMotor = new CANSparkFlex(this.config.shooterTopMotor, CANSparkLowLevel.MotorType.kBrushless);
+        SparkPIDController shooterPID = shooterTopMotor.getPIDController();
         shooterPID.setP(1.0);
         configShooterMotor();
 
-        shooterFollowerMotor = new CANSparkFlex(Constants.Shooter.shooterFollowerMotor, CANSparkLowLevel.MotorType.kBrushless);
+        shooterBottomMotor = new CANSparkFlex(this.config.shooterBottomMotor, CANSparkLowLevel.MotorType.kBrushless);
         configShooterFollowerMotor();
 
-        shooterIntakeMotor = new CANSparkMax(Constants.Shooter.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
+        shooterIntakeMotor = new CANSparkMax(this.config.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
         configShooterIntakeMotor();
 
     }
@@ -33,12 +36,12 @@ public class Shooter extends SubsystemBase {
 
     public void shootNote() {
         //shooterPID.setReference(1000, CANSparkBase.ControlType.kVelocity);
-        shooterIntakeMotor.set(Constants.Shooter.shooterIntakeSpeed);
-        shooterMotor.set(Constants.Shooter.shooterSpeed);
+        shooterIntakeMotor.set(this.config.shooterIntakeSpeed);
+        shooterTopMotor.set(this.config.shooterSpeed);
     }
 
     public void stop() {
-        shooterMotor.stopMotor();
+        shooterTopMotor.stopMotor();
         shooterIntakeMotor.stopMotor();
     }
 
@@ -47,7 +50,7 @@ public class Shooter extends SubsystemBase {
     }
 
     private void configShooterFollowerMotor() {
-        shooterFollowerMotor.follow(shooterMotor);
+        shooterBottomMotor.follow(shooterTopMotor);
     }
 
     private void configShooterIntakeMotor() {

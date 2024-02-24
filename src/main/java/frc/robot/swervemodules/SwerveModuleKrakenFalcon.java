@@ -11,9 +11,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.Constants;
+import frc.lib.config.SwerveModuleConfig;
+import frc.lib.krakentalon.krakenTalonConstants;
 import frc.lib.util.Conversions;
-import frc.lib.util.SwerveModuleConstants;
-import frc.lib.doubleNeo.doubleNeoConstants;
+import frc.lib.config.SwerveModuleConfig;
 import frc.robot.Robot;
 import frc.robot.interfaces.SwerveModule;
 
@@ -25,7 +27,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     private final CANcoder angleEncoder;
     private final int mModule;
 
-    private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(doubleNeoConstants.Swerve.driveKS, doubleNeoConstants.Swerve.driveKV, doubleNeoConstants.Swerve.driveKA);
+    private final SimpleMotorFeedforward driveFeedForward = new SimpleMotorFeedforward(krakenTalonConstants.Swerve.driveKS, krakenTalonConstants.Swerve.driveKV, krakenTalonConstants.Swerve.driveKA);
 
     /* drive motor control requests */
     private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0);
@@ -34,7 +36,10 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     /* angle motor control requests */
     private final PositionVoltage anglePosition = new PositionVoltage(0);
 
-    public SwerveModuleKrakenFalcon(SwerveModuleConstants moduleConstants, int moduleNumber) {
+    private int frameCount = 0;
+    private static final int frameReset = 10;
+
+    public SwerveModuleKrakenFalcon(SwerveModuleConfig moduleConstants, int moduleNumber) {
         this.angleOffset = moduleConstants.angleOffset;
         this.mModule = moduleNumber;
 
@@ -55,6 +60,11 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
 
     @Override
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
+        if (frameCount % frameReset == 0) {
+            resetToAbsolute();
+            frameCount = 0;
+        }
+        frameCount++;
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
         mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()));
         setSpeed(desiredState, isOpenLoop);
@@ -89,7 +99,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     @Override
     public SwerveModuleState getState() {
         return new SwerveModuleState(
-                Conversions.RPSToMPS(mDriveMotor.getVelocity().getValue(), doubleNeoConstants.Swerve.wheelCircumference),
+                Conversions.RPSToMPS(mDriveMotor.getVelocity().getValue(), krakenTalonConstants.Swerve.wheelCircumference),
                 Rotation2d.fromRotations(mAngleMotor.getPosition().getValue())
         );
     }
@@ -97,7 +107,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     @Override
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-                Conversions.rotationsToMeters(mDriveMotor.getPosition().getValue(), doubleNeoConstants.Swerve.wheelCircumference),
+                Conversions.rotationsToMeters(mDriveMotor.getPosition().getValue(), krakenTalonConstants.Swerve.wheelCircumference),
                 Rotation2d.fromRotations(mAngleMotor.getPosition().getValue())
         );
     }
@@ -105,11 +115,11 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if(isOpenLoop){
-            driveDutyCycle.Output = desiredState.speedMetersPerSecond / doubleNeoConstants.Swerve.maxSpeed;
+            driveDutyCycle.Output = desiredState.speedMetersPerSecond / krakenTalonConstants.Swerve.maxSpeed;
             mDriveMotor.setControl(driveDutyCycle);
         }
         else {
-            driveVelocity.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, doubleNeoConstants.Swerve.wheelCircumference);
+            driveVelocity.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, krakenTalonConstants.Swerve.wheelCircumference);
             driveVelocity.FeedForward = driveFeedForward.calculate(desiredState.speedMetersPerSecond);
             mDriveMotor.setControl(driveVelocity);
         }

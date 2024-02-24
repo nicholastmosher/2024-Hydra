@@ -1,46 +1,19 @@
 package frc.lib;
 
-import frc.lib.doubleNeo.doubleNeoConstants;
+import edu.wpi.first.math.geometry.Rotation2d;
+import frc.lib.config.*;
 import frc.lib.krakentalon.krakenTalonConstants;
 
-public final class Constants extends krakenTalonConstants {
+public final class Constants {
 
+    public static IntakeConfig intakeConfig = new IntakeConfig(32, -0.8);
 
-    public static final class Intake {
-        public static final int intakeMotor = 32;
-        public static final double intakeSpeed = -0.8;
-    }
+    public static ArmConfig armConfig = new ArmConfig(33, 34, new PidConfig(1.0, 0.0, 0.0));
 
-    public static final class Arm {
-        public static final int armMotor = 33;
-        public static final int armFollowerMotor = 34;
+    public static ShooterConfig shooterConfig = new ShooterConfig(50, 51, 37, new PidConfig(1.0, 0.0, 0.0), -0.8, 0.6);
 
-        public static final double kP = 1.0;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double kF = 0.0;
-
-        public static final double desiredShooterAngle = 30.0;
-        public static final double desiredIntakeAngle = -30;
-        public static final double armEncoderOffset = 0.0;
-
-        public static final double minAngle = 31.0;
-        public static final double maxAngle = 31.0;
-    }
-
-    public static final class Shooter {
-        public static final int shooterMotor = 50;
-        public static final int shooterFollowerMotor = 51;
-        public static final int shooterIntakeMotor = 37;
-
-        public static final double kP = 1.0;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
-        public static final double kF = 0.0;
-
-        public static final double shooterIntakeSpeed = -0.8;
-        public static final double shooterSpeed = 0.6;
-    }
-
-
+    public static SwerveModuleConfig mod0frontleftConfig = new SwerveModuleConfig(1, 2, 3, Rotation2d.fromDegrees(142.39));
+    public static SwerveModuleConfig mod1frontrightConfig = new SwerveModuleConfig(11, 12, 13, Rotation2d.fromDegrees(17.92));
+    public static SwerveModuleConfig mod2backleftConfig = new SwerveModuleConfig(21, 22, 23, Rotation2d.fromDegrees(106.43));
+    public static SwerveModuleConfig mod3backrightConfig = new SwerveModuleConfig(31, 32, 33, Rotation2d.fromDegrees(136.05));
 }
