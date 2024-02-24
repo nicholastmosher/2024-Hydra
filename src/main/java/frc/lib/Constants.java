@@ -8,7 +8,7 @@ public final class Constants extends krakenTalonConstants {
 
     public static final class Intake {
         public static final int intakeMotor = 32;
-        public static final double intakeSpeed = 0.8;
+        public static final double intakeSpeed = -0.8;
     }
 
     public static final class Arm {
@@ -38,7 +38,7 @@ public final class Constants extends krakenTalonConstants {
         public static final double kD = 0.0;
         public static final double kF = 0.0;
 
-        public static final double shooterIntakeSpeed = 0.8;
+        public static final double shooterIntakeSpeed = -0.8;
         public static final double shooterSpeed = 0.6;
     }
 

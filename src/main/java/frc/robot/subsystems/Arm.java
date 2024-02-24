@@ -19,10 +19,11 @@ public class Arm extends SubsystemBase {
         armPID = armMotor.getPIDController();
         configArmMotor();
 
+        armEncoder = armMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
         armFollowerMotor = new CANSparkMax(Constants.Arm.armFollowerMotor, CANSparkLowLevel.MotorType.kBrushless);
         configFollowerMotor();
 
-        armEncoder = armMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+
 
     }
 
@@ -39,8 +40,8 @@ public class Arm extends SubsystemBase {
     }
 
     private void configArmMotor() {
-        armPID.setOutputRange(Constants.Arm.minAngle, Constants.Arm.maxAngle);
-        armPID.setFeedbackDevice(armEncoder);
+        //armPID.setOutputRange(Constants.Arm.minAngle, Constants.Arm.maxAngle);
+        armPID.setFeedbackDevice(armMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle));
     }
 
     private void configFollowerMotor() {

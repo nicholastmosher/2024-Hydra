@@ -9,14 +9,11 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.Robot;
-import frc.robot.commands.Arm.IntakePosition;
-import frc.robot.commands.Arm.ShootPosition;
 import frc.robot.commands.Drive.TeleopSwerve;
-import frc.robot.commands.Intake.IntakeNote;
-import frc.robot.commands.Shooter.IndexNote;
-import frc.robot.commands.Shooter.ShootNote;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
+import frc.robot.commands.CommandGroups.Intake.*;
+import frc.robot.commands.CommandGroups.Shoot.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,7 +34,7 @@ public class RobotContainerGame implements RobotContainer {
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton intake = new JoystickButton(driver, XboxController.Axis.kLeftTrigger.value);
+    private final JoystickButton intake = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kX.value);
 
     /* Subsystems */
@@ -46,15 +43,10 @@ public class RobotContainerGame implements RobotContainer {
     private final Intake i_Intake = new Intake();
     private final Shooter s_Shooter = new Shooter();
 
-    // commands
+    // command groups
 
-    private final IntakePosition armToIntake = new IntakePosition(a_Arm);
-    private final ShootPosition armToShoot = new ShootPosition(a_Arm);
-
-    private final IntakeNote intakeNote = new IntakeNote(i_Intake);
-
-    private final IndexNote indexNote = new IndexNote(s_Shooter);
-    private final ShootNote shootNote = new ShootNote(s_Shooter);
+    private final IntakeCommandGroup Intake = new IntakeCommandGroup(a_Arm, i_Intake, s_Shooter);
+    private final ShootCommandGroup Shoot = new ShootCommandGroup(a_Arm, s_Shooter);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -82,10 +74,8 @@ public class RobotContainerGame implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        intake.whileTrue(new SequentialCommandGroup(armToIntake, new ParallelDeadlineGroup(indexNote, intakeNote))).whileFalse(new ParallelCommandGroup(new InstantCommand(a_Arm::stopSet), new InstantCommand(s_Shooter::stop)));
-        shoot.whileTrue(new SequentialCommandGroup(armToShoot, shootNote)).whileFalse(new ParallelCommandGroup(new InstantCommand(a_Arm::stopSet), new InstantCommand(s_Shooter::stop)));
-        //shoot.whileTrue(new SequentialCommandGroup((indexNote).withTimeout(5).onlyIf(shoot), shootNote));
-
+        intake.whileTrue(Intake);
+        shoot.whileTrue(Shoot);
         
     }
 
