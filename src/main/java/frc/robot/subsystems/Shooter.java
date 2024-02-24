@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.Constants;
 import frc.lib.config.ShooterConfig;
 
 public class Shooter extends SubsystemBase {

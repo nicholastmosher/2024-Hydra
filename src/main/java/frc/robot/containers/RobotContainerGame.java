@@ -1,6 +1,5 @@
 package frc.robot.containers;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -10,9 +9,9 @@ import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.lib.Constants;
-import frc.lib.config.IntakeConfig;
 import frc.robot.Robot;
 import frc.robot.commands.Drive.TeleopSwerve;
+import frc.robot.commands.Drive.TrajectoryFollowerCommands;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.CommandGroups.Intake.*;
@@ -52,6 +51,7 @@ public class RobotContainerGame implements RobotContainer {
     private final ShootCommandGroup Shoot = new ShootCommandGroup(a_Arm, s_Shooter);
 
 
+    private final TrajectoryFollowerCommands pathFollower = new TrajectoryFollowerCommands(s_Swerve, true);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -91,8 +91,7 @@ public class RobotContainerGame implements RobotContainer {
      */
     @Override
     public Command getAutonomousCommand() {
-        System.out.println("no auto");
-        return null;
+        return pathFollower.followPath("shortline");
     }
 
     @Override

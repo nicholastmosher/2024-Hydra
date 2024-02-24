@@ -42,12 +42,12 @@ public class TeleopSwerve extends Command {
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), krakenTalonConstants.stickDeadband);
 
         Translation2d slewedTranslation = new Translation2d(Xfilter.calculate(x*krakenTalonConstants.Swerve.maxSpeed), Yfilter.calculate(y*krakenTalonConstants.Swerve.maxSpeed));
-//        Translation2d translation = new Translation2d(x*krakenTalonConstants.Swerve.maxSpeed, y*krakenTalonConstants.Swerve.maxSpeed);
+        Translation2d translation = new Translation2d(x*krakenTalonConstants.Swerve.maxSpeed, y*krakenTalonConstants.Swerve.maxSpeed);
 
         /* Drive */
         s_Swerve.drive(
-                slewedTranslation,
-                Anglefilter.calculate(rotationVal * krakenTalonConstants.Swerve.maxAngularVelocity),
+                translation,
+                rotationVal * krakenTalonConstants.Swerve.maxAngularVelocity,
                 !robotCentricSup.getAsBoolean(),
                 true
         );

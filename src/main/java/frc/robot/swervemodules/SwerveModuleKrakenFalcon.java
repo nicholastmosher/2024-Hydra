@@ -60,10 +60,10 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
 
     @Override
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop) {
-        if (frameCount % frameReset == 0) {
-            resetToAbsolute();
-            frameCount = 0;
-        }
+//        if (frameCount % frameReset == 0) {
+//            resetToAbsolute();
+//            frameCount = 0;
+//        }
         frameCount++;
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
         mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()));

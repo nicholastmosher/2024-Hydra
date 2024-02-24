@@ -24,6 +24,8 @@ public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
+    private ChassisSpeeds latestSpeeds;
+
     /**
      * Default constructor uses SwerveModuleTalonNeo
      */
@@ -45,6 +47,11 @@ public class Swerve extends SubsystemBase {
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
         swerveOdometry = new SwerveDriveOdometry(krakenTalonConstants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
+        this.latestSpeeds = new ChassisSpeeds(0, 0,0);
+    }
+
+    public ChassisSpeeds getLatestSpeeds() {
+        return latestSpeeds;
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -58,6 +65,12 @@ public class Swerve extends SubsystemBase {
                 translation.getY(),
                 rotation);
 
+        this.latestSpeeds = speeds;
+
+        driveChassisSpeeds(speeds, isOpenLoop);
+    }
+
+    public void driveChassisSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates = krakenTalonConstants.Swerve.swerveKinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, krakenTalonConstants.Swerve.maxSpeed);
 
@@ -65,7 +78,9 @@ public class Swerve extends SubsystemBase {
             SwerveModule mod = mSwerveMods[i];
             mod.setDesiredState(swerveModuleStates[i], isOpenLoop);
         }
+
     }
+
 
     public void debugSetDriveSpeed(int module, double speed) {
         mSwerveMods[module].debugSetDriveSpeed(speed);

@@ -13,7 +13,7 @@ public class krakenTalonConstants {
 
 
     public static final class Swerve {
-        public final static int pigeonID = 30;
+        public final static int pigeonID = 02;
 
         public final static ModuleConstants drivemodule =  //TODO: This must be tuned to specific robot
                 ModuleConstants.SDS.MK4i.KrakenFalcon(ModuleConstants.SDS.MK4i.driveRatio.L1and16t);
@@ -33,6 +33,8 @@ public class krakenTalonConstants {
                 new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
                 new Translation2d(-wheelBase / 2.0, trackWidth / 2.0),
                 new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
+
+        public final static double swerveRadius = 11.6875;
 
         /* Module Gear Ratios */
         public final static double driveGearRatio = drivemodule.driveGearRatio;
