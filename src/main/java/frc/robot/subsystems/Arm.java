@@ -34,7 +34,17 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngle(Rotation2d angle) {
+        Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
+        System.out.println(getPosition().getDegrees());
+        System.out.println(motorAngle.getDegrees());
+        armRightMotor.getEncoder().setPosition(getPosition().getRotations());
         armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
+        //System.out.println(armPID.get);
+
+    }
+
+    public void moveArm(double input) {
+        armRightMotor.set(input*0.1);
     }
 
     public boolean endCondition(Rotation2d angle) {
@@ -43,15 +53,21 @@ public class Arm extends SubsystemBase {
 
     public void stopSet() {
         armRightMotor.stopMotor();
+        armLeftMotor.stopMotor();
+        System.out.println("Stop All");
     }
 
     private void configArmMotor() {
         //armPID.setOutputRange(Constants.Arm.minAngle, Constants.Arm.maxAngle);
-        armPID.setFeedbackDevice(armRightMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle));
+        armPID.setFeedbackDevice(armEncoder);
+        armRightMotor.getEncoder().setPosition(getPosition().getRotations());
+        armPID.setP(0.1);
+
     }
 
     private void configFollowerMotor() {
         armLeftMotor.follow(armRightMotor, true);
+        armLeftMotor.getPIDController().setP(0.1);
     }
 
     private Rotation2d getPosition() {
@@ -60,6 +76,9 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Arm Position", getPosition().getDegrees());
+        Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("ArmPosition", getPosition().getDegrees());
+        SmartDashboard.putNumber("InbuiltEncoderAngle", motorAngle.getDegrees());
+
     }
 }

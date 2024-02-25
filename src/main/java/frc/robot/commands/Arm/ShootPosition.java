@@ -17,8 +17,7 @@ public class ShootPosition extends Command {
 
     @Override
     public void execute() {
-        Rotation2d angle = Rotation2d.fromDegrees(arm.config.shootAngle);
-        arm.setAngle(angle);
+        arm.setAngle(arm.config.shootAngle);
     }
 
     @Override
@@ -28,8 +27,7 @@ public class ShootPosition extends Command {
 
     @Override
     public boolean isFinished() {
-        Rotation2d angle = new Rotation2d(arm.config.shootAngle);
-        return arm.endCondition(angle);
+        return arm.endCondition(arm.config.shootAngle);
     }
 
 }

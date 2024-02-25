@@ -7,11 +7,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import frc.lib.Constants;
 import frc.lib.CtreConfigs;
+import frc.lib.config.ArmConfig;
 import frc.robot.Robot;
 import frc.robot.commands.Drive.debug.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
+import frc.robot.commands.Arm.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,13 +25,21 @@ import frc.robot.subsystems.*;
 public class RobotContainerTest implements RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
-    private final JoystickButton commandDrive = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton commandSteer = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton debugSwerveTranslation = new JoystickButton(driver,XboxController.Button.kY.value);
+    //private final Joystick driver2 = new Joystick(1);
+    private final int yAxis = XboxController.Axis.kLeftY.value;
+    private final JoystickButton amp = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton intake = new JoystickButton(driver,XboxController.Button.kY.value);
     private final JoystickButton debugSwerveRotation = new JoystickButton(driver,XboxController.Button.kX.value);
 
     /* Subsystems */
     private final Swerve mSwerve;
+    private final Arm a_Arm =new Arm(Constants.armConfig);
+
+
+    private final IntakePosition armtoIntake = new IntakePosition(a_Arm);
+    private final ShootPosition armtoShoot = new ShootPosition(a_Arm);
+    private final AmpPosition armtoAmp = new AmpPosition(a_Arm);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainerTest(CtreConfigs ctreConfigs) {
@@ -36,6 +47,9 @@ public class RobotContainerTest implements RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
         System.out.println("Initialized DebugRobot");
+        a_Arm.setDefaultCommand(
+                new InstantCommand(() -> a_Arm.moveArm(driver.getRawAxis(yAxis)), a_Arm)
+        );
     }
 
     /**
@@ -46,14 +60,18 @@ public class RobotContainerTest implements RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        debugSwerveTranslation.onTrue(new DiagnoseSwerveTranslation(mSwerve));
-        debugSwerveRotation.onTrue(new DiagnoseSwerveRotation(mSwerve));
+        //debugSwerveTranslation.onTrue(new DiagnoseSwerveTranslation(mSwerve));
+        //debugSwerveRotation.onTrue(new DiagnoseSwerveRotation(mSwerve));
 
         //commandDrive.onTrue(new DiagnoseDrive(mSwerve));
-        commandDrive.onTrue(new InstantCommand(() -> mSwerve.zeroEncoders()));
-        commandSteer.onTrue(new DiagnoseSteering(mSwerve));
+        //commandDrive.onTrue(new InstantCommand(() -> mSwerve.zeroEncoders()));
+        //commandSteer.onTrue(new DiagnoseSteering(mSwerve));
 //        commandSteer.onTrue(new SwerveAssignSteer(motorTest));
 //        commandShoot.onTrue(new ShooterAssignPower(mShooter, 0.70));
+        amp.whileTrue(armtoAmp);
+        shoot.whileTrue(armtoShoot);
+        intake.whileTrue(armtoIntake);
+
     }
 
     /**

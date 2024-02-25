@@ -11,6 +11,7 @@ public class Shooter extends SubsystemBase {
     private final CANSparkFlex shooterTopMotor;
     private final CANSparkFlex shooterBottomMotor;
     private final CANSparkMax shooterIntakeMotor;
+
     public ShooterConfig config;
 
     public Shooter(ShooterConfig config) {
