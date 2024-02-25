@@ -1,49 +1,48 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel;
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.AbsoluteEncoder;
-import edu.wpi.first.math.geometry.Rotation2d;
-import frc.lib.Constants;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.config.ShooterConfig;
 
 public class Shooter extends SubsystemBase {
-    private final CANSparkFlex shooterMotor;
-    private final CANSparkFlex shooterFollowerMotor;
+    private final CANSparkFlex shooterTopMotor;
+    private final CANSparkFlex shooterBottomMotor;
     private final CANSparkMax shooterIntakeMotor;
 
-    private final SparkPIDController shooterPID;
-    private final SparkPIDController shooterIntakePID;
+    public ShooterConfig config;
 
-    public Shooter() {
-        shooterMotor = new CANSparkFlex(Constants.Shooter.shooterMotor, CANSparkLowLevel.MotorType.kBrushless);
-        shooterPID = shooterMotor.getPIDController();
+    public Shooter(ShooterConfig config) {
+        this.config = config;
+        shooterTopMotor = new CANSparkFlex(this.config.shooterTopMotor, CANSparkLowLevel.MotorType.kBrushless);
+        SparkPIDController shooterPID = shooterTopMotor.getPIDController();
+        shooterPID.setP(1.0);
         configShooterMotor();
 
-        shooterIntakeMotor = new CANSparkMax(Constants.Shooter.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
-        shooterIntakePID = shooterIntakeMotor.getPIDController();
-        configShooterIntakeMotor();
-
-        shooterFollowerMotor = new CANSparkFlex(Constants.Shooter.shooterFollowerMotor, CANSparkLowLevel.MotorType.kBrushless);
+        shooterBottomMotor = new CANSparkFlex(this.config.shooterBottomMotor, CANSparkLowLevel.MotorType.kBrushless);
         configShooterFollowerMotor();
+
+        shooterIntakeMotor = new CANSparkMax(this.config.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
+        configShooterIntakeMotor();
 
     }
 
     public void indexNote() {
-        shooterIntakePID.setReference(Constants.Shooter.shooterIntakeSpeed, CANSparkBase.ControlType.kVelocity);
+        //shooterIntakePID.setReference(Constants.Shooter.shooterIntakeSpeed, CANSparkBase.ControlType.kVelocity);
+        shooterIntakeMotor.set(-0.8);
     }
 
     public void shootNote() {
-        shooterPID.setReference(Constants.Shooter.shooterSpeed, CANSparkBase.ControlType.kVelocity);
+        //shooterPID.setReference(1000, CANSparkBase.ControlType.kVelocity);
+        shooterIntakeMotor.set(this.config.shooterIntakeSpeed);
+        shooterTopMotor.set(this.config.shooterSpeed);
     }
 
     public void stop() {
-        shooterMotor.stopMotor();
+        shooterTopMotor.stopMotor();
+        shooterIntakeMotor.stopMotor();
     }
 
     private void configShooterMotor() {
@@ -51,7 +50,7 @@ public class Shooter extends SubsystemBase {
     }
 
     private void configShooterFollowerMotor() {
-        shooterFollowerMotor.follow(shooterMotor);
+        shooterBottomMotor.follow(shooterTopMotor);
     }
 
     private void configShooterIntakeMotor() {

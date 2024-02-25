@@ -1,6 +1,5 @@
 package frc.lib;
 
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.util.Units;
@@ -43,7 +42,7 @@ public class ModuleConstants {
                 // (150 / 7) : 1
                 double angleGearRatio = ((150.0 / 7.0) / 1.0);
         
-                double angleKP = 100.0;
+                double angleKP = 10.0;
                 double angleKI = 0.0;
                 double angleKD = 0.0;
         
@@ -92,13 +91,13 @@ public class ModuleConstants {
                 // (150 / 7) : 1
                 double angleGearRatio = ((150.0 / 7.0));
 
-                double angleKP = 100.0;
+                double angleKP = 12.0;
                 double angleKI = 0.0;
                 double angleKD = 0.0;
 
                 boolean driveMotorInvert = false;//InvertedValue.CounterClockwise_Positive;
                 boolean angleMotorInvert = false;//InvertedValue.Clockwise_Positive;
-                SensorDirectionValue cancoderInvert = SensorDirectionValue.CounterClockwise_Positive;
+                SensorDirectionValue cancoderInvert = SensorDirectionValue.Clockwise_Positive;
                 return new ModuleConstants(wheelDiameter, angleGearRatio, driveGearRatio, angleKP, angleKI, angleKD, driveMotorInvert, angleMotorInvert, cancoderInvert);
             }
 

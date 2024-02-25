@@ -1,10 +1,10 @@
-package frc.robot.commands.Debug;
+package frc.robot.commands.Drive.debug;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.SwerveTest;
+import frc.robot.subsystems.Swerve;
 
 public class DiagnoseSteering extends SequentialCommandGroup {
-    public DiagnoseSteering(SwerveTest swerve){
+    public DiagnoseSteering(Swerve swerve){
         super(
                 new TestSwerveSteerMotors(swerve, 0, 0.5).withTimeout(1.0),
                 new TestSwerveSteerMotors(swerve, 1, 0.5).withTimeout(1.0),

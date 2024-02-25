@@ -8,15 +8,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import frc.lib.Constants;
+import frc.lib.CtreConfigs;
 import frc.robot.Robot;
-import frc.robot.commands.Arm.IntakePosition;
-import frc.robot.commands.Arm.ShootPosition;
 import frc.robot.commands.Drive.TeleopSwerve;
-import frc.robot.commands.Intake.IntakeNote;
-import frc.robot.commands.Shooter.IndexNote;
-import frc.robot.commands.Shooter.ShootNote;
+import frc.robot.commands.Autos.TrajectoryFollowerCommands;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
+import frc.robot.commands.CommandGroups.Intake.*;
+import frc.robot.commands.CommandGroups.Shoot.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,46 +24,44 @@ import frc.robot.subsystems.*;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class RobotContainerGame implements RobotContainer {
+public class RobotContainerTeleop implements RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
-    //private final CommandXboxController driver = new CommandXboxController(0);
 
     /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
+    private final int yAxis = XboxController.Axis.kLeftY.value;
+    private final int xAxis = XboxController.Axis.kLeftX.value;
     private final int rotationAxis = XboxController.Axis.kRightX.value;
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton intake = new JoystickButton(driver, XboxController.Axis.kLeftTrigger.value);
-    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Axis.kRightTrigger.value);
+    private final JoystickButton intake = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kX.value);
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
-    private final Arm a_Arm = new Arm();
-    private final Intake i_Intake = new Intake();
-    private final Shooter s_Shooter = new Shooter();
+    private final Swerve s_Swerve;
+    private final Arm a_Arm = new Arm(Constants.armConfig);
+    private final Intake i_Intake = new Intake(Constants.intakeConfig);
+    private final Shooter s_Shooter = new Shooter(Constants.shooterConfig);
 
-    // commands
+    // command groups
 
-    private final IntakePosition armToIntake = new IntakePosition(a_Arm);
-    private final ShootPosition armToShoot = new ShootPosition(a_Arm);
+    private final IntakeCommandGroup Intake = new IntakeCommandGroup(a_Arm, i_Intake, s_Shooter);
+    private final ShootCommandGroup Shoot = new ShootCommandGroup(a_Arm, s_Shooter);
 
-    private final IntakeNote intakeNote = new IntakeNote(i_Intake);
-
-    private final IndexNote indexNote = new IndexNote(s_Shooter);
-    private final ShootNote shootNote = new ShootNote(s_Shooter);
-
+    private final TrajectoryFollowerCommands pathFollower;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainerGame() {
+    public RobotContainerTeleop(CtreConfigs ctreConfigs) {
+        this.s_Swerve = new Swerve(ctreConfigs);
+        this.pathFollower = new TrajectoryFollowerCommands(s_Swerve, true);
+
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis), 
-                () -> -driver.getRawAxis(strafeAxis), 
+                () -> -driver.getRawAxis(xAxis),
+                () -> -driver.getRawAxis(yAxis),
                 () -> -driver.getRawAxis(rotationAxis),
                     robotCentric
             )
@@ -82,9 +80,8 @@ public class RobotContainerGame implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        intake.onTrue(new SequentialCommandGroup(armToIntake, new ParallelDeadlineGroup(indexNote, intakeNote)));
-        shoot.onTrue(new SequentialCommandGroup(armToShoot, shootNote));
-        
+        intake.whileTrue(Intake);
+        shoot.whileTrue(Shoot);
     }
 
     /**
@@ -94,8 +91,7 @@ public class RobotContainerGame implements RobotContainer {
      */
     @Override
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return Commands.print("No Auto");
+        return pathFollower.followPath("shortline");
     }
 
     @Override

@@ -7,11 +7,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib.CTREConfigs;
-import frc.robot.containers.RobotContainerDebug;
-import frc.robot.containers.RobotContainerGame;
+import frc.lib.CtreConfigs;
+import frc.robot.containers.RobotContainerTest;
+import frc.robot.containers.RobotContainerTeleop;
 import frc.robot.interfaces.RobotContainer;
-import org.littletonrobotics.junction.LoggedRobot;
+import edu.wpi.first.wpilibj.TimedRobot;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,8 +19,8 @@ import org.littletonrobotics.junction.LoggedRobot;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends LoggedRobot {
-    public static final CTREConfigs ctreConfigs = new CTREConfigs();
+public class Robot extends TimedRobot {
+    public final CtreConfigs ctreConfigs = new CtreConfigs();
     private Command m_autonomousCommand;
     private RobotContainer mRobotContainer;
 
@@ -32,9 +32,9 @@ public class Robot extends LoggedRobot {
     public void robotInit() {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
-//        mRobotContainer = new RobotContainerGame();
-        mRobotContainer = new RobotContainerDebug();
         SmartDashboard.putString("Version", "2");
+//        mRobotContainer = new RobotContainerTeleop(ctreConfigs);
+        mRobotContainer = new RobotContainerTest(ctreConfigs);
     }
 
     /**
@@ -61,7 +61,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledPeriodic() {}
 
-    /** This autonomous runs the autonomous command selected by your {@link RobotContainerGame} class. */
+    /** This autonomous runs the autonomous command selected by your {@link RobotContainerTeleop} class. */
     @Override
     public void autonomousInit() {
         m_autonomousCommand = mRobotContainer.getAutonomousCommand();
