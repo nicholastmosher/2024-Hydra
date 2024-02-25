@@ -1,4 +1,4 @@
-package frc.robot.commands.Drive;
+package frc.robot.commands.Autos;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -21,8 +21,8 @@ public class TrajectoryFollowerCommands {
     public TrajectoryFollowerCommands(Swerve subsystem, boolean isBlueAlliance) {
         this.isBlue = isBlueAlliance;
         this.config = new HolonomicPathFollowerConfig(
-                new PIDConstants(0, 0 ,0),
-                new PIDConstants(0, 0,0),
+                new PIDConstants(1, 0 ,0),
+                new PIDConstants(1, 0,0),
                 krakenTalonConstants.Swerve.maxSpeed,
                 krakenTalonConstants.Swerve.swerveRadius,
                 new ReplanningConfig(true, false)

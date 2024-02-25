@@ -1,6 +1,5 @@
 package frc.robot.swervemodules;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -11,12 +10,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.lib.Constants;
+import frc.lib.CtreConfigs;
 import frc.lib.config.SwerveModuleConfig;
 import frc.lib.krakentalon.krakenTalonConstants;
 import frc.lib.util.Conversions;
-import frc.lib.config.SwerveModuleConfig;
-import frc.robot.Robot;
 import frc.robot.interfaces.SwerveModule;
 
 public class SwerveModuleKrakenFalcon implements SwerveModule {
@@ -36,25 +33,28 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     /* angle motor control requests */
     private final PositionVoltage anglePosition = new PositionVoltage(0);
 
+    public final CtreConfigs ctreConfigs;
+
     private int frameCount = 0;
     private static final int frameReset = 10;
 
-    public SwerveModuleKrakenFalcon(SwerveModuleConfig moduleConstants, int moduleNumber) {
+    public SwerveModuleKrakenFalcon(CtreConfigs ctreConfigs, SwerveModuleConfig moduleConstants, int moduleNumber) {
+        this.ctreConfigs = ctreConfigs;
         this.angleOffset = moduleConstants.angleOffset;
         this.mModule = moduleNumber;
 
         /* Angle Encoder Config */
         angleEncoder = new CANcoder(moduleConstants.cancoderID);
-        angleEncoder.getConfigurator().apply(Robot.ctreConfigs.swerveCANcoderConfig);
+        angleEncoder.getConfigurator().apply(ctreConfigs.swerveCANcoderConfig);
 
         /* Angle Motor Config */
         mAngleMotor = new TalonFX(moduleConstants.angleMotorID);
-        mAngleMotor.getConfigurator().apply(Robot.ctreConfigs.swerveAngleFXConfig);
+        mAngleMotor.getConfigurator().apply(ctreConfigs.swerveAngleFXConfig);
         resetToAbsolute();
 
         /* Drive Motor Config */
         mDriveMotor = new TalonFX(moduleConstants.driveMotorID);
-        mDriveMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
+        mDriveMotor.getConfigurator().apply(ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
     }
 
@@ -64,7 +64,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
 //            resetToAbsolute();
 //            frameCount = 0;
 //        }
-        frameCount++;
+        //frameCount++;
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
         mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()));
         setSpeed(desiredState, isOpenLoop);
@@ -99,7 +99,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     @Override
     public SwerveModuleState getState() {
         return new SwerveModuleState(
-                Conversions.RPSToMPS(mDriveMotor.getVelocity().getValue(), krakenTalonConstants.Swerve.wheelCircumference),
+                Conversions.RPSToMPS(mDriveMotor.getVelocity().getValue(), krakenTalonConstants.Swerve.driveTrainConfig.wheelCircumference),
                 Rotation2d.fromRotations(mAngleMotor.getPosition().getValue())
         );
     }
@@ -107,11 +107,10 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     @Override
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-                Conversions.rotationsToMeters(mDriveMotor.getPosition().getValue(), krakenTalonConstants.Swerve.wheelCircumference),
+                Conversions.rotationsToMeters(mDriveMotor.getPosition().getValue(), krakenTalonConstants.Swerve.driveTrainConfig.wheelCircumference),
                 Rotation2d.fromRotations(mAngleMotor.getPosition().getValue())
         );
     }
-
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if(isOpenLoop){
@@ -119,7 +118,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
             mDriveMotor.setControl(driveDutyCycle);
         }
         else {
-            driveVelocity.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, krakenTalonConstants.Swerve.wheelCircumference);
+            driveVelocity.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, krakenTalonConstants.Swerve.driveTrainConfig.wheelCircumference);
             driveVelocity.FeedForward = driveFeedForward.calculate(desiredState.speedMetersPerSecond);
             mDriveMotor.setControl(driveVelocity);
         }

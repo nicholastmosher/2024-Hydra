@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
+import frc.lib.CtreConfigs;
 import frc.robot.Robot;
 import frc.robot.commands.Drive.debug.*;
 import frc.robot.interfaces.RobotContainer;
@@ -18,7 +19,7 @@ import frc.robot.subsystems.*;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class RobotContainerDebug implements RobotContainer {
+public class RobotContainerTest implements RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
     private final JoystickButton commandDrive = new JoystickButton(driver, XboxController.Button.kA.value);
@@ -27,11 +28,11 @@ public class RobotContainerDebug implements RobotContainer {
     private final JoystickButton debugSwerveRotation = new JoystickButton(driver,XboxController.Button.kX.value);
 
     /* Subsystems */
-    private final Swerve mSwerve = new Swerve();
-//    private final SwerveTest mSwerveTest = new SwerveTest();
+    private final Swerve mSwerve;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainerDebug() {
+    public RobotContainerTest(CtreConfigs ctreConfigs) {
+        this.mSwerve = new Swerve(ctreConfigs);
         // Configure the button bindings
         configureButtonBindings();
         System.out.println("Initialized DebugRobot");
@@ -45,7 +46,6 @@ public class RobotContainerDebug implements RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-
         debugSwerveTranslation.onTrue(new DiagnoseSwerveTranslation(mSwerve));
         debugSwerveRotation.onTrue(new DiagnoseSwerveRotation(mSwerve));
 
@@ -67,27 +67,4 @@ public class RobotContainerDebug implements RobotContainer {
         //return new exampleAuto(s_Swerve);
         return new InstantCommand(() -> {});
     }
-
-//    public Command makeDriveTestCommand() {
-//        return new SequentialCommandGroup(
-//                new TestSwerveDriveMotors(motorTest, 0, 0.5).withTimeout(2.0),
-//                new TestSwerveDriveMotors(motorTest, 1, 0.5).withTimeout(2.0),
-//                new TestSwerveDriveMotors(motorTest, 2, 0.5).withTimeout(2.0),
-//                new TestSwerveDriveMotors(motorTest, 3, 0.5).withTimeout(2.0),
-//
-//                new TestSwerveDriveMotors(motorTest, 0, 0).withTimeout(2.0),
-//                new TestSwerveDriveMotors(motorTest, 1, 0).withTimeout(2.0),
-//                new TestSwerveDriveMotors(motorTest, 2, 0).withTimeout(2.0),
-//                new TestSwerveDriveMotors(motorTest, 3, 0).withTimeout(2.0)
-//        );
-//    }
-
-//    public Command makeSteeringTestCommand() {
-//        return new SequentialCommandGroup(
-//                new TestSwerveSteerMotors(motorTest, 0, 0.5).withTimeout(2.0),
-//                new TestSwerveSteerMotors(motorTest, 1, 0.5).withTimeout(2.0),
-//                new TestSwerveSteerMotors(motorTest, 2, 0.5).withTimeout(2.0),
-//                new TestSwerveSteerMotors(motorTest, 3, 0.5).withTimeout(2.0)
-//        );
-//    }
 }

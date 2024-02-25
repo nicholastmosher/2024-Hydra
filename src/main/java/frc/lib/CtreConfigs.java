@@ -5,20 +5,17 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 
 import com.ctre.phoenix6.signals.InvertedValue;
-import frc.lib.Constants;
 import frc.lib.krakentalon.krakenTalonConstants;
-//import com.ctre.phoenix6.sensors.CANCoderConfiguration;
-//import com.ctre.phoenix6.sensors.SensorTimeBase;
 
-public final class CTREConfigs {
+public final class CtreConfigs {
     public TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();
     public TalonFXConfiguration swerveDriveFXConfig = new TalonFXConfiguration();
-    public static CANcoderConfiguration swerveCANcoderConfig = new CANcoderConfiguration();
+    public CANcoderConfiguration swerveCANcoderConfig = new CANcoderConfiguration();
 
-    public CTREConfigs(){
+    public CtreConfigs() {
         /** Swerve CANCoder Configuration */
         swerveCANcoderConfig.MagnetSensor.SensorDirection = krakenTalonConstants.Swerve.cancoderInvert;
-//        swerveCANcoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+        swerveCANcoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
 //        swerveCANcoderConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
 //        swerveCANcoderConfig.sensorTimeBase = SensorTimeBase.PerSecond;
 
@@ -32,17 +29,17 @@ public final class CTREConfigs {
         /* Gear Ratio and Wrapping Config */
         swerveAngleFXConfig.Feedback.SensorToMechanismRatio = krakenTalonConstants.Swerve.angleGearRatio;
         swerveAngleFXConfig.ClosedLoopGeneral.ContinuousWrap = true;
-        
+
         /* Current Limiting */
-        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLimitEnable = krakenTalonConstants.Swerve.angleEnableCurrentLimit;
-        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLimit = krakenTalonConstants.Swerve.angleCurrentLimit;
-        swerveAngleFXConfig.CurrentLimits.SupplyCurrentThreshold = krakenTalonConstants.Swerve.angleCurrentThreshold;
-        swerveAngleFXConfig.CurrentLimits.SupplyTimeThreshold = krakenTalonConstants.Swerve.angleCurrentThresholdTime;
+        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLimit = krakenTalonConstants.Swerve.angleCurrentLimit.currentLimit;
+        swerveAngleFXConfig.CurrentLimits.SupplyCurrentThreshold = krakenTalonConstants.Swerve.angleCurrentLimit.currentThreshold;
+        swerveAngleFXConfig.CurrentLimits.SupplyTimeThreshold = krakenTalonConstants.Swerve.angleCurrentLimit.currentThresholdTime;
+        swerveAngleFXConfig.CurrentLimits.SupplyCurrentLimitEnable = krakenTalonConstants.Swerve.angleCurrentLimit.enableCurrentLimit;
 
         /* PID Config */
-        swerveAngleFXConfig.Slot0.kP = krakenTalonConstants.Swerve.angleKP;
-        swerveAngleFXConfig.Slot0.kI = krakenTalonConstants.Swerve.angleKI;
-        swerveAngleFXConfig.Slot0.kD = krakenTalonConstants.Swerve.angleKD;
+        swerveAngleFXConfig.Slot0.kP = krakenTalonConstants.Swerve.anglePid.kP;
+        swerveAngleFXConfig.Slot0.kI = krakenTalonConstants.Swerve.anglePid.kI;
+        swerveAngleFXConfig.Slot0.kD = krakenTalonConstants.Swerve.anglePid.kD;
 
         /** Swerve Drive Motor Configuration */
         /* Motor Inverts and Neutral Mode */
@@ -53,15 +50,15 @@ public final class CTREConfigs {
         swerveDriveFXConfig.Feedback.SensorToMechanismRatio = krakenTalonConstants.Swerve.driveGearRatio;
 
         /* Current Limiting */
-        swerveDriveFXConfig.CurrentLimits.SupplyCurrentLimitEnable = krakenTalonConstants.Swerve.driveEnableCurrentLimit;
-        swerveDriveFXConfig.CurrentLimits.SupplyCurrentLimit = krakenTalonConstants.Swerve.driveCurrentLimit;
-        swerveDriveFXConfig.CurrentLimits.SupplyCurrentThreshold = krakenTalonConstants.Swerve.driveCurrentThreshold;
-        swerveDriveFXConfig.CurrentLimits.SupplyTimeThreshold = krakenTalonConstants.Swerve.driveCurrentThresholdTime;
+        swerveDriveFXConfig.CurrentLimits.SupplyCurrentLimit = krakenTalonConstants.Swerve.driveCurrentLimit.currentLimit;
+        swerveDriveFXConfig.CurrentLimits.SupplyCurrentThreshold = krakenTalonConstants.Swerve.driveCurrentLimit.currentThreshold;
+        swerveDriveFXConfig.CurrentLimits.SupplyTimeThreshold = krakenTalonConstants.Swerve.driveCurrentLimit.currentThresholdTime;
+        swerveDriveFXConfig.CurrentLimits.SupplyCurrentLimitEnable = krakenTalonConstants.Swerve.driveCurrentLimit.enableCurrentLimit;
 
         /* PID Config */
-        swerveDriveFXConfig.Slot0.kP = krakenTalonConstants.Swerve.driveKP;
-        swerveDriveFXConfig.Slot0.kI = krakenTalonConstants.Swerve.driveKI;
-        swerveDriveFXConfig.Slot0.kD = krakenTalonConstants.Swerve.driveKD;
+        swerveDriveFXConfig.Slot0.kP = krakenTalonConstants.Swerve.drivePid.kP;
+        swerveDriveFXConfig.Slot0.kI = krakenTalonConstants.Swerve.drivePid.kI;
+        swerveDriveFXConfig.Slot0.kD = krakenTalonConstants.Swerve.drivePid.kD;
 
         /* Open and Closed Loop Ramping */
         swerveDriveFXConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = krakenTalonConstants.Swerve.openLoopRamp;

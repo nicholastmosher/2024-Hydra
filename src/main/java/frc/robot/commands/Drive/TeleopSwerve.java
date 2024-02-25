@@ -36,6 +36,8 @@ public class TeleopSwerve extends Command {
 
     @Override
     public void execute() {
+        double maxSpeed;
+
         /* Get Values, Deadband*/
         double y = MathUtil.applyDeadband(this.y.getAsDouble(), krakenTalonConstants.stickDeadband);
         double x = MathUtil.applyDeadband(this.x.getAsDouble(), krakenTalonConstants.stickDeadband);

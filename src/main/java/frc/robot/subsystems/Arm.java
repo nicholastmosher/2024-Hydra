@@ -21,6 +21,8 @@ public class Arm extends SubsystemBase {
 
         armRightMotor = new CANSparkMax(this.config.rightMotorId, CANSparkLowLevel.MotorType.kBrushless);
         armPID = armRightMotor.getPIDController();
+
+
         armEncoder = armRightMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
         configArmMotor();
 
