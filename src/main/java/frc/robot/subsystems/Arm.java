@@ -24,6 +24,7 @@ public class Arm extends SubsystemBase {
 
 
         armEncoder = armRightMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+        armPID.setFeedbackDevice(armEncoder);
         configArmMotor();
 
         armLeftMotor = new CANSparkMax(this.config.leftMotorId, CANSparkLowLevel.MotorType.kBrushless);
@@ -54,14 +55,18 @@ public class Arm extends SubsystemBase {
     public void stopSet() {
         armRightMotor.stopMotor();
         armLeftMotor.stopMotor();
-        System.out.println("Stop All");
+        System.out.println("Stop All Arm Movement");
     }
 
     private void configArmMotor() {
         //armPID.setOutputRange(Constants.Arm.minAngle, Constants.Arm.maxAngle);
-        armPID.setFeedbackDevice(armEncoder);
         armRightMotor.getEncoder().setPosition(getPosition().getRotations());
+        armPID.setPositionPIDWrappingEnabled(true);
         armPID.setP(0.1);
+        armPID.setI(1e-4);
+        armPID.setD(0);
+        armPID.setFF(0);
+        //armPID.setOutputRange(-1, 1);
 
     }
 
