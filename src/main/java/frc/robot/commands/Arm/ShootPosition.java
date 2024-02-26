@@ -3,6 +3,7 @@ package frc.robot.commands.Arm;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.Constants;
+import frc.lib.config.ArmConfig;
 import frc.robot.subsystems.Arm;
 
 public class ShootPosition extends Command {
@@ -16,8 +17,7 @@ public class ShootPosition extends Command {
 
     @Override
     public void execute() {
-        Rotation2d angle = Rotation2d.fromDegrees(Constants.Arm.desiredShooterAngle);
-        arm.setAngle(angle);
+        arm.setAngle(arm.config.shootAngle);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ShootPosition extends Command {
 
     @Override
     public boolean isFinished() {
-        return arm.endConditionShoot();
+        return arm.endCondition(arm.config.shootAngle);
     }
 
 }

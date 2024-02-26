@@ -1,7 +1,8 @@
 package frc.robot.subsystems;
 
+import frc.lib.CtreConfigs;
 import frc.lib.Constants;
-import frc.lib.doubleNeo.doubleNeoConstants;
+import frc.lib.krakentalon.krakenTalonConstants;
 import frc.robot.interfaces.SwerveModule;
 import frc.robot.swervemodules.SwerveModuleKrakenFalcon;
 
@@ -24,15 +25,17 @@ public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
 
+    private ChassisSpeeds latestSpeeds;
+
     /**
      * Default constructor uses SwerveModuleTalonNeo
      */
-    public Swerve() {
+    public Swerve(CtreConfigs ctreConfigs) {
         this(new SwerveModule[]{
-                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod0.constants, 0),
-                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod1.constants, 1),
-                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod2.constants, 2),
-                new SwerveModuleKrakenFalcon(Constants.Swerve.Mod3.constants, 3)
+                new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod0frontleftConfig, 0),
+                new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod1frontrightConfig, 1),
+                new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod2backleftConfig, 2),
+                new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod3backrightConfig, 3)
         });
     }
 
@@ -41,10 +44,15 @@ public class Swerve extends SubsystemBase {
      */
     public Swerve(SwerveModule[] modules) {
         this.mSwerveMods = modules;
-        gyro = new Pigeon2(doubleNeoConstants.Swerve.pigeonID);
+        gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
-        swerveOdometry = new SwerveDriveOdometry(doubleNeoConstants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
+        swerveOdometry = new SwerveDriveOdometry(krakenTalonConstants.Swerve.driveTrainConfig.kinematics, getGyroYaw(), getModulePositions());
+        this.latestSpeeds = new ChassisSpeeds(0, 0,0);
+    }
+
+    public ChassisSpeeds getLatestSpeeds() {
+        return latestSpeeds;
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -58,8 +66,14 @@ public class Swerve extends SubsystemBase {
                 translation.getY(),
                 rotation);
 
-        SwerveModuleState[] swerveModuleStates = doubleNeoConstants.Swerve.swerveKinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, doubleNeoConstants.Swerve.maxSpeed);
+        this.latestSpeeds = speeds;
+
+        driveChassisSpeeds(speeds, isOpenLoop);
+    }
+
+    public void driveChassisSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {
+        SwerveModuleState[] swerveModuleStates = krakenTalonConstants.Swerve.driveTrainConfig.kinematics.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, krakenTalonConstants.Swerve.maxSpeed);
 
         for (int i = 0; i < mSwerveMods.length; i++) {
             SwerveModule mod = mSwerveMods[i];
@@ -67,9 +81,17 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public void debugSetDriveSpeed(int module, double speed) {
+        mSwerveMods[module].debugSetDriveSpeed(speed);
+    }
+
+    public void debugSetSteeringSpeed(int module, double speed) {
+        mSwerveMods[module].debugSetSteeringSpeed(speed);
+    }
+
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, doubleNeoConstants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, krakenTalonConstants.Swerve.maxSpeed);
 
         for (int i = 0; i < mSwerveMods.length; i++) {
             SwerveModule mod = mSwerveMods[i];
@@ -126,11 +148,18 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public void zeroEncoders(){
+        for(SwerveModule mod : mSwerveMods){
+            mod.zeroEncoders();
+        }
+    }
+
     @Override
     public void periodic() {
         swerveOdometry.update(getGyroYaw(), getModulePositions());
 
-        for (SwerveModule mod : mSwerveMods) {
+        for (int i = 0; i < mSwerveMods.length; i++) {
+            SwerveModule mod = mSwerveMods[i];
             mod.dashboardPeriodic();
         }
     }

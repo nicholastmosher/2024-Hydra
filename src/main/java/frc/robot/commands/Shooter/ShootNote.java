@@ -12,6 +12,7 @@ public class ShootNote extends Command{
 
     @Override
     public void execute() {
+        //shooter.shootNote();
         shooter.shootNote();
     }
 
