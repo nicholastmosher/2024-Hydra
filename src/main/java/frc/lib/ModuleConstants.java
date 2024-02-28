@@ -91,8 +91,8 @@ public class ModuleConstants {
                 // (150 / 7) : 1
                 double angleGearRatio = ((150.0 / 7.0));
 
-                double angleKP = 12.0;
-                double angleKI = 0.0;
+                double angleKP = 24;
+                double angleKI = 1e-4;
                 double angleKD = 0.0;
 
                 boolean driveMotorInvert = false;//InvertedValue.CounterClockwise_Positive;
