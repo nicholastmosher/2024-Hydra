@@ -10,5 +10,6 @@ import frc.robot.subsystems.Shooter;
 public class IntakingCommandGroup extends ParallelDeadlineGroup {
     public IntakingCommandGroup(Intake intake, Shooter shooter) {
         super(new IntakeNote(intake), new IndexNote(shooter));
+        System.out.println("intaking");
     }
 }
