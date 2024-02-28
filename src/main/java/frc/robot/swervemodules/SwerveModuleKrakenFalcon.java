@@ -133,14 +133,14 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
 
     @Override
     public void dashboardPeriodic() {
-        SmartDashboard.putNumber(String.format("CanCoder%d Angle", mModule), getRotation().getRotations());
-        SmartDashboard.putNumber(String.format("MotorSteer%d Angle", mModule), Rotation2d.fromRotations(mAngleMotor.getPosition().getValue()).getRotations());
+        SmartDashboard.putNumber(String.format("CanCoder%dAngle", mModule), getRotation().getRotations());
+        SmartDashboard.putNumber(String.format("MotorSteer%dAngle", mModule), Rotation2d.fromRotations(mAngleMotor.getPosition().getValue()).getRotations());
 
         Rotation2d adjustedCancoder = Rotation2d.fromRotations(getRotation().getRotations() - cancoderOffset.getRotations());
         Rotation2d adjustedMotor = Rotation2d.fromRotations(mAngleMotor.getPosition().getValue() - motorOffset.getRotations());
 
-        SmartDashboard.putNumber(String.format("ZeroCanCoder%d Angle", mModule), adjustedCancoder.getRotations());
-        SmartDashboard.putNumber(String.format("ZeroMotor%d Angle", mModule), adjustedMotor.getRotations());
+        SmartDashboard.putNumber(String.format("ZeroCanCoder%dAngle", mModule), adjustedCancoder.getRotations());
+        SmartDashboard.putNumber(String.format("ZeroMotor%dAngle", mModule), adjustedMotor.getRotations());
 
 //        SmartDashboard.putNumber(String.format("DriveMotor%d Voltage", mModule), mDriveMotor.getMotorVoltage().getValue());
 //        SmartDashboard.putNumber(String.format("AngleMotor%d Voltage", mModule), mAngleMotor.getMotorVoltage().getValue());

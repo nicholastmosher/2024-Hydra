@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.ArmConfig;
+import frc.lib.config.DashboardConfig;
 
 public class Arm extends SubsystemBase {
     private final CANSparkMax armRightMotor;
@@ -16,22 +17,29 @@ public class Arm extends SubsystemBase {
 
     public final ArmConfig config;
 
-    public Arm(ArmConfig config) {
+    public final DashboardConfig dashboardConfig;
+
+    public Arm(ArmConfig config, DashboardConfig dashboardConfig) {
         this.config = config;
+        this.dashboardConfig = dashboardConfig;
 
         armRightMotor = new CANSparkMax(this.config.rightMotorId, CANSparkLowLevel.MotorType.kBrushless);
         armPID = armRightMotor.getPIDController();
-
-
         armEncoder = armRightMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+        armEncoder.setPositionConversionFactor(config.positionScalingFactor);
+        armEncoder.setZeroOffset(config.zeroOffset.getDegrees());
         armPID.setFeedbackDevice(armEncoder);
-        configArmMotor();
+        armPID.setPositionPIDWrappingEnabled(false);
+        armPID.setPositionPIDWrappingMaxInput(config.ampAngle.getDegrees() +5);
+        armPID.setPositionPIDWrappingMinInput(0);
+        armPID.setP(0.1);
+        armPID.setI(1e-4);
+        armPID.setD(0);
+        armPID.setFF(0);
 
         armLeftMotor = new CANSparkMax(this.config.leftMotorId, CANSparkLowLevel.MotorType.kBrushless);
-        configFollowerMotor();
-
-
-
+        armLeftMotor.follow(armRightMotor, true);
+        armLeftMotor.getPIDController().setP(0.1);
     }
 
     public void setAngle(Rotation2d angle) {
@@ -40,8 +48,6 @@ public class Arm extends SubsystemBase {
         System.out.println(motorAngle.getDegrees());
         armRightMotor.getEncoder().setPosition(getPosition().getRotations());
         armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
-        //System.out.println(armPID.get);
-
     }
 
     public void moveArm(double input) {
@@ -58,32 +64,16 @@ public class Arm extends SubsystemBase {
         System.out.println("Stop All Arm Movement");
     }
 
-    private void configArmMotor() {
-        //armPID.setOutputRange(Constants.Arm.minAngle, Constants.Arm.maxAngle);
-        armRightMotor.getEncoder().setPosition(getPosition().getRotations());
-        armPID.setPositionPIDWrappingEnabled(true);
-        armPID.setP(0.1);
-        armPID.setI(1e-4);
-        armPID.setD(0);
-        armPID.setFF(0);
-        //armPID.setOutputRange(-1, 1);
-
-    }
-
-    private void configFollowerMotor() {
-        armLeftMotor.follow(armRightMotor, true);
-        armLeftMotor.getPIDController().setP(0.1);
-    }
-
     private Rotation2d getPosition() {
         return Rotation2d.fromRotations(armEncoder.getPosition());
     }
 
     @Override
     public void periodic() {
-        Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber("ArmPosition", getPosition().getDegrees());
-        SmartDashboard.putNumber("InbuiltEncoderAngle", motorAngle.getDegrees());
-
+        Rotation2d rightMotorAngle = Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
+        Rotation2d leftMotorAngle = Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber(dashboardConfig.ARM_ABSOLUTE_ENCODER, getPosition().getDegrees());
+        SmartDashboard.putNumber(dashboardConfig.ARM_RIGHT_MOTOR_POSITION, rightMotorAngle.getDegrees());
+        SmartDashboard.putNumber(dashboardConfig.ARM_LEFT_MOTOR_POSITION, leftMotorAngle.getDegrees());
     }
 }

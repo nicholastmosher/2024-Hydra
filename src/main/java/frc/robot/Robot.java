@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.CtreConfigs;
+import frc.lib.config.DashboardConfig;
+import frc.lib.config.RobotConfig;
 import frc.robot.containers.RobotContainerTest;
 import frc.robot.containers.RobotContainerTeleop;
 import frc.robot.interfaces.RobotContainer;
@@ -21,6 +23,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
  */
 public class Robot extends TimedRobot {
     public final CtreConfigs ctreConfigs = new CtreConfigs();
+    public final DashboardConfig dashboardConfig = new DashboardConfig();
+    public final RobotConfig robotConfig = new RobotConfig(ctreConfigs, dashboardConfig);
+
     private Command m_autonomousCommand;
     private RobotContainer mRobotContainer;
 
@@ -33,8 +38,8 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         SmartDashboard.putString("Version", "2");
-//        mRobotContainer = new RobotContainerTeleop(ctreConfigs);
-        mRobotContainer = new RobotContainerTest(ctreConfigs);
+//        mRobotContainer = new RobotContainerTeleop(robotConfig);
+        mRobotContainer = new RobotContainerTest(robotConfig);
     }
 
     /**
