@@ -15,6 +15,8 @@ import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
 import frc.robot.commands.CommandGroups.Intake.IntakingCommandGroup;
 import frc.robot.commands.Drive.debug.*;
+import frc.robot.commands.Intake.IntakeNote;
+import frc.robot.commands.Shooter.IndexNote;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.Arm.*;
@@ -47,6 +49,8 @@ public class RobotContainerTest implements RobotContainer {
     private final ShootPosition armtoShoot;
     private final AmpPosition armtoAmp;
     private final IntakingCommandGroup intaking = new IntakingCommandGroup(i_intake, s_Shooter);
+    private final IntakeNote intakingg = new IntakeNote(i_intake);
+    private final IndexNote index = new IndexNote(s_Shooter);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainerTest(RobotConfig robotConfig) {
@@ -83,7 +87,8 @@ public class RobotContainerTest implements RobotContainer {
         //amp.whileTrue(this.armtoAmp);
         //shoot.whileTrue(this.armtoShoot);
         //intake.whileTrue(this.armtoIntake);
-        Intaking.whileTrue(intaking);
+        amp.whileTrue(intakingg);
+        shoot.whileTrue(index);
 
 
     }
