@@ -32,10 +32,10 @@ public class Swerve extends SubsystemBase {
      */
     public Swerve(CtreConfigs ctreConfigs) {
         this(new SwerveModule[]{
-                new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod0frontleftConfig, 0),
+                new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod3backrightConfig, 3),
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod1frontrightConfig, 1),
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod2backleftConfig, 2),
-                new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod3backrightConfig, 3)
+                new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod0frontleftConfig, 0)
         });
     }
 

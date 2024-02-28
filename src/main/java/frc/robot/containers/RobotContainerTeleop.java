@@ -77,7 +77,7 @@ public class RobotContainerTeleop implements RobotContainer {
         );
 
         c_Climber.setDefaultCommand(
-                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(yAxis)))
+                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(yAxis)), c_Climber)
         );
 
         // Configure the button bindings
@@ -93,8 +93,8 @@ public class RobotContainerTeleop implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        intake.whileTrue(intakeCommand);
-        shoot.whileTrue(shootCommand);
+        //intake.whileTrue(intakeCommand);
+        //shoot.whileTrue(shootCommand);
     }
 
     /**
