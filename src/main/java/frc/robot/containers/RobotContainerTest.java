@@ -5,12 +5,15 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.lib.Constants;
 import frc.lib.CtreConfigs;
 import frc.lib.config.ArmConfig;
+import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
+import frc.robot.commands.CommandGroups.Intake.IntakingCommandGroup;
 import frc.robot.commands.Drive.debug.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
@@ -31,25 +34,34 @@ public class RobotContainerTest implements RobotContainer {
     private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton intake = new JoystickButton(driver,XboxController.Button.kY.value);
     private final JoystickButton debugSwerveRotation = new JoystickButton(driver,XboxController.Button.kX.value);
+    private final JoystickButton Intaking = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
 
     /* Subsystems */
     private final Swerve mSwerve;
-    private final Arm a_Arm =new Arm(Constants.armConfig);
+    private final Arm a_Arm;
+    private final Shooter s_Shooter = new Shooter(Constants.shooterConfig);
+    private final Intake i_intake = new Intake(Constants.intakeConfig);
 
 
-    private final IntakePosition armtoIntake = new IntakePosition(a_Arm);
-    private final ShootPosition armtoShoot = new ShootPosition(a_Arm);
-    private final AmpPosition armtoAmp = new AmpPosition(a_Arm);
+    private final IntakePosition armtoIntake;
+    private final ShootPosition armtoShoot;
+    private final AmpPosition armtoAmp;
+    private final IntakingCommandGroup intaking = new IntakingCommandGroup(i_intake, s_Shooter);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainerTest(CtreConfigs ctreConfigs) {
-        this.mSwerve = new Swerve(ctreConfigs);
+    public RobotContainerTest(RobotConfig robotConfig) {
+        this.mSwerve = new Swerve(robotConfig.ctreConfigs);
         // Configure the button bindings
         configureButtonBindings();
         System.out.println("Initialized DebugRobot");
+        a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
         a_Arm.setDefaultCommand(
                 new InstantCommand(() -> a_Arm.moveArm(driver.getRawAxis(yAxis)), a_Arm)
         );
+
+        this.armtoIntake = new IntakePosition(a_Arm);
+        this.armtoShoot = new ShootPosition(a_Arm);
+        this.armtoAmp = new AmpPosition(a_Arm);
     }
 
     /**
@@ -68,9 +80,11 @@ public class RobotContainerTest implements RobotContainer {
         //commandSteer.onTrue(new DiagnoseSteering(mSwerve));
 //        commandSteer.onTrue(new SwerveAssignSteer(motorTest));
 //        commandShoot.onTrue(new ShooterAssignPower(mShooter, 0.70));
-        amp.whileTrue(armtoAmp);
-        shoot.whileTrue(armtoShoot);
-        intake.whileTrue(armtoIntake);
+        //amp.whileTrue(this.armtoAmp);
+        //shoot.whileTrue(this.armtoShoot);
+        //intake.whileTrue(this.armtoIntake);
+        Intaking.whileTrue(intaking);
+
 
     }
 

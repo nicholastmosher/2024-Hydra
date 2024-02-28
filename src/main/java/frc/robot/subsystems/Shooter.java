@@ -4,7 +4,9 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkPIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.config.DashboardConfig;
 import frc.lib.config.ShooterConfig;
 
 public class Shooter extends SubsystemBase {
@@ -12,21 +14,21 @@ public class Shooter extends SubsystemBase {
     private final CANSparkFlex shooterBottomMotor;
     private final CANSparkMax shooterIntakeMotor;
 
-    public ShooterConfig config;
+    public final ShooterConfig config;
+    //public final DashboardConfig dashboardConfig;
 
     public Shooter(ShooterConfig config) {
         this.config = config;
+        //this.dashboardConfig = dashboardConfig;
+
         shooterTopMotor = new CANSparkFlex(this.config.shooterTopMotor, CANSparkLowLevel.MotorType.kBrushless);
         SparkPIDController shooterPID = shooterTopMotor.getPIDController();
         shooterPID.setP(1.0);
-        configShooterMotor();
 
         shooterBottomMotor = new CANSparkFlex(this.config.shooterBottomMotor, CANSparkLowLevel.MotorType.kBrushless);
-        configShooterFollowerMotor();
+        shooterBottomMotor.follow(shooterTopMotor);
 
         shooterIntakeMotor = new CANSparkMax(this.config.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
-        configShooterIntakeMotor();
-
     }
 
     public void indexNote() {
@@ -45,15 +47,10 @@ public class Shooter extends SubsystemBase {
         shooterIntakeMotor.stopMotor();
     }
 
-    private void configShooterMotor() {
+    public void dashboardPeriodic(){
+        //SmartDashboard.putNumber(dashboardConfig.SHOOTER_TOP_MOTOR_VELOCITY, shooterTopMotor.getEncoder().getVelocity());
+        //SmartDashboard.putNumber(dashboardConfig.SHOOTER_BOTTOM_MOTOR_VELOCITY, shooterBottomMotor.getEncoder().getVelocity());
 
     }
 
-    private void configShooterFollowerMotor() {
-        shooterBottomMotor.follow(shooterTopMotor);
-    }
-
-    private void configShooterIntakeMotor() {
-
-    }
 }
