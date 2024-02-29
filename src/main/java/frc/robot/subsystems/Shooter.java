@@ -1,45 +1,56 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import com.revrobotics.SparkPIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.config.DashboardConfig;
+import frc.lib.config.ShooterConfig;
 
 public class Shooter extends SubsystemBase {
-    private final MotorController lowRoller;
-    private final MotorController highRoller;
+    private final CANSparkFlex shooterTopMotor;
+    private final CANSparkFlex shooterBottomMotor;
+    private final CANSparkMax shooterIntakeMotor;
 
-    /**
-     * Initialize shooter motors from motor IDs
-     *
-     * @param lowRollerId Motor ID of low motor
-     * @param highRollerId Motor ID of high motor
-     */
-    public Shooter(int lowRollerId, int highRollerId) {
-        this(
-            new CANSparkMax(lowRollerId, CANSparkLowLevel.MotorType.kBrushless),
-            new CANSparkMax(highRollerId, CANSparkLowLevel.MotorType.kBrushless)
-        );
+    public final ShooterConfig config;
+    //public final DashboardConfig dashboardConfig;
+
+    public Shooter(ShooterConfig config) {
+        this.config = config;
+        //this.dashboardConfig = dashboardConfig;
+
+        shooterTopMotor = new CANSparkFlex(this.config.shooterTopMotor, CANSparkLowLevel.MotorType.kBrushless);
+        SparkPIDController shooterPID = shooterTopMotor.getPIDController();
+        shooterPID.setP(1.0);
+
+        shooterBottomMotor = new CANSparkFlex(this.config.shooterBottomMotor, CANSparkLowLevel.MotorType.kBrushless);
+        shooterBottomMotor.follow(shooterTopMotor);
+
+        shooterIntakeMotor = new CANSparkMax(this.config.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
     }
 
-    /**
-     * Initialize shooter with given MotorControllers
-     *
-     * @param lowRoller MotorController for low roller
-     * @param highRoller MotorController for high roller
-     */
-    public Shooter(MotorController lowRoller, MotorController highRoller) {
-        this.lowRoller = lowRoller;
-        this.highRoller = highRoller;
+    public void indexNote() {
+        //shooterIntakePID.setReference(Constants.Shooter.shooterIntakeSpeed, CANSparkBase.ControlType.kVelocity);
+        shooterIntakeMotor.set(-0.8);
     }
 
-    /**
-     * Set the power of both shooter motors
-     *
-     * @param power Power [-1.0, 1.0] of the shooter motors
-     */
-    public void setPower(double power) {
-        lowRoller.set(power);
-        highRoller.set(power);
+    public void shootNote() {
+        //shooterPID.setReference(1000, CANSparkBase.ControlType.kVelocity);
+        shooterIntakeMotor.set(this.config.shooterIntakeSpeed);
+        shooterTopMotor.set(this.config.shooterSpeed);
     }
+
+    public void stop() {
+        shooterTopMotor.stopMotor();
+        shooterIntakeMotor.stopMotor();
+    }
+
+    public void dashboardPeriodic(){
+        //SmartDashboard.putNumber(dashboardConfig.SHOOTER_TOP_MOTOR_VELOCITY, shooterTopMotor.getEncoder().getVelocity());
+        //SmartDashboard.putNumber(dashboardConfig.SHOOTER_BOTTOM_MOTOR_VELOCITY, shooterBottomMotor.getEncoder().getVelocity());
+
+    }
+
 }

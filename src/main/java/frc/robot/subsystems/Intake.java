@@ -1,38 +1,48 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-
+import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
-
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorMatchResult;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.Constants;
+import frc.lib.config.IntakeConfig;
 
 public class Intake extends SubsystemBase {
-  /** Creates a new Intake. */
+    private final I2C.Port colorSensorPort = I2C.Port.kOnboard;
+    private final CANSparkMax intakeMotor;
+    private final ColorSensorV3 colorSensor = new ColorSensorV3(colorSensorPort);
+    private final ColorMatch colorMatcher = new ColorMatch();
 
-  public CANSparkFlex intakeMotor;
+    public final IntakeConfig config;
 
-  public Intake() {
-    intakeMotor = new CANSparkFlex(Constants.IntakeMototCANID, MotorType.kBrushless);
-  }
+    public Intake(IntakeConfig config) {
+        this.config = config;
+        intakeMotor = new CANSparkMax(this.config.intakeMotorId, CANSparkLowLevel.MotorType.kBrushless);
+        Color orangeColor = new Color(0.561, 0.232, 0.114);
+        colorMatcher.addColorMatch(orangeColor);
+    }
 
-  public void doIntake() {
-    intakeMotor.set(0.9);
-  }
+    public void setIntakeMotor() {
+        intakeMotor.set(this.config.intakeMotorSpeed);
+    }
 
-  public void stop() {
-    intakeMotor.set(0);
-  }
+    public boolean endCondition() {
+        ColorMatchResult color = colorMatcher.matchClosestColor(colorSensor.getColor());
+        return color.color == Color.kOrange;
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    SmartDashboard.putNumber("intakemotor", intakeMotor.get());
-  }
+    public void stopIntakeMotor() {
+        intakeMotor.set(0);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("Is Intaked", endCondition());
+    }
+
 }
