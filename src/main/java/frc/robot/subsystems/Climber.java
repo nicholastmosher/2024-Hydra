@@ -33,12 +33,27 @@ public class Climber extends SubsystemBase {
         this.leftLimitSwitch = config.leftMotorLimitSwitch;
     }
 
+    public void climberExtend(){
+        rightClimberMotor.set(this.climberSpeed);
+        leftClimberMotor.set(this.climberSpeed);
+    }
+
+    public void climberRetract(){
+        rightClimberMotor.set(this.downclimberSpeed);
+        leftClimberMotor.set(this.downclimberSpeed);
+    }
+
+    public void stop(){
+        rightClimberMotor.set(0);
+        leftClimberMotor.set(0);
+    }
+
     public void init() {
         while (!rightLimitSwitch.get()) {
             rightClimberMotor.set(downclimberSpeed);
         }
         rightClimberMotor.stopMotor();
-        rightClimberMotor.setPosition(rightClimberMotor.getPosition().getValue());
+        rightClimberMotor.setPosition(0);
         while (!leftLimitSwitch.get()) {
             leftClimberMotor.set(downclimberSpeed);
         }

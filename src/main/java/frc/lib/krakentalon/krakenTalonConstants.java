@@ -13,7 +13,7 @@ public class krakenTalonConstants {
     public static double stickDeadband = 0.1;
 
     public static final class Swerve {
-        public final static int pigeonID = 02;
+        public final static int pigeonID = 4;
 
         public final static ModuleConstants drivemodule =  //TODO: This must be tuned to specific robot
                 ModuleConstants.SDS.MK4i.KrakenFalcon(ModuleConstants.SDS.MK4i.driveRatio.L1and16t);
