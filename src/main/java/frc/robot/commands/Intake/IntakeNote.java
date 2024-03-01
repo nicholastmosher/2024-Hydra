@@ -14,7 +14,6 @@ public class IntakeNote extends Command {
     @Override
     public void execute() {
         intake.setIntakeMotor();
-        System.out.println("intaking");
     }
 
     @Override
