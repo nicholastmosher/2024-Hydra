@@ -6,11 +6,11 @@ import frc.lib.config.*;
 
 public final class Constants {
 
-    public static IntakeConfig intakeConfig = new IntakeConfig(50, -0.8);
+    public static IntakeConfig intakeConfig = new IntakeConfig(50, -0.5);
 
     public static ArmConfig armConfig = new ArmConfig(51, 52, new PidConfig(1.0, 0.0, 0.0), Rotation2d.fromDegrees(2), Rotation2d.fromDegrees(2), Rotation2d.fromDegrees(232.44-162.84), Rotation2d.fromRotations(1).getDegrees(), Rotation2d.fromDegrees(162.84));
 
-    public static ShooterConfig shooterConfig = new ShooterConfig(53, 54, 55, new PidConfig(1.0, 0.0, 0.0), -0.8, 0.6);
+    public static ShooterConfig shooterConfig = new ShooterConfig(53, 54, 55, new PidConfig(1.0, 0.0, 0.0), -0.2, 0.5);
 
     public static LightConfig lightConfig = new LightConfig(56, 57, 1.5, 0);
 

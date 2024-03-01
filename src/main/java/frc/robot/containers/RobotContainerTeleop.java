@@ -18,6 +18,9 @@ import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.CommandGroups.Intake.*;
 import frc.robot.commands.CommandGroups.Shoot.*;
+import frc.robot.commands.Intake.IntakeNote;
+import frc.robot.commands.Shooter.IndexNote;
+import frc.robot.commands.Shooter.ShootNote;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,7 +42,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton intake = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Axis.kRightTrigger.value);
+    private final JoystickButton shoot = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Subsystems */
     private final Swerve s_Swerve;
@@ -55,6 +58,11 @@ public class RobotContainerTeleop implements RobotContainer {
 
     private final TrajectoryFollowerCommands pathFollower;
 
+    private final IntakeNote intakeNote;
+    private final IndexNote indexNote;
+    private final ShootNote shootNote;
+    private final IntakingCommandGroup intaking;
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainerTeleop(RobotConfig robotConfig) {
         this.s_Swerve = new Swerve(robotConfig.ctreConfigs);
@@ -67,6 +75,12 @@ public class RobotContainerTeleop implements RobotContainer {
 
         intakeCommand = new IntakeCommandGroup(a_Arm, i_Intake, s_Shooter);
         shootCommand = new ShootCommandGroup(a_Arm, s_Shooter);
+
+        intakeNote = new IntakeNote(i_Intake);
+        indexNote = new IndexNote(s_Shooter);
+        shootNote = new ShootNote(s_Shooter);
+        intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
+
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -97,6 +111,8 @@ public class RobotContainerTeleop implements RobotContainer {
         zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroHeading));
         //intake.whileTrue(intakeCommand);
         //shoot.whileTrue(shootCommand);
+        intake.whileTrue(intaking);
+        shoot.whileTrue(shootNote);
     }
 
     /**
@@ -118,5 +134,7 @@ public class RobotContainerTeleop implements RobotContainer {
         }
         s_Shooter.dashboardPeriodic();
         SmartDashboard.putBoolean("robotcentric", !robotCentric.getAsBoolean());
+        SmartDashboard.putBoolean("fieldOrient", robotCentric.getAsBoolean());
+
     }
 }
