@@ -3,6 +3,7 @@ package frc.robot.containers;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
@@ -49,7 +50,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
-
+    private final PowerDistribution p_Power;
     // command groups
 
     private final IntakeCommandGroup intakeCommand;
@@ -70,6 +71,7 @@ public class RobotContainerTeleop implements RobotContainer {
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
+        p_Power = new PowerDistribution(0, PowerDistribution.ModuleType.kRev);
 
         intakeCommand = new IntakeCommandGroup(a_Arm, i_Intake, s_Shooter);
         shootCommand = new ShootCommandGroup(a_Arm, s_Shooter);
@@ -131,6 +133,8 @@ public class RobotContainerTeleop implements RobotContainer {
             SmartDashboard.putNumber(String.format("SwerveSpeed%d", i), state.speedMetersPerSecond);
         }
         s_Shooter.dashboardPeriodic();
+        SmartDashboard.putBoolean("robotcentric", !robotCentric.getAsBoolean());
         SmartDashboard.putBoolean("fieldOrient", robotCentric.getAsBoolean());
+
     }
 }
