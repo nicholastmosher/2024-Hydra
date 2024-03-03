@@ -45,19 +45,33 @@ public class Arm extends SubsystemBase {
         armLeftMotor.follow(armRightMotor, true);
         armLeftMotor.getPIDController().setP(0.1);
 
-        armLimitSwitch = new DigitalInput(3);
+        armLimitSwitch = config.armLimitSwitch;
+    }
+
+    public void init() {
+
     }
 
     public void setAngle(Rotation2d angle) {
-        Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
-        System.out.println(getPosition().getDegrees());
-        System.out.println(motorAngle.getDegrees());
-        armRightMotor.getEncoder().setPosition(getPosition().getRotations());
-        armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
+        if (!isFullLower()) {
+            Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
+            System.out.println(getPosition().getDegrees());
+            System.out.println(motorAngle.getDegrees());
+            armRightMotor.getEncoder().setPosition(getPosition().getRotations());
+            armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
+        } else {
+            stopSet();
+        }
+
     }
 
     public void moveArm(double input) {
-        armRightMotor.set(input*0.1);
+        if (!isFullLower()) {
+            armRightMotor.set(input*0.1);
+        } else {
+            stopSet();
+        }
+
     }
 
     public boolean endCondition(Rotation2d angle) {
@@ -74,6 +88,10 @@ public class Arm extends SubsystemBase {
         return Rotation2d.fromRotations(armEncoder.getPosition());
     }
 
+    private boolean isFullLower() {
+        return armLimitSwitch.get();
+    }
+
     @Override
     public void periodic() {
         Rotation2d rightMotorAngle = Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
@@ -81,5 +99,6 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber(dashboardConfig.ARM_ABSOLUTE_ENCODER, getPosition().getDegrees());
         SmartDashboard.putNumber(dashboardConfig.ARM_RIGHT_MOTOR_POSITION, rightMotorAngle.getDegrees());
         SmartDashboard.putNumber(dashboardConfig.ARM_LEFT_MOTOR_POSITION, leftMotorAngle.getDegrees());
+        SmartDashboard.putBoolean("isFullLower", isFullLower());
     }
 }

@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.ClimberConfig;
 import frc.lib.config.DashboardConfig;
@@ -48,6 +50,13 @@ public class Climber extends SubsystemBase {
         leftClimberMotor.set(0);
     }
 
+    private boolean isLeftFullLower() {
+        return leftLimitSwitch.get();
+    }
+    private boolean isRightFullLower() {
+        return rightLimitSwitch.get();
+    }
+
     public void init() {
         while (!rightLimitSwitch.get()) {
             rightClimberMotor.set(downclimberSpeed);
@@ -65,6 +74,12 @@ public class Climber extends SubsystemBase {
 
     public void joystickControl(double input) {
         rightClimberMotor.set(input);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("isLeftFullLower", isLeftFullLower());
+        SmartDashboard.putBoolean("isRightFullLower", isRightFullLower());
     }
 
 
