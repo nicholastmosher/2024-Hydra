@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.ArmConfig;
@@ -15,12 +16,15 @@ public class Arm extends SubsystemBase {
 
     private final AbsoluteEncoder armEncoder;
 
+    private final DigitalInput armLimitSwitch;
+
     public final ArmConfig config;
 
     public final DashboardConfig dashboardConfig;
 
     public Arm(ArmConfig config, DashboardConfig dashboardConfig) {
         this.config = config;
+
         this.dashboardConfig = dashboardConfig;
 
         armRightMotor = new CANSparkMax(this.config.rightMotorId, CANSparkLowLevel.MotorType.kBrushless);
@@ -40,6 +44,8 @@ public class Arm extends SubsystemBase {
         armLeftMotor = new CANSparkMax(this.config.leftMotorId, CANSparkLowLevel.MotorType.kBrushless);
         armLeftMotor.follow(armRightMotor, true);
         armLeftMotor.getPIDController().setP(0.1);
+
+        armLimitSwitch = new DigitalInput(3);
     }
 
     public void setAngle(Rotation2d angle) {

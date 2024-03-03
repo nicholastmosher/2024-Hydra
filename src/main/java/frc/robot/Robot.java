@@ -27,6 +27,7 @@ public class Robot extends TimedRobot {
     public final RobotConfig robotConfig = new RobotConfig(ctreConfigs, dashboardConfig);
 
     private Command m_autonomousCommand;
+    private Command m_InitCommand;
     private RobotContainer mRobotContainer;
 
     /**
@@ -38,8 +39,8 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         SmartDashboard.putString("Version", "2");
-        //mRobotContainer = new RobotContainerTeleop(robotConfig);
-        mRobotContainer = new RobotContainerTest(robotConfig);
+        mRobotContainer = new RobotContainerTeleop(robotConfig);
+        // mRobotContainer = new RobotContainerTest(robotConfig);
     }
 
     /**
@@ -70,9 +71,11 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         m_autonomousCommand = mRobotContainer.getAutonomousCommand();
+        m_InitCommand = mRobotContainer.Initialize();
 
         // schedule the autonomous command (example)
-        if (m_autonomousCommand != null) {
+        if (m_autonomousCommand != null && m_InitCommand !=null) {
+            m_InitCommand.schedule();
             m_autonomousCommand.schedule();
         }
     }

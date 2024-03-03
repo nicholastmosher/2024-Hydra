@@ -59,11 +59,12 @@ public class Climber extends SubsystemBase {
         }
         leftClimberMotor.stopMotor();
         leftClimberMotor.setPosition(leftClimberMotor.getPosition().getValue());
+
         leftClimberMotor.setControl(new Follower(config.rightClimberMotorID, false));
     }
 
     public void joystickControl(double input) {
-        rightClimberMotor.set(input*input);
+        rightClimberMotor.set(input);
     }
 
 

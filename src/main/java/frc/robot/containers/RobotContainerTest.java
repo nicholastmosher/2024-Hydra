@@ -109,4 +109,9 @@ public class RobotContainerTest implements RobotContainer {
         //return new exampleAuto(s_Swerve);
         return new InstantCommand(() -> {});
     }
+
+    @Override
+    public Command Initialize() {
+        return null;
+    }
 }

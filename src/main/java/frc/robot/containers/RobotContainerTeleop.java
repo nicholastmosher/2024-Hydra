@@ -14,6 +14,7 @@ import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
 import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
+import frc.robot.commands.Initialize.ClimberInit;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.CommandGroups.Intake.*;
@@ -31,7 +32,7 @@ import frc.robot.commands.Shooter.ShootNote;
 public class RobotContainerTeleop implements RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
-    private final Joystick teloscopicControl = new Joystick(0);
+    private final Joystick teloscopicControl = new Joystick(1);
 
     /* Drive Controls */
     private final int yAxis = XboxController.Axis.kLeftY.value;
@@ -50,7 +51,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
-    private final PowerDistribution p_Power;
+    //private final PowerDistribution p_Power;
     // command groups
 
     private final IntakeCommandGroup intakeCommand;
@@ -63,6 +64,8 @@ public class RobotContainerTeleop implements RobotContainer {
     private final ShootNote shootNote;
     private final IntakingCommandGroup intaking;
 
+    private final ClimberInit climberInit;
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainerTeleop(RobotConfig robotConfig) {
         this.s_Swerve = new Swerve(robotConfig.ctreConfigs);
@@ -71,7 +74,6 @@ public class RobotContainerTeleop implements RobotContainer {
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
-        p_Power = new PowerDistribution(0, PowerDistribution.ModuleType.kRev);
 
         intakeCommand = new IntakeCommandGroup(a_Arm, i_Intake, s_Shooter);
         shootCommand = new ShootCommandGroup(a_Arm, s_Shooter);
@@ -81,6 +83,7 @@ public class RobotContainerTeleop implements RobotContainer {
         shootNote = new ShootNote(s_Shooter);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
 
+        climberInit = new ClimberInit(c_Climber);
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -109,8 +112,6 @@ public class RobotContainerTeleop implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        //intake.whileTrue(intakeCommand);
-        //shoot.whileTrue(shootCommand);
         intake.whileTrue(intaking);
         shoot.whileTrue(shootNote);
     }
@@ -123,6 +124,11 @@ public class RobotContainerTeleop implements RobotContainer {
     @Override
     public Command getAutonomousCommand() {
         return pathFollower.followPath("shortline");
+    }
+
+    @Override
+    public Command Initialize() {
+        return climberInit;
     }
 
     @Override
