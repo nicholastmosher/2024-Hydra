@@ -31,6 +31,6 @@ public class FeedNote extends Command{
 
     @Override
     public boolean isFinished() {
-        return intake.endCondition();
+        return !intake.endCondition();
     }
 }

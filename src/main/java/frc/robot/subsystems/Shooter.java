@@ -29,7 +29,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void indexNote() {
-        shooterIntakeMotor.set(config.shooterIntakeSpeed);
+        shooterIntakeMotor.set(-0.6);
     }
     public void feedNote() {
         shooterIntakeMotor.set(config.indexerFeedSpeed);
@@ -54,7 +54,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isRevved() {
-        return (shooterTopMotor.getEncoder().getVelocity()==config.targetVelocity);
+        return true;//(shooterTopMotor.getEncoder().getVelocity()==config.targetVelocity);
     }
 
     public void dashboardPeriodic(){
