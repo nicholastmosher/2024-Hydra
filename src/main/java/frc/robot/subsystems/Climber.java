@@ -28,6 +28,7 @@ public class Climber extends SubsystemBase {
 
         this.rightClimberMotor = new TalonFX(config.rightClimberMotorID);
         this.leftClimberMotor = new TalonFX(config.leftClimberMotorID);
+        leftClimberMotor.setControl(new Follower(config.rightClimberMotorID, true));
         this.climberSpeed = config.climberSpeed;
         this.downclimberSpeed = config.downclimberSpeed;
 
@@ -51,19 +52,29 @@ public class Climber extends SubsystemBase {
     }
 
     private boolean isLeftFullLower() {
-        return leftLimitSwitch.get();
+        if (!leftLimitSwitch.get()) {
+            rightClimberMotor.setPosition(0);
+            return true;
+        } else {
+            return false;
+        }
     }
     private boolean isRightFullLower() {
-        return rightLimitSwitch.get();
+        if (!rightLimitSwitch.get()) {
+            rightClimberMotor.setPosition(0);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void init() {
-        while (!rightLimitSwitch.get()) {
+        while (!isRightFullLower()) {
             rightClimberMotor.set(downclimberSpeed);
         }
         rightClimberMotor.stopMotor();
         rightClimberMotor.setPosition(0);
-        while (!leftLimitSwitch.get()) {
+        while (!isLeftFullLower()) {
             leftClimberMotor.set(downclimberSpeed);
         }
         leftClimberMotor.stopMotor();
@@ -73,12 +84,24 @@ public class Climber extends SubsystemBase {
     }
 
     public void joystickControl(double input) {
-        rightClimberMotor.set(input);
+        if (!isRightFullLower()) {
+            rightClimberMotor.set(-input);
+        }
+        else {
+            if (input<0) {
+                rightClimberMotor.set(input);
+            } else {
+                rightClimberMotor.stopMotor();
+            }
+
+        }
+
+
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("isLeftFullLower", isLeftFullLower());
+//        SmartDashboard.putBoolean("isLeftFullLower", isLeftFullLower());
         SmartDashboard.putBoolean("isRightFullLower", isRightFullLower());
     }
 

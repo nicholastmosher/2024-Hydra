@@ -53,29 +53,33 @@ public class Arm extends SubsystemBase {
     }
 
     public void setAngle(Rotation2d angle) {
-        if (!isFullLower()) {
+        if (!isFullLower() ||  armEncoder.getVelocity() >0) {
             Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
             System.out.println(getPosition().getDegrees());
             System.out.println(motorAngle.getDegrees());
             armRightMotor.getEncoder().setPosition(getPosition().getRotations());
             armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
         } else {
-            stopSet();
+            armRightMotor.stopMotor();
         }
 
     }
 
     public void moveArm(double input) {
         if (!isFullLower()) {
-            armRightMotor.set(input*0.1);
+            armRightMotor.set(input);
         } else {
-            stopSet();
+            if (input >0) {
+                armRightMotor.set(input);
+            } else {
+                armRightMotor.stopMotor();
+            }
         }
 
     }
 
     public boolean endCondition(Rotation2d angle) {
-        return armEncoder.getPosition() > (angle.getDegrees() + 1) && armEncoder.getPosition() < (angle.getDegrees() - 1);
+        return armEncoder.getPosition() > (angle.getDegrees() - 1) && armEncoder.getPosition() < (angle.getDegrees() + 1);
     }
 
     public void stopSet() {
@@ -89,7 +93,7 @@ public class Arm extends SubsystemBase {
     }
 
     private boolean isFullLower() {
-        return armLimitSwitch.get();
+        return !armLimitSwitch.get();
     }
 
     @Override
