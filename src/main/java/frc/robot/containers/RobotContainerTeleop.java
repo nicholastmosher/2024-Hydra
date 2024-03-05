@@ -79,15 +79,15 @@ public class RobotContainerTeleop implements RobotContainer {
 
         climberInit = new ClimberInit(c_Climber);
 
-//        s_Swerve.setDefaultCommand(
-//            new TeleopSwerve(
-//                s_Swerve,
-//                () -> -driver.getRawAxis(leftxAxis),
-//                () -> -driver.getRawAxis(leftyAxis),
-//                () -> -driver.getRawAxis(rotationAxis),
-//                    driver.b()
-//            )
-//        );
+       s_Swerve.setDefaultCommand(
+           new TeleopSwerve(
+               s_Swerve,
+               () -> -driver.getRawAxis(leftxAxis),
+               () -> -driver.getRawAxis(leftyAxis),
+               () -> -driver.getRawAxis(rotationAxis),
+                   driver.b()
+           )
+       );
 
         c_Climber.setDefaultCommand(
                 new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
@@ -108,7 +108,7 @@ public class RobotContainerTeleop implements RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        driver.y().onTrue(zero);
+        driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
         driver.leftTrigger().whileTrue(intaking);
         driver.rightTrigger().whileTrue(revShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
         driver.rightBumper().whileTrue(feedNote);

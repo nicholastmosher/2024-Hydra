@@ -29,7 +29,7 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean endCondition() {
-        return colorSensor.getProximity() > (config.proximity - 50) && colorSensor.getProximity() < (config.proximity + 50);
+        return false;//colorSensor.getProximity() > (config.proximity - 50) && colorSensor.getProximity() < (config.proximity + 50);
 
     }
 
