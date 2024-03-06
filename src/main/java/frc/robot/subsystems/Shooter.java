@@ -42,7 +42,8 @@ public class Shooter extends SubsystemBase {
 
     public void startShooter() {
 //        shooterTopMotor.set(this.config.shooterSpeed);
-        shooterPID.setReference(config.targetVelocity, CANSparkBase.ControlType.kVelocity);
+        shooterTopMotor.set(0.4);
+        //shooterPID.setReference(config.targetVelocity, CANSparkBase.ControlType.kVelocity);
     }
 
     public void stop() {
@@ -61,7 +62,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isRevved() {
-        return shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
+        return true;//shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
     }
 
     public void dashboardPeriodic(){
