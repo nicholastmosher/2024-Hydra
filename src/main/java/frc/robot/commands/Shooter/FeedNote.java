@@ -10,7 +10,7 @@ public class FeedNote extends Command{
     public FeedNote(Shooter subsystem, Intake isubsystem) {
         shooter = subsystem;
         intake = isubsystem;
-        addRequirements(shooter, intake);
+        addRequirements(intake);
     }
 
     @Override

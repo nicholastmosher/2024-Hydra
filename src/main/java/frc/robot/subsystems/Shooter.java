@@ -39,7 +39,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public void startShooter() {
-        shooterTopMotor.set(this.config.shooterSpeed);
+//        shooterTopMotor.set(this.config.shooterSpeed);
+        shooterTopMotor.getPIDController().setReference(config.targetVelocity, CANSparkBase.ControlType.kVelocity);
     }
 
     public void stop() {
@@ -47,10 +48,14 @@ public class Shooter extends SubsystemBase {
         shooterIntakeMotor.stopMotor();
     }
     public void stopFeed() {
-        shooterIntakeMotor.stopMotor();
+        shooterIntakeMotor.set(0);
     }
     public void stopShoot() {
         shooterTopMotor.stopMotor();
+    }
+
+    public void sendBack() {
+        shooterIntakeMotor.set(0.05);
     }
 
     public boolean isRevved() {

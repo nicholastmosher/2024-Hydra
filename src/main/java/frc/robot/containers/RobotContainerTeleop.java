@@ -18,9 +18,12 @@ import frc.robot.commands.Drive.ZeroHeading;
 import frc.robot.commands.Initialize.ClimberInit;
 import frc.robot.commands.Shooter.FeedNote;
 import frc.robot.commands.Shooter.RevShooter;
+import frc.robot.commands.Shooter.SendBack;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.CommandGroups.Intake.*;
+
+import static frc.lib.Constants.AutonomousOptions;
 //import frc.robot.commands.CommandGroups.Shoot.*;
 
 /**
@@ -57,6 +60,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final FeedNote feedNote;
     private final IntakingCommandGroup intaking;
     private final RevShooter revShooter;
+    private final SendBack sendBack;
 
     private final ClimberInit climberInit;
 
@@ -76,25 +80,26 @@ public class RobotContainerTeleop implements RobotContainer {
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
         revShooter = new RevShooter(s_Shooter);
+        sendBack = new SendBack(s_Shooter, 1);
 
         climberInit = new ClimberInit(c_Climber);
 
-       s_Swerve.setDefaultCommand(
-           new TeleopSwerve(
-               s_Swerve,
-               () -> -driver.getRawAxis(leftxAxis),
-               () -> -driver.getRawAxis(leftyAxis),
-               () -> -driver.getRawAxis(rotationAxis),
-                   driver.b()
-           )
-       );
+//       s_Swerve.setDefaultCommand(
+//           new TeleopSwerve(
+//               s_Swerve,
+//               () -> -driver.getRawAxis(leftxAxis),
+//               () -> -driver.getRawAxis(leftyAxis),
+//               () -> -driver.getRawAxis(rotationAxis),
+//                   driver.b()
+//           )
+//       );
 
         c_Climber.setDefaultCommand(
                 new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
         );
-        a_Arm.setDefaultCommand(
-                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
-        );
+//        a_Arm.setDefaultCommand(
+//                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
+//        );
 
         // Configure the button bindings
         configureButtonBindings();
@@ -109,7 +114,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        driver.leftTrigger().whileTrue(intaking);
+        driver.leftTrigger().whileTrue(intaking).onFalse(sendBack);
         driver.rightTrigger().whileTrue(revShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
         driver.rightBumper().whileTrue(feedNote);
         //.onFalse(new InstantCommand(s_Shooter::stopFeed))
@@ -122,6 +127,20 @@ public class RobotContainerTeleop implements RobotContainer {
      */
     @Override
     public Command getAutonomousCommand() {
+//        Command autoCommand = new TeleopSwerve(s_Swerve);
+//
+//        switch(sp) {
+//            case DRIVE:
+//                break;
+//            case DRIVEMIDDLE:
+//                autCommand = new AutoSequencePlaceCube(m_robotDrive, m_Arm, m_vision, m_grabberSubsystem, true);
+//                break;
+//            case SHOOTNDRIVE:
+//                autCommand = new AutoSequencePlaceCube(m_robotDrive, m_Arm, m_vision, m_grabberSubsystem, false);
+//                break;
+//
+//        }
+//        return autoCommand;
         return pathFollower.followPath("shortline");
     }
 

@@ -17,7 +17,7 @@ public class RevShooter extends Command{
 
     @Override
     public void end(boolean interupted) {
-        shooter.stop();
+        shooter.stopShoot();
     }
 //    @Override
 //    public boolean isFinished() {

@@ -28,7 +28,7 @@ public class Climber extends SubsystemBase {
 
         this.rightClimberMotor = new TalonFX(config.rightClimberMotorID);
         this.leftClimberMotor = new TalonFX(config.leftClimberMotorID);
-        leftClimberMotor.setControl(new Follower(config.rightClimberMotorID, true));
+//        leftClimberMotor.setControl(new Follower(config.rightClimberMotorID, true));
         this.climberSpeed = config.climberSpeed;
         this.downclimberSpeed = config.downclimberSpeed;
 
@@ -53,19 +53,23 @@ public class Climber extends SubsystemBase {
 
     private boolean isLeftFullLower() {
         if (!leftLimitSwitch.get()) {
-            rightClimberMotor.setPosition(0);
+            leftClimberMotor.setPosition(0);
             return true;
-        } else {
-            return false;
         }
+
+
+        return false;
     }
     private boolean isRightFullLower() {
         if (!rightLimitSwitch.get()) {
             rightClimberMotor.setPosition(0);
             return true;
-        } else {
-            return false;
         }
+
+
+        return false;
+
+
     }
 
     public void init() {
@@ -78,31 +82,63 @@ public class Climber extends SubsystemBase {
             leftClimberMotor.set(downclimberSpeed);
         }
         leftClimberMotor.stopMotor();
-        leftClimberMotor.setPosition(leftClimberMotor.getPosition().getValue());
+//        leftClimberMotor.setPosition(leftClimberMotor.getPosition().getValue());
 
         leftClimberMotor.setControl(new Follower(config.rightClimberMotorID, false));
     }
 
     public void joystickControl(double input) {
-        if (!isRightFullLower()) {
-            rightClimberMotor.set(-input);
-        }
-        else {
-            if (input<0) {
-                rightClimberMotor.set(input);
-            } else {
-                rightClimberMotor.stopMotor();
+        rightClimberMove(input);
+        leftClimberMove(input);
+    }
+
+    // Assume positive is up and negative is down
+    private void rightClimberMove(double in) {
+        if (in > 0) {
+            if (isRightFullLower()) {
+                rightClimberMotor.set(0);
+                return;
             }
 
+            rightClimberMotor.set(in);
+            return;
         }
+        if (in < 0) {
+            rightClimberMotor.set(in);
+            return;
+        }
+        rightClimberMotor.set(0);
 
 
+
+
+
+    }
+
+    private void leftClimberMove(double in) {
+        if (in > 0) {
+            if (isLeftFullLower()) {
+                leftClimberMotor.set(0);
+                return;
+            }
+
+            leftClimberMotor.set(in);
+            return;
+        }
+        if (in < 0) {
+            leftClimberMotor.set(in);
+            return;
+        }
+        leftClimberMotor.set(0);
     }
 
     @Override
     public void periodic() {
 //        SmartDashboard.putBoolean("isLeftFullLower", isLeftFullLower());
         SmartDashboard.putBoolean("isRightFullLower", isRightFullLower());
+        SmartDashboard.putBoolean("isLeftFullLower", isLeftFullLower());
+        SmartDashboard.putNumber("rightclimberencoder", rightClimberMotor.getPosition().getValue());
+        SmartDashboard.putNumber("rightclimberencoder", leftClimberMotor.getPosition().getValue());
     }
 
 
