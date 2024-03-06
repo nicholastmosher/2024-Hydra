@@ -4,21 +4,18 @@ import frc.robot.subsystems.Shooter;
 
 public class SendBack extends Command{
     Shooter shooter;
-    private int counter = 0;
-    private int target = 0;
 
-    public SendBack(Shooter subsystem, double seconds) {
+
+    public SendBack(Shooter subsystem) {
         shooter = subsystem;
         addRequirements(shooter);
-        target = (int)(seconds * 50);
+
     }
 
 
 
     @Override
     public void execute() {
-        if(counter < target)
-            counter++;
 
         shooter.sendBack();
     }
@@ -29,6 +26,6 @@ public class SendBack extends Command{
     }
     @Override
     public boolean isFinished() {
-        return counter >= target;
+        return false;
     }
 }

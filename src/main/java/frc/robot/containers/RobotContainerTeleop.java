@@ -80,7 +80,7 @@ public class RobotContainerTeleop implements RobotContainer {
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
         revShooter = new RevShooter(s_Shooter);
-        sendBack = new SendBack(s_Shooter, 1);
+        sendBack = new SendBack(s_Shooter);
 
         climberInit = new ClimberInit(c_Climber);
 
@@ -114,7 +114,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        driver.leftTrigger().whileTrue(intaking).onFalse(sendBack);
+        driver.leftTrigger().whileTrue(intaking).onFalse(sendBack.withTimeout(1));
         driver.rightTrigger().whileTrue(revShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
         driver.rightBumper().whileTrue(feedNote);
         //.onFalse(new InstantCommand(s_Shooter::stopFeed))

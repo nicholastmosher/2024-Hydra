@@ -11,6 +11,8 @@ public class Shooter extends SubsystemBase {
     private final CANSparkFlex shooterBottomMotor;
     private final CANSparkMax shooterIntakeMotor;
 
+    private final SparkPIDController shooterPID;
+
     public final ShooterConfig config;
     //public final DashboardConfig dashboardConfig;
 
@@ -19,8 +21,8 @@ public class Shooter extends SubsystemBase {
         //this.dashboardConfig = dashboardConfig;
 
         shooterTopMotor = new CANSparkFlex(this.config.shooterTopMotor, CANSparkLowLevel.MotorType.kBrushless);
-        SparkPIDController shooterPID = shooterTopMotor.getPIDController();
-        shooterPID.setP(1.0);
+        shooterPID = shooterTopMotor.getPIDController();
+        shooterPID.setP(config.pid.kP);
 
         shooterBottomMotor = new CANSparkFlex(this.config.shooterBottomMotor, CANSparkLowLevel.MotorType.kBrushless);
         shooterBottomMotor.follow(shooterTopMotor);
@@ -40,7 +42,7 @@ public class Shooter extends SubsystemBase {
 
     public void startShooter() {
 //        shooterTopMotor.set(this.config.shooterSpeed);
-        shooterTopMotor.getPIDController().setReference(config.targetVelocity, CANSparkBase.ControlType.kVelocity);
+        shooterPID.setReference(config.targetVelocity, CANSparkBase.ControlType.kVelocity);
     }
 
     public void stop() {

@@ -10,7 +10,7 @@ public final class Constants {
 
     public static ArmConfig armConfig = new ArmConfig(51, 52, new PidConfig(1.0, 0.0, 0.0), Rotation2d.fromDegrees(2), Rotation2d.fromDegrees(2), Rotation2d.fromDegrees(232.44-162.84), Rotation2d.fromRotations(1).getDegrees(), Rotation2d.fromDegrees(162.84), new DigitalInput(2));
 
-    public static ShooterConfig shooterConfig = new ShooterConfig(53, 54, 55, new PidConfig(1.0, 0.0, 0.0), -0.2, -1, 0.5, 2200);
+    public static ShooterConfig shooterConfig = new ShooterConfig(53, 54, 55, new PidConfig(6e-5, 0.0, 0.0), -0.2, -1, 0.5, 0.01);
 
     public static LightConfig lightConfig = new LightConfig(56, 57, 1.5, 0);
 

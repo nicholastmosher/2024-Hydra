@@ -10,6 +10,6 @@ import frc.robot.subsystems.Shooter;
 
 public class IntakeCommandGroup extends SequentialCommandGroup {
     public IntakeCommandGroup(Intake intake, Shooter shooter) {
-        super(new IntakingCommandGroup(intake, shooter), new SendBack(shooter, 1));
+        super(new IntakingCommandGroup(intake, shooter), new SendBack(shooter));
     }
 }

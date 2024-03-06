@@ -11,9 +11,13 @@ public class RevShooter extends Command{
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
         shooter.startShooter();
     }
+
+//    @Override
+//    public void execute() {
+//    }
 
     @Override
     public void end(boolean interupted) {
