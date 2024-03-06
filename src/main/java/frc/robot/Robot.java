@@ -17,6 +17,7 @@ import frc.robot.containers.RobotContainerTest;
 import frc.robot.containers.RobotContainerTeleop;
 import frc.robot.interfaces.RobotContainer;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.cameraserver.CameraServer;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -49,6 +50,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putData("AutonomousSelection", positionChooser);
         SmartDashboard.putString("Version", "2");
         mRobotContainer = new RobotContainerTeleop(robotConfig);
+        CameraServer.startAutomaticCapture();
 
 
         // mRobotContainer = new RobotContainerTest(robotConfig);
