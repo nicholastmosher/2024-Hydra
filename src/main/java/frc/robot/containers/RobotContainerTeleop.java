@@ -161,7 +161,9 @@ public class RobotContainerTeleop implements RobotContainer {
 //
 //        }
 //        return autoCommand;
-        return pathFollower.followPath("shortline");
+        //return pathFollower.followPath("shortline");
+
+        return new SequentialCommandGroup(new ParallelDeadlineGroup(feedNote, revShooter), s_Swerve.getDefaultCommand());
     }
 
 //    @Override
