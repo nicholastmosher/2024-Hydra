@@ -16,33 +16,43 @@ public class Intake extends SubsystemBase {
     private final I2C.Port colorSensorPort = I2C.Port.kOnboard;
     private final CANSparkMax intakeMotor;
     private final ColorSensorV3 colorSensor = new ColorSensorV3(colorSensorPort);
-    private final ColorMatch colorMatcher = new ColorMatch();
 
     public final IntakeConfig config;
 
     public Intake(IntakeConfig config) {
         this.config = config;
         intakeMotor = new CANSparkMax(this.config.intakeMotorId, CANSparkLowLevel.MotorType.kBrushless);
-        Color orangeColor = new Color(0.561, 0.232, 0.114);
-        colorMatcher.addColorMatch(orangeColor);
     }
 
-    public void setIntakeMotor() {
-        intakeMotor.set(this.config.intakeMotorSpeed);
+    public void setIntakeMotor(boolean invert) {
+        if (!invert) {
+            intakeMotor.set(this.config.intakeMotorSpeed);
+            return;
+        }
+        intakeMotor.set(-this.config.intakeMotorSpeed);
     }
 
     public boolean endCondition() {
-        ColorMatchResult color = colorMatcher.matchClosestColor(colorSensor.getColor());
-        return color.color == Color.kOrange;
+        return colorSensor.getProximity() > (config.proximity - 50) && colorSensor.getProximity() < (config.proximity + 50);
+
     }
 
     public void stopIntakeMotor() {
         intakeMotor.set(0);
     }
 
+    public boolean isIntakeStopped() {
+        if (intakeMotor.getEncoder().getVelocity() ==0) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Is Intaked", endCondition());
+        SmartDashboard.putBoolean("ColorSensorStatusConnected", colorSensor.isConnected());
+        SmartDashboard.putNumber("SensorDist", colorSensor.getProximity());
     }
 
 }

@@ -4,7 +4,7 @@ import frc.lib.CtreConfigs;
 import frc.lib.Constants;
 import frc.lib.krakentalon.krakenTalonConstants;
 import frc.robot.interfaces.SwerveModule;
-import frc.robot.swervemodules.SwerveModuleKrakenFalcon;
+import frc.robot.classes.SwerveModuleKrakenFalcon;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
