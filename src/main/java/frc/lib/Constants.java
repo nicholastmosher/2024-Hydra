@@ -22,6 +22,23 @@ public final class Constants {
     public static SwerveModuleConfig mod3backrightConfig = new SwerveModuleConfig(41, 42, 43, Rotation2d.fromDegrees(-0.10+45-
             90));
 
+    public final class Debug {
+        //set to false to allow compiler to identify and eliminate
+        //unreachable code
+        public static final boolean VisionON = false;
+        }
+
+    public static class VisionParameters {
+        public static final int k_lightOff = 1;
+        public static final int k_lightOn = 3;
+        public static final int k_maxPipeline = 2;
+        public static final int k_aprilTagPipeline = 0;
+        public static final int k_conePipeline = 1;
+        public static final int k_cubePipeline = 2;
+        public static final int k_retrotapePipeline = 3;
+        public static final double k_xTargetBounds = 2.0;  //+- degrees
+        public static final double k_offset = 8.0;
+        }
     public static enum AutonomousOptions {
         DRIVE, SHOOTNDRIVE, DRIVEMIDDLE;
     }

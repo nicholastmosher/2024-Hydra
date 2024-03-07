@@ -19,6 +19,10 @@ import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
 import frc.robot.commands.Drive.ZeroHeading;
 import frc.robot.commands.Initialize.ClimberInit;
+import frc.robot.commands.Shooter.FeedNote;
+import frc.robot.commands.Shooter.RevShooter;
+import frc.robot.commands.Vision.limeLightOff;
+import frc.robot.commands.Vision.limeLightOn;
 import frc.robot.commands.Intake.RejectNoteIntake;
 import frc.robot.commands.Light.SetRed;
 import frc.robot.commands.Light.SetWhite;
@@ -58,20 +62,20 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
-//    private final Light l_Light;
-    //private final BlinkinLEDController blinkin;
+    private final Vision v_Vision;
 
     private final TrajectoryFollowerCommands pathFollower;
     private final FeedNote feedNote;
     private final IntakingCommandGroup intaking;
     private final RevShooter revShooter;
+    private final limeLightOff lightOff;
+    private final limeLightOn lightOn;
     private final RejectNoteIntake rejectNoteIntake;
     private final SendBack sendBack;
     private final StopIntake stopIntake;
     private final StopShooter stopShooter;
     private final SetRed setRed;
     private final SetWhite setWhite;
-
 
 
 
@@ -85,11 +89,15 @@ public class RobotContainerTeleop implements RobotContainer {
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
-        //blinkin = new BlinkinLEDController();
-
+        v_Vision = new  Vision();
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
         revShooter = new RevShooter(s_Shooter);
+        lightOff = new limeLightOff(v_Vision);
+        lightOn = new limeLightOn(v_Vision);
+        
+
+        climberInit = new ClimberInit(c_Climber);
         sendBack = new SendBack(s_Shooter);
         rejectNoteIntake = new RejectNoteIntake(i_Intake);
         stopIntake = new StopIntake(s_Shooter, i_Intake);
@@ -129,11 +137,13 @@ public class RobotContainerTeleop implements RobotContainer {
         driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
         driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, setRed, sendBack.withTimeout(1), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
         driver.rightTrigger().whileTrue(revShooter);//onTrue(revShooter.onlyIf(s_Shooter::isShooterStopped));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
-        //driver.rightTrigger().onTrue(stopShooter.unless(s_Shooter::isShooterStopped));
         driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote, setWhite));
-
         driver.a().onTrue(rejectNoteIntake);
-        //driver.b().onTrue(new InstantCommand(blinkin::setTeamColor));
+      
+        teloscopicControl.x().onTrue(lightOn);
+        teloscopicControl.y().onTrue(lightOff);
+      
+   
 
 
 
