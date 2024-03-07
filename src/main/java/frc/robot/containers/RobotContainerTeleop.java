@@ -97,7 +97,6 @@ public class RobotContainerTeleop implements RobotContainer {
         lightOn = new limeLightOn(v_Vision);
         
 
-        climberInit = new ClimberInit(c_Climber);
         sendBack = new SendBack(s_Shooter);
         rejectNoteIntake = new RejectNoteIntake(i_Intake);
         stopIntake = new StopIntake(s_Shooter, i_Intake);
