@@ -1,4 +1,4 @@
-package frc.robot.swervemodules;
+package frc.robot.classes;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;

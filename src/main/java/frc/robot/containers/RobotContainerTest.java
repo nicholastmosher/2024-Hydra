@@ -55,17 +55,21 @@ public class RobotContainerTest implements RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainerTest(RobotConfig robotConfig) {
         this.mSwerve = new Swerve(robotConfig.ctreConfigs);
+        this.a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
+
+        armtoIntake = new IntakePosition(a_Arm);
+        armtoShoot = new ShootPosition(a_Arm);
+        armtoAmp = new AmpPosition(a_Arm);
+
+
         // Configure the button bindings
         configureButtonBindings();
-        System.out.println("Initialized DebugRobot");
-        a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
+        // System.out.println("Initialized DebugRobot");
         a_Arm.setDefaultCommand(
                 new InstantCommand(() -> a_Arm.moveArm(driver.getRawAxis(yAxis)), a_Arm)
         );
 
-        this.armtoIntake = new IntakePosition(a_Arm);
-        this.armtoShoot = new ShootPosition(a_Arm);
-        this.armtoAmp = new AmpPosition(a_Arm);
+        
     }
 
     /**
@@ -87,8 +91,9 @@ public class RobotContainerTest implements RobotContainer {
         //amp.whileTrue(this.armtoAmp);
         //shoot.whileTrue(this.armtoShoot);
         //intake.whileTrue(this.armtoIntake);
-        amp.whileTrue(intakingg);
-        shoot.whileTrue(index);
+        amp.whileTrue(this.armtoAmp);
+        shoot.whileTrue(this.armtoShoot);
+        intake.whileTrue(this.armtoIntake);
 
 
     }
@@ -104,4 +109,9 @@ public class RobotContainerTest implements RobotContainer {
         //return new exampleAuto(s_Swerve);
         return new InstantCommand(() -> {});
     }
+
+//    @Override
+//    public Command Initialize() {
+//        return null;
+//    }
 }

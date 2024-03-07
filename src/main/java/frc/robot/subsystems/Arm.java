@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.ArmConfig;
@@ -15,12 +16,15 @@ public class Arm extends SubsystemBase {
 
     private final AbsoluteEncoder armEncoder;
 
+    private final DigitalInput armLimitSwitch;
+
     public final ArmConfig config;
 
     public final DashboardConfig dashboardConfig;
 
     public Arm(ArmConfig config, DashboardConfig dashboardConfig) {
         this.config = config;
+
         this.dashboardConfig = dashboardConfig;
 
         armRightMotor = new CANSparkMax(this.config.rightMotorId, CANSparkLowLevel.MotorType.kBrushless);
@@ -40,22 +44,42 @@ public class Arm extends SubsystemBase {
         armLeftMotor = new CANSparkMax(this.config.leftMotorId, CANSparkLowLevel.MotorType.kBrushless);
         armLeftMotor.follow(armRightMotor, true);
         armLeftMotor.getPIDController().setP(0.1);
+
+        armLimitSwitch = config.armLimitSwitch;
+    }
+
+    public void init() {
+
     }
 
     public void setAngle(Rotation2d angle) {
-        Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
-        System.out.println(getPosition().getDegrees());
-        System.out.println(motorAngle.getDegrees());
-        armRightMotor.getEncoder().setPosition(getPosition().getRotations());
-        armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
+        if (!isFullLower() ||  armEncoder.getVelocity() >0) {
+            Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
+            System.out.println(getPosition().getDegrees());
+            System.out.println(motorAngle.getDegrees());
+            armRightMotor.getEncoder().setPosition(getPosition().getRotations());
+            armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
+        } else {
+            armRightMotor.stopMotor();
+        }
+
     }
 
     public void moveArm(double input) {
-        armRightMotor.set(input*0.1);
+        if (!isFullLower()) {
+            armRightMotor.set(input);
+        } else {
+            if (input >0) {
+                armRightMotor.set(input);
+            } else {
+                armRightMotor.stopMotor();
+            }
+        }
+
     }
 
     public boolean endCondition(Rotation2d angle) {
-        return armEncoder.getPosition() > (angle.getDegrees() + 1) && armEncoder.getPosition() < (angle.getDegrees() - 1);
+        return armEncoder.getPosition() > (angle.getDegrees() - 1) && armEncoder.getPosition() < (angle.getDegrees() + 1);
     }
 
     public void stopSet() {
@@ -68,6 +92,10 @@ public class Arm extends SubsystemBase {
         return Rotation2d.fromRotations(armEncoder.getPosition());
     }
 
+    private boolean isFullLower() {
+        return !armLimitSwitch.get();
+    }
+
     @Override
     public void periodic() {
         Rotation2d rightMotorAngle = Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
@@ -75,5 +103,6 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber(dashboardConfig.ARM_ABSOLUTE_ENCODER, getPosition().getDegrees());
         SmartDashboard.putNumber(dashboardConfig.ARM_RIGHT_MOTOR_POSITION, rightMotorAngle.getDegrees());
         SmartDashboard.putNumber(dashboardConfig.ARM_LEFT_MOTOR_POSITION, leftMotorAngle.getDegrees());
+        SmartDashboard.putBoolean("isFullLower", isFullLower());
     }
 }

@@ -1,9 +1,6 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkFlex;
-import com.revrobotics.CANSparkLowLevel;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.DashboardConfig;
@@ -14,6 +11,10 @@ public class Shooter extends SubsystemBase {
     private final CANSparkFlex shooterBottomMotor;
     private final CANSparkMax shooterIntakeMotor;
 
+    private final SparkPIDController shooterPID;
+
+    //private boolean IsRevved;
+
     public final ShooterConfig config;
     //public final DashboardConfig dashboardConfig;
 
@@ -22,35 +23,71 @@ public class Shooter extends SubsystemBase {
         //this.dashboardConfig = dashboardConfig;
 
         shooterTopMotor = new CANSparkFlex(this.config.shooterTopMotor, CANSparkLowLevel.MotorType.kBrushless);
-        SparkPIDController shooterPID = shooterTopMotor.getPIDController();
-        shooterPID.setP(1.0);
+        shooterPID = shooterTopMotor.getPIDController();
+        shooterPID.setP(config.pid.kP);
 
         shooterBottomMotor = new CANSparkFlex(this.config.shooterBottomMotor, CANSparkLowLevel.MotorType.kBrushless);
         shooterBottomMotor.follow(shooterTopMotor);
 
         shooterIntakeMotor = new CANSparkMax(this.config.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
+
+
     }
 
     public void indexNote() {
-        //shooterIntakePID.setReference(Constants.Shooter.shooterIntakeSpeed, CANSparkBase.ControlType.kVelocity);
-        shooterIntakeMotor.set(-0.8);
+        shooterIntakeMotor.set(-0.6);
+    }
+    public void feedNote() {
+        shooterIntakeMotor.set(config.indexerFeedSpeed);
     }
 
-    public void shootNote() {
-        //shooterPID.setReference(1000, CANSparkBase.ControlType.kVelocity);
-        shooterIntakeMotor.set(this.config.shooterIntakeSpeed);
-        shooterTopMotor.set(this.config.shooterSpeed);
+    public void startShooter() {
+//        shooterTopMotor.set(this.config.shooterSpeed);
+        shooterTopMotor.set(0.4);
+        //shooterPID.setReference(config.targetVelocity, CANSparkBase.ControlType.kVelocity);
     }
 
     public void stop() {
         shooterTopMotor.stopMotor();
         shooterIntakeMotor.stopMotor();
     }
+    public void stopFeed() {
+        shooterIntakeMotor.set(0);
+    }
+    public void stopShoot() {
+        shooterTopMotor.stopMotor();
+    }
+
+    public void sendBack() {
+        shooterIntakeMotor.set(0.05);
+    }
+
+    public boolean isRevved() {
+        return true;//shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
+    }
+
+//    public void setRevved() {
+//
+//    }
+
+    public boolean isIndexerStopped() {
+        if (shooterIntakeMotor.getEncoder().getVelocity() ==0) {
+            return true;
+        }
+        return false;
+    }
+    public boolean isShooterStopped() {
+        if (shooterTopMotor.getEncoder().getVelocity() ==0) {
+            return true;
+        }
+        return false;
+    }
 
     public void dashboardPeriodic(){
         //SmartDashboard.putNumber(dashboardConfig.SHOOTER_TOP_MOTOR_VELOCITY, shooterTopMotor.getEncoder().getVelocity());
         //SmartDashboard.putNumber(dashboardConfig.SHOOTER_BOTTOM_MOTOR_VELOCITY, shooterBottomMotor.getEncoder().getVelocity());
-
+        SmartDashboard.putNumber("shooterVelocity", shooterTopMotor.getEncoder().getVelocity());
+        SmartDashboard.putBoolean("is revved", isRevved());
     }
 
 }

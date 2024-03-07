@@ -4,7 +4,7 @@ import frc.lib.CtreConfigs;
 import frc.lib.Constants;
 import frc.lib.krakentalon.krakenTalonConstants;
 import frc.robot.interfaces.SwerveModule;
-import frc.robot.swervemodules.SwerveModuleKrakenFalcon;
+import frc.robot.classes.SwerveModuleKrakenFalcon;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -62,8 +62,8 @@ public class Swerve extends SubsystemBase {
                 rotation,
                 getHeading()
         ) : new ChassisSpeeds(
-                translation.getX(),
-                translation.getY(),
+                -translation.getX(),
+                -translation.getY(),
                 rotation);
 
         this.latestSpeeds = speeds;
@@ -138,7 +138,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(gyro.getYaw().getValue());
+        return Rotation2d.fromDegrees(-gyro.getYaw().getValue());
     }
 
     public void resetModulesToAbsolute() {

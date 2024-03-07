@@ -2,21 +2,26 @@ package frc.robot.commands.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 
-public class IndexNote extends Command{
+public class StopShooter extends Command{
     Shooter shooter;
 
-    public IndexNote(Shooter subsystem) {
+    public StopShooter(Shooter subsystem) {
         shooter = subsystem;
         addRequirements(shooter);
     }
 
     @Override
     public void execute() {
-        shooter.indexNote();
+        shooter.stopShoot();
     }
 
     @Override
     public void end(boolean interupted) {
-        shooter.stopFeed();
+        shooter.stopShoot();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return shooter.isShooterStopped();
     }
 }
