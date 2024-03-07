@@ -3,17 +3,17 @@ package frc.robot.commands.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake;
 
-public class IntakeNote extends Command {
+public class RejectNoteIntake extends Command {
     Intake intake;
 
-    public IntakeNote(Intake subsystem) {
+    public RejectNoteIntake(Intake subsystem) {
         intake = subsystem;
         addRequirements(intake);
     }
 
     @Override
     public void execute() {
-        intake.setIntakeMotor(false);
+        intake.setIntakeMotor(true);
     }
 
     @Override

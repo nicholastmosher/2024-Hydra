@@ -24,8 +24,12 @@ public class Intake extends SubsystemBase {
         intakeMotor = new CANSparkMax(this.config.intakeMotorId, CANSparkLowLevel.MotorType.kBrushless);
     }
 
-    public void setIntakeMotor() {
-        intakeMotor.set(this.config.intakeMotorSpeed);
+    public void setIntakeMotor(boolean invert) {
+        if (!invert) {
+            intakeMotor.set(this.config.intakeMotorSpeed);
+            return;
+        }
+        intakeMotor.set(-this.config.intakeMotorSpeed);
     }
 
     public boolean endCondition() {
@@ -35,6 +39,13 @@ public class Intake extends SubsystemBase {
 
     public void stopIntakeMotor() {
         intakeMotor.set(0);
+    }
+
+    public boolean isIntakeStopped() {
+        if (intakeMotor.getEncoder().getVelocity() ==0) {
+            return true;
+        }
+        return false;
     }
 
     @Override

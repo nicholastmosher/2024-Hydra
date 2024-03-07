@@ -10,6 +10,6 @@ public interface RobotContainer {
 
     Command getAutonomousCommand();
 
-    Command Initialize();
+//    Command Initialize();
 
 }

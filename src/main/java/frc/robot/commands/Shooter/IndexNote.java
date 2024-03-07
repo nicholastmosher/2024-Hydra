@@ -17,6 +17,6 @@ public class IndexNote extends Command{
 
     @Override
     public void end(boolean interupted) {
-        shooter.stop();
+        shooter.stopFeed();
     }
 }

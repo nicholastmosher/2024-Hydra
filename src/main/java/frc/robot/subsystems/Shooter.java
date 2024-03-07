@@ -13,6 +13,8 @@ public class Shooter extends SubsystemBase {
 
     private final SparkPIDController shooterPID;
 
+    //private boolean IsRevved;
+
     public final ShooterConfig config;
     //public final DashboardConfig dashboardConfig;
 
@@ -28,6 +30,8 @@ public class Shooter extends SubsystemBase {
         shooterBottomMotor.follow(shooterTopMotor);
 
         shooterIntakeMotor = new CANSparkMax(this.config.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
+
+
     }
 
     public void indexNote() {
@@ -35,9 +39,6 @@ public class Shooter extends SubsystemBase {
     }
     public void feedNote() {
         shooterIntakeMotor.set(config.indexerFeedSpeed);
-
-//        shooterIntakeMotor.getEncoder().setPosition(0);
-//        shooterIntakeMotor.getPIDController().setReference(25, CANSparkBase.ControlType.kPosition);
     }
 
     public void startShooter() {
@@ -63,6 +64,23 @@ public class Shooter extends SubsystemBase {
 
     public boolean isRevved() {
         return true;//shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
+    }
+
+//    public void setRevved() {
+//
+//    }
+
+    public boolean isIndexerStopped() {
+        if (shooterIntakeMotor.getEncoder().getVelocity() ==0) {
+            return true;
+        }
+        return false;
+    }
+    public boolean isShooterStopped() {
+        if (shooterTopMotor.getEncoder().getVelocity() ==0) {
+            return true;
+        }
+        return false;
     }
 
     public void dashboardPeriodic(){
