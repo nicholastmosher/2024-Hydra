@@ -18,6 +18,8 @@ import frc.robot.commands.Drive.ZeroHeading;
 import frc.robot.commands.Initialize.ClimberInit;
 import frc.robot.commands.Shooter.FeedNote;
 import frc.robot.commands.Shooter.RevShooter;
+import frc.robot.commands.Vision.limeLightOff;
+import frc.robot.commands.Vision.limeLightOn;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.CommandGroups.Intake.*;
@@ -48,6 +50,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
+    private final Vision v_Vision;
     //private final PowerDistribution p_Power;
     // command groups
 
@@ -57,6 +60,9 @@ public class RobotContainerTeleop implements RobotContainer {
     private final FeedNote feedNote;
     private final IntakingCommandGroup intaking;
     private final RevShooter revShooter;
+    private final limeLightOff lightOff;
+    private final limeLightOn lightOn;
+
 
     private final ClimberInit climberInit;
 
@@ -70,12 +76,16 @@ public class RobotContainerTeleop implements RobotContainer {
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
+        v_Vision = new  Vision();
 
         zero = new ZeroHeading(s_Swerve);
 
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
         revShooter = new RevShooter(s_Shooter);
+        lightOff = new limeLightOff(v_Vision);
+        lightOn = new limeLightOn(v_Vision);
+        
 
         climberInit = new ClimberInit(c_Climber);
 
@@ -112,6 +122,10 @@ public class RobotContainerTeleop implements RobotContainer {
         driver.leftTrigger().whileTrue(intaking);
         driver.rightTrigger().whileTrue(revShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
         driver.rightBumper().whileTrue(feedNote);
+        teloscopicControl.x().onTrue(lightOn);
+        teloscopicControl.y().onTrue(lightOff);
+
+        
         //.onFalse(new InstantCommand(s_Shooter::stopFeed))
     }
 
