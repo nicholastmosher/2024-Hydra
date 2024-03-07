@@ -54,6 +54,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
+//    private final Light l_Light;
 
     private final TrajectoryFollowerCommands pathFollower;
     private final FeedNote feedNote;
@@ -76,6 +77,7 @@ public class RobotContainerTeleop implements RobotContainer {
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
+//        l_Light = new Light(Constants.lightConfig);
 
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
@@ -116,7 +118,8 @@ public class RobotContainerTeleop implements RobotContainer {
         /* Driver Buttons */
         driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
         driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, sendBack.withTimeout(1), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
-        driver.rightTrigger().whileTrue(revShooter);//onTrue(new ParallelRaceGroup(stopShooter.unless(s_Shooter::isShooterStopped), revShooter));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
+        driver.rightTrigger().whileTrue(revShooter);//onTrue(revShooter.onlyIf(s_Shooter::isShooterStopped));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
+        //driver.rightTrigger().onTrue(stopShooter.unless(s_Shooter::isShooterStopped));
         driver.rightBumper().onTrue(feedNote);
 
         driver.a().onTrue(rejectNoteIntake);
