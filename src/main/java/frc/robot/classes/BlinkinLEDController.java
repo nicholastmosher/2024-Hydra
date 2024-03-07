@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
 /** Control REV Robotics Blinkin LED controller */
 public class BlinkinLEDController {
+
+
     public enum BlinkinPattern {
         /*
          * Fixed Palette Pattern
@@ -218,7 +220,15 @@ public class BlinkinLEDController {
      * Set LEDs to team color
      */
     public void setTeamColor() {
-        setPattern(BlinkinPattern.CP1_2_COLOR_GRADIENT);
+        setPattern(BlinkinPattern.DARK_GRAY);
+//        m_blinkin.set();
+    }
+    public void setRed() {
+        setPattern(BlinkinPattern.SHOT_RED);
+//        m_blinkin.set();
+    }
+    public void setWhite() {
+        setPattern(BlinkinPattern.WHITE);
 //        m_blinkin.set();
     }
 
@@ -235,5 +245,13 @@ public class BlinkinLEDController {
      */
     public void off() {
         setPattern(BlinkinPattern.BLACK);
+    }
+
+    public boolean isRed() {
+        return getCurrentPattern()==BlinkinPattern.SHOT_RED;
+    }
+
+    public boolean isWhite() {
+        return getCurrentPattern()==BlinkinPattern.WHITE;
     }
 }

@@ -20,6 +20,8 @@ import frc.robot.commands.Autos.TrajectoryFollowerCommands;
 import frc.robot.commands.Drive.ZeroHeading;
 import frc.robot.commands.Initialize.ClimberInit;
 import frc.robot.commands.Intake.RejectNoteIntake;
+import frc.robot.commands.Light.SetRed;
+import frc.robot.commands.Light.SetWhite;
 import frc.robot.commands.Shooter.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
@@ -67,11 +69,14 @@ public class RobotContainerTeleop implements RobotContainer {
     private final SendBack sendBack;
     private final StopIntake stopIntake;
     private final StopShooter stopShooter;
+    private final SetRed setRed;
+    private final SetWhite setWhite;
+
 
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainerTeleop(RobotConfig robotConfig) {
+    public RobotContainerTeleop(RobotConfig robotConfig, BlinkinLEDController blinkin) {
 
         this.s_Swerve = new Swerve(robotConfig.ctreConfigs);
         this.pathFollower = new TrajectoryFollowerCommands(s_Swerve, true);
@@ -89,16 +94,18 @@ public class RobotContainerTeleop implements RobotContainer {
         rejectNoteIntake = new RejectNoteIntake(i_Intake);
         stopIntake = new StopIntake(s_Shooter, i_Intake);
         stopShooter = new StopShooter(s_Shooter);
+        setRed = new SetRed(blinkin);
+        setWhite = new SetWhite(blinkin);
 
-       s_Swerve.setDefaultCommand(
-           new TeleopSwerve(
-               s_Swerve,
-               () -> -driver.getRawAxis(leftxAxis),
-               () -> -driver.getRawAxis(leftyAxis),
-               () -> -driver.getRawAxis(rotationAxis),
-                   driver.leftBumper()
-           )
-       );
+//       s_Swerve.setDefaultCommand(
+//           new TeleopSwerve(
+//               s_Swerve,
+//               () -> -driver.getRawAxis(leftxAxis),
+//               () -> -driver.getRawAxis(leftyAxis),
+//               () -> -driver.getRawAxis(rotationAxis),
+//                   driver.leftBumper()
+//           )
+//       );
 
         c_Climber.setDefaultCommand(
                 new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
@@ -120,10 +127,10 @@ public class RobotContainerTeleop implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, sendBack.withTimeout(1), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
+        driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, setRed, sendBack.withTimeout(1), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
         driver.rightTrigger().whileTrue(revShooter);//onTrue(revShooter.onlyIf(s_Shooter::isShooterStopped));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
         //driver.rightTrigger().onTrue(stopShooter.unless(s_Shooter::isShooterStopped));
-        driver.rightBumper().onTrue(feedNote);
+        driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote, setWhite));
 
         driver.a().onTrue(rejectNoteIntake);
         //driver.b().onTrue(new InstantCommand(blinkin::setTeamColor));

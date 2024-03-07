@@ -51,10 +51,11 @@ public class Robot extends TimedRobot {
         positionChooser.addOption("shoot and drive", AutonomousOptions.SHOOTNDRIVE);
         SmartDashboard.putData("AutonomousSelection", positionChooser);
         SmartDashboard.putString("Version", "2");
-        mRobotContainer = new RobotContainerTeleop(robotConfig);
-        CameraServer.startAutomaticCapture();
         blinkin = new BlinkinLEDController();
         blinkin.setTeamColor();
+        mRobotContainer = new RobotContainerTeleop(robotConfig, blinkin);
+        CameraServer.startAutomaticCapture();
+
 
 
         // mRobotContainer = new RobotContainerTest(robotConfig);
@@ -108,7 +109,6 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        blinkin.setTeamColor();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
