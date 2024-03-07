@@ -13,6 +13,7 @@ import frc.lib.Constants.AutonomousOptions;
 import frc.lib.CtreConfigs;
 import frc.lib.config.DashboardConfig;
 import frc.lib.config.RobotConfig;
+import frc.robot.classes.BlinkinLEDController;
 import frc.robot.containers.RobotContainerTest;
 import frc.robot.containers.RobotContainerTeleop;
 import frc.robot.interfaces.RobotContainer;
@@ -33,6 +34,7 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
     private Command m_InitCommand;
     private RobotContainer mRobotContainer;
+    private BlinkinLEDController blinkin;
 
     private final SendableChooser<AutonomousOptions> positionChooser = new SendableChooser<>();
 
@@ -51,6 +53,8 @@ public class Robot extends TimedRobot {
         SmartDashboard.putString("Version", "2");
         mRobotContainer = new RobotContainerTeleop(robotConfig);
         CameraServer.startAutomaticCapture();
+        blinkin = new BlinkinLEDController();
+        blinkin.setTeamColor();
 
 
         // mRobotContainer = new RobotContainerTest(robotConfig);
@@ -104,6 +108,7 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
+        blinkin.setTeamColor();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }

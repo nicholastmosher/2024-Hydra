@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.lib.Constants;
 import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
+import frc.robot.classes.BlinkinLEDController;
 import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
 import frc.robot.commands.Drive.ZeroHeading;
@@ -27,6 +28,7 @@ import frc.robot.commands.CommandGroups.Intake.*;
 import java.beans.FeatureDescriptor;
 
 import static frc.lib.Constants.AutonomousOptions;
+import static frc.robot.classes.BlinkinLEDController.BlinkinPattern.SHOT_RED;
 //import frc.robot.commands.CommandGroups.Shoot.*;
 
 /**
@@ -55,6 +57,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Shooter s_Shooter;
     private final Climber c_Climber;
 //    private final Light l_Light;
+    //private final BlinkinLEDController blinkin;
 
     private final TrajectoryFollowerCommands pathFollower;
     private final FeedNote feedNote;
@@ -77,7 +80,7 @@ public class RobotContainerTeleop implements RobotContainer {
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
-//        l_Light = new Light(Constants.lightConfig);
+        //blinkin = new BlinkinLEDController();
 
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
@@ -123,6 +126,7 @@ public class RobotContainerTeleop implements RobotContainer {
         driver.rightBumper().onTrue(feedNote);
 
         driver.a().onTrue(rejectNoteIntake);
+        //driver.b().onTrue(new InstantCommand(blinkin::setTeamColor));
 
 
 
