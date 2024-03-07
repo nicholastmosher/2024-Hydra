@@ -17,8 +17,10 @@ import frc.robot.classes.BlinkinLEDController;
 import frc.robot.containers.RobotContainerTest;
 import frc.robot.containers.RobotContainerTeleop;
 import frc.robot.interfaces.RobotContainer;
+import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.cameraserver.CameraServer;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,7 +32,6 @@ public class Robot extends TimedRobot {
     public final CtreConfigs ctreConfigs = new CtreConfigs();
     public final DashboardConfig dashboardConfig = new DashboardConfig();
     public final RobotConfig robotConfig = new RobotConfig(ctreConfigs, dashboardConfig);
-
     private Command m_autonomousCommand;
     private Command m_InitCommand;
     private RobotContainer mRobotContainer;
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
 
 
         // mRobotContainer = new RobotContainerTest(robotConfig);
+        CameraServer.startAutomaticCapture();
     }
 
     /**
