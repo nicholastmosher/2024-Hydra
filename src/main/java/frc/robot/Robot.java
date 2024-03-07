@@ -4,12 +4,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.Constants;
+import frc.lib.Constants.AutonomousOptions;
 import frc.lib.CtreConfigs;
 import frc.lib.config.DashboardConfig;
 import frc.lib.config.RobotConfig;
+import frc.robot.classes.BlinkinLEDController;
 import frc.robot.containers.RobotContainerTest;
 import frc.robot.containers.RobotContainerTeleop;
 import frc.robot.interfaces.RobotContainer;
@@ -31,7 +35,9 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
     private Command m_InitCommand;
     private RobotContainer mRobotContainer;
-    
+    private BlinkinLEDController blinkin;
+
+    private final SendableChooser<AutonomousOptions> positionChooser = new SendableChooser<>();
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -41,8 +47,18 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
+        positionChooser.setDefaultOption("DRIVE", AutonomousOptions.DRIVE);
+        positionChooser.addOption("DriveOutMiddle", AutonomousOptions.DRIVEMIDDLE);
+        positionChooser.addOption("shoot and drive", AutonomousOptions.SHOOTNDRIVE);
+        SmartDashboard.putData("AutonomousSelection", positionChooser);
         SmartDashboard.putString("Version", "2");
-        mRobotContainer = new RobotContainerTeleop(robotConfig);
+        blinkin = new BlinkinLEDController();
+        blinkin.setTeamColor();
+        mRobotContainer = new RobotContainerTeleop(robotConfig, blinkin);
+        CameraServer.startAutomaticCapture();
+
+
+
         // mRobotContainer = new RobotContainerTest(robotConfig);
         CameraServer.startAutomaticCapture();
     }
@@ -74,8 +90,9 @@ public class Robot extends TimedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainerTeleop} class. */
     @Override
     public void autonomousInit() {
+        AutonomousOptions sp = positionChooser.getSelected();
         m_autonomousCommand = mRobotContainer.getAutonomousCommand();
-        m_InitCommand = mRobotContainer.Initialize();
+        //m_InitCommand = mRobotContainer.Initialize();
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null && m_InitCommand !=null) {

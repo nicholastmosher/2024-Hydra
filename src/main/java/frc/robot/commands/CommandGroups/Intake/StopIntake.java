@@ -1,42 +1,37 @@
-package frc.robot.commands.Shooter;
+package frc.robot.commands.CommandGroups.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
-public class FeedNote extends Command{
+public class StopIntake extends Command{
     Shooter shooter;
     Intake intake;
 
-    public FeedNote(Shooter subsystem, Intake isubsystem) {
+    public StopIntake(Shooter subsystem, Intake isubsystem) {
         shooter = subsystem;
         intake = isubsystem;
-        addRequirements(intake);
+        addRequirements(intake, shooter);
     }
 
     @Override
     public void execute() {
         //shooter.shootNote();
-        if(shooter.isRevved()) {
-            shooter.feedNote();
-        } else {
-            shooter.stopFeed();
-        }
+        shooter.stopFeed();
+        intake.stopIntakeMotor();
 
-    }
-
-    public void excecuteNoLimit() {
-        shooter.feedNote();
     }
 
     @Override
     public void end(boolean interupted) {
         shooter.stopFeed();
+        intake.stopIntakeMotor();
     }
 
     @Override
     public boolean isFinished() {
-        return !intake.endCondition();
+        if (shooter.isIndexerStopped() && intake.isIntakeStopped()) {
+            return true;
+        }
+        return false;
     }
-
-
 }

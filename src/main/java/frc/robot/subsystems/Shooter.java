@@ -11,6 +11,10 @@ public class Shooter extends SubsystemBase {
     private final CANSparkFlex shooterBottomMotor;
     private final CANSparkMax shooterIntakeMotor;
 
+    private final SparkPIDController shooterPID;
+
+    //private boolean IsRevved;
+
     public final ShooterConfig config;
     //public final DashboardConfig dashboardConfig;
 
@@ -19,13 +23,15 @@ public class Shooter extends SubsystemBase {
         //this.dashboardConfig = dashboardConfig;
 
         shooterTopMotor = new CANSparkFlex(this.config.shooterTopMotor, CANSparkLowLevel.MotorType.kBrushless);
-        SparkPIDController shooterPID = shooterTopMotor.getPIDController();
-        shooterPID.setP(1.0);
+        shooterPID = shooterTopMotor.getPIDController();
+        shooterPID.setP(config.pid.kP);
 
         shooterBottomMotor = new CANSparkFlex(this.config.shooterBottomMotor, CANSparkLowLevel.MotorType.kBrushless);
         shooterBottomMotor.follow(shooterTopMotor);
 
         shooterIntakeMotor = new CANSparkMax(this.config.shooterIntakeMotor, CANSparkLowLevel.MotorType.kBrushless);
+
+
     }
 
     public void indexNote() {
@@ -33,13 +39,12 @@ public class Shooter extends SubsystemBase {
     }
     public void feedNote() {
         shooterIntakeMotor.set(config.indexerFeedSpeed);
-
-//        shooterIntakeMotor.getEncoder().setPosition(0);
-//        shooterIntakeMotor.getPIDController().setReference(25, CANSparkBase.ControlType.kPosition);
     }
 
     public void startShooter() {
-        shooterTopMotor.set(this.config.shooterSpeed);
+//        shooterTopMotor.set(this.config.shooterSpeed);
+        shooterTopMotor.set(0.4);
+        //shooterPID.setReference(config.targetVelocity, CANSparkBase.ControlType.kVelocity);
     }
 
     public void stop() {
@@ -47,14 +52,35 @@ public class Shooter extends SubsystemBase {
         shooterIntakeMotor.stopMotor();
     }
     public void stopFeed() {
-        shooterIntakeMotor.stopMotor();
+        shooterIntakeMotor.set(0);
     }
     public void stopShoot() {
         shooterTopMotor.stopMotor();
     }
 
+    public void sendBack() {
+        shooterIntakeMotor.set(0.05);
+    }
+
     public boolean isRevved() {
-        return shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
+        return true;//shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
+    }
+
+//    public void setRevved() {
+//
+//    }
+
+    public boolean isIndexerStopped() {
+        if (shooterIntakeMotor.getEncoder().getVelocity() ==0) {
+            return true;
+        }
+        return false;
+    }
+    public boolean isShooterStopped() {
+        if (shooterTopMotor.getEncoder().getVelocity() ==0) {
+            return true;
+        }
+        return false;
     }
 
     public void dashboardPeriodic(){

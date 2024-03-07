@@ -1,17 +1,20 @@
 package frc.robot.containers;
 
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.util.function.BooleanConsumer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.lib.Constants;
 import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
+import frc.robot.classes.BlinkinLEDController;
 import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
 import frc.robot.commands.Drive.ZeroHeading;
@@ -20,9 +23,18 @@ import frc.robot.commands.Shooter.FeedNote;
 import frc.robot.commands.Shooter.RevShooter;
 import frc.robot.commands.Vision.limeLightOff;
 import frc.robot.commands.Vision.limeLightOn;
+import frc.robot.commands.Intake.RejectNoteIntake;
+import frc.robot.commands.Light.SetRed;
+import frc.robot.commands.Light.SetWhite;
+import frc.robot.commands.Shooter.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.CommandGroups.Intake.*;
+
+import java.beans.FeatureDescriptor;
+
+import static frc.lib.Constants.AutonomousOptions;
+import static frc.robot.classes.BlinkinLEDController.BlinkinPattern.SHOT_RED;
 //import frc.robot.commands.CommandGroups.Shoot.*;
 
 /**
@@ -51,23 +63,24 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Shooter s_Shooter;
     private final Climber c_Climber;
     private final Vision v_Vision;
-    //private final PowerDistribution p_Power;
-    // command groups
 
-    private final ZeroHeading zero;
     private final TrajectoryFollowerCommands pathFollower;
-
     private final FeedNote feedNote;
     private final IntakingCommandGroup intaking;
     private final RevShooter revShooter;
     private final limeLightOff lightOff;
     private final limeLightOn lightOn;
+    private final RejectNoteIntake rejectNoteIntake;
+    private final SendBack sendBack;
+    private final StopIntake stopIntake;
+    private final StopShooter stopShooter;
+    private final SetRed setRed;
+    private final SetWhite setWhite;
 
 
-    private final ClimberInit climberInit;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainerTeleop(RobotConfig robotConfig) {
+    public RobotContainerTeleop(RobotConfig robotConfig, BlinkinLEDController blinkin) {
 
         this.s_Swerve = new Swerve(robotConfig.ctreConfigs);
         this.pathFollower = new TrajectoryFollowerCommands(s_Swerve, true);
@@ -77,9 +90,6 @@ public class RobotContainerTeleop implements RobotContainer {
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
         v_Vision = new  Vision();
-
-        zero = new ZeroHeading(s_Swerve);
-
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
         revShooter = new RevShooter(s_Shooter);
@@ -88,6 +98,12 @@ public class RobotContainerTeleop implements RobotContainer {
         
 
         climberInit = new ClimberInit(c_Climber);
+        sendBack = new SendBack(s_Shooter);
+        rejectNoteIntake = new RejectNoteIntake(i_Intake);
+        stopIntake = new StopIntake(s_Shooter, i_Intake);
+        stopShooter = new StopShooter(s_Shooter);
+        setRed = new SetRed(blinkin);
+        setWhite = new SetWhite(blinkin);
 
        s_Swerve.setDefaultCommand(
            new TeleopSwerve(
@@ -95,16 +111,16 @@ public class RobotContainerTeleop implements RobotContainer {
                () -> -driver.getRawAxis(leftxAxis),
                () -> -driver.getRawAxis(leftyAxis),
                () -> -driver.getRawAxis(rotationAxis),
-                   driver.b()
+                   driver.leftBumper()
            )
        );
 
         c_Climber.setDefaultCommand(
                 new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
         );
-        a_Arm.setDefaultCommand(
-                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
-        );
+//        a_Arm.setDefaultCommand(
+//                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
+//        );
 
         // Configure the button bindings
         configureButtonBindings();
@@ -119,13 +135,18 @@ public class RobotContainerTeleop implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        driver.leftTrigger().whileTrue(intaking);
-        driver.rightTrigger().whileTrue(revShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
-        driver.rightBumper().whileTrue(feedNote);
+        driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, setRed, sendBack.withTimeout(1), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
+        driver.rightTrigger().whileTrue(revShooter);//onTrue(revShooter.onlyIf(s_Shooter::isShooterStopped));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
+        driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote, setWhite));
+        driver.a().onTrue(rejectNoteIntake);
+      
         teloscopicControl.x().onTrue(lightOn);
         teloscopicControl.y().onTrue(lightOff);
+      
+   
 
-        
+
+
         //.onFalse(new InstantCommand(s_Shooter::stopFeed))
     }
 
@@ -136,18 +157,34 @@ public class RobotContainerTeleop implements RobotContainer {
      */
     @Override
     public Command getAutonomousCommand() {
-        return pathFollower.followPath("shortline");
+//        Command autoCommand = new TeleopSwerve(s_Swerve);
+//
+//        switch(sp) {
+//            case DRIVE:
+//                break;
+//            case DRIVEMIDDLE:
+//                autCommand = new AutoSequencePlaceCube(m_robotDrive, m_Arm, m_vision, m_grabberSubsystem, true);
+//                break;
+//            case SHOOTNDRIVE:
+//                autCommand = new AutoSequencePlaceCube(m_robotDrive, m_Arm, m_vision, m_grabberSubsystem, false);
+//                break;
+//
+//        }
+//        return autoCommand;
+        //return pathFollower.followPath("shortline");
+
+        return new SequentialCommandGroup(new ParallelDeadlineGroup(feedNote, revShooter), s_Swerve.getDefaultCommand());
     }
 
-    @Override
-    public Command Initialize() {
-        return climberInit;
-    }
+//    @Override
+//    public Command Initialize() {
+//        return climberInit;
+//    }
 
 
-    public Command Initizalize() {
-        return climberInit;
-    }
+//    public Command Initizalize() {
+//        return climberInit;
+//    }
 
     @Override
     public void robotPeriodic() {
