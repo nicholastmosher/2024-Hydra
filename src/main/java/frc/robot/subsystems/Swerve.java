@@ -62,8 +62,8 @@ public class Swerve extends SubsystemBase {
                 rotation,
                 getHeading()
         ) : new ChassisSpeeds(
-                translation.getX(),
-                translation.getY(),
+                -translation.getX(),
+                -translation.getY(),
                 rotation);
 
         this.latestSpeeds = speeds;

@@ -97,15 +97,15 @@ public class RobotContainerTeleop implements RobotContainer {
         setRed = new SetRed(blinkin);
         setWhite = new SetWhite(blinkin);
 
-//       s_Swerve.setDefaultCommand(
-//           new TeleopSwerve(
-//               s_Swerve,
-//               () -> -driver.getRawAxis(leftxAxis),
-//               () -> -driver.getRawAxis(leftyAxis),
-//               () -> -driver.getRawAxis(rotationAxis),
-//                   driver.leftBumper()
-//           )
-//       );
+       s_Swerve.setDefaultCommand(
+           new TeleopSwerve(
+               s_Swerve,
+               () -> -driver.getRawAxis(leftxAxis),
+               () -> -driver.getRawAxis(leftyAxis),
+               () -> -driver.getRawAxis(rotationAxis),
+                   driver.leftBumper()
+           )
+       );
 
         c_Climber.setDefaultCommand(
                 new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
@@ -161,7 +161,9 @@ public class RobotContainerTeleop implements RobotContainer {
 //
 //        }
 //        return autoCommand;
-        return pathFollower.followPath("shortline");
+        //return pathFollower.followPath("shortline");
+
+        return new SequentialCommandGroup(new ParallelDeadlineGroup(feedNote, revShooter), s_Swerve.getDefaultCommand());
     }
 
 //    @Override
