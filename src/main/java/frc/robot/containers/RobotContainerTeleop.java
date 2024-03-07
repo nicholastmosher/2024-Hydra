@@ -90,22 +90,22 @@ public class RobotContainerTeleop implements RobotContainer {
         stopIntake = new StopIntake(s_Shooter, i_Intake);
         stopShooter = new StopShooter(s_Shooter);
 
-//       s_Swerve.setDefaultCommand(
-//           new TeleopSwerve(
-//               s_Swerve,
-//               () -> -driver.getRawAxis(leftxAxis),
-//               () -> -driver.getRawAxis(leftyAxis),
-//               () -> -driver.getRawAxis(rotationAxis),
-//                   driver.b()
-//           )
-//       );
+       s_Swerve.setDefaultCommand(
+           new TeleopSwerve(
+               s_Swerve,
+               () -> -driver.getRawAxis(leftxAxis),
+               () -> -driver.getRawAxis(leftyAxis),
+               () -> -driver.getRawAxis(rotationAxis),
+                   driver.leftBumper()
+           )
+       );
 
-//        c_Climber.setDefaultCommand(
-//                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
-//        );
-        a_Arm.setDefaultCommand(
-                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
+        c_Climber.setDefaultCommand(
+                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
         );
+//        a_Arm.setDefaultCommand(
+//                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
+//        );
 
         // Configure the button bindings
         configureButtonBindings();
