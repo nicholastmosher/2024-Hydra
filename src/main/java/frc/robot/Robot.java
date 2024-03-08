@@ -57,8 +57,6 @@ public class Robot extends TimedRobot {
         mRobotContainer = new RobotContainerTeleop(robotConfig, blinkin);
         //CameraServer.startAutomaticCapture();
 
-
-
         // mRobotContainer = new RobotContainerTest(robotConfig);
         CameraServer.startAutomaticCapture();
     }

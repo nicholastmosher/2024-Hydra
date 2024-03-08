@@ -1,15 +1,12 @@
 package frc.robot.containers;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.function.BooleanConsumer;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.InternalButton;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.lib.Constants;
 import frc.lib.config.RobotConfig;
@@ -17,8 +14,6 @@ import frc.robot.Robot;
 import frc.robot.classes.BlinkinLEDController;
 import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
-import frc.robot.commands.Drive.ZeroHeading;
-import frc.robot.commands.Initialize.ClimberInit;
 import frc.robot.commands.Shooter.FeedNote;
 import frc.robot.commands.Shooter.RevShooter;
 import frc.robot.commands.Vision.limeLightOff;
@@ -30,12 +25,6 @@ import frc.robot.commands.Shooter.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.CommandGroups.Intake.*;
-
-import java.beans.FeatureDescriptor;
-
-import static frc.lib.Constants.AutonomousOptions;
-import static frc.robot.classes.BlinkinLEDController.BlinkinPattern.SHOT_RED;
-//import frc.robot.commands.CommandGroups.Shoot.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -77,26 +66,23 @@ public class RobotContainerTeleop implements RobotContainer {
     private final SetRed setRed;
     private final SetWhite setWhite;
 
-
-
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainerTeleop(RobotConfig robotConfig, BlinkinLEDController blinkin) {
-
         this.s_Swerve = new Swerve(robotConfig.ctreConfigs);
         this.pathFollower = new TrajectoryFollowerCommands(s_Swerve, true);
 
+        // Subsystems
         a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
-        //v_Vision = new  Vision();
+
+        // Commands
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
         revShooter = new RevShooter(s_Shooter);
-        // lightOff = new limeLightOff(v_Vision);
-        // lightOn = new limeLightOn(v_Vision);
-        
-
+//        lightOff = new limeLightOff(v_Vision);
+//        lightOn = new limeLightOn(v_Vision);
         sendBack = new SendBack(s_Shooter);
         rejectNoteIntake = new RejectNoteIntake(i_Intake);
         stopIntake = new StopIntake(s_Shooter, i_Intake);
@@ -104,15 +90,25 @@ public class RobotContainerTeleop implements RobotContainer {
         setRed = new SetRed(blinkin);
         setWhite = new SetWhite(blinkin);
 
-       s_Swerve.setDefaultCommand(
-           new TeleopSwerve(
-               s_Swerve,
-               () -> -driver.getRawAxis(leftxAxis),
-               () -> -driver.getRawAxis(leftyAxis),
-               () -> -driver.getRawAxis(rotationAxis),
-                   driver.leftBumper()
-           )
-       );
+        NamedCommands.registerCommand("feed-note", feedNote);
+        NamedCommands.registerCommand("intake", intaking);
+        NamedCommands.registerCommand("rev-shooter", revShooter);
+        NamedCommands.registerCommand("send-back", sendBack);
+        NamedCommands.registerCommand("reject-note", rejectNoteIntake);
+        NamedCommands.registerCommand("stop-intake", stopIntake);
+        NamedCommands.registerCommand("stop-shooter", stopShooter);
+        NamedCommands.registerCommand("set-red", setRed);
+        NamedCommands.registerCommand("set-white", setWhite);
+
+        s_Swerve.setDefaultCommand(
+            new TeleopSwerve(
+                s_Swerve,
+                () -> -driver.getRawAxis(leftxAxis),
+                () -> -driver.getRawAxis(leftyAxis),
+                () -> -driver.getRawAxis(rotationAxis),
+                    driver.leftBumper()
+            )
+        );
 
         c_Climber.setDefaultCommand(
                 new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
@@ -138,15 +134,9 @@ public class RobotContainerTeleop implements RobotContainer {
         driver.rightTrigger().whileTrue(revShooter);//onTrue(revShooter.onlyIf(s_Shooter::isShooterStopped));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
         driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote, setWhite));
         driver.a().onTrue(rejectNoteIntake);
-      
-        // teloscopicControl.x().onTrue(lightOn);
-        // teloscopicControl.y().onTrue(lightOff);
-        //teloscopicControl.rightBumper().whileTrue(sendBack);
-      
-   
 
-
-
+//        teloscopicControl.x().onTrue(lightOn);
+//        teloscopicControl.y().onTrue(lightOff);
         //.onFalse(new InstantCommand(s_Shooter::stopFeed))
     }
 
@@ -176,16 +166,6 @@ public class RobotContainerTeleop implements RobotContainer {
         // return new SequentialCommandGroup(new ParallelDeadlineGroup(feedNote, revShooter), s_Swerve.getDefaultCommand());
     }
 
-//    @Override
-//    public Command Initialize() {
-//        return climberInit;
-//    }
-
-
-//    public Command Initizalize() {
-//        return climberInit;
-//    }
-
     @Override
     public void robotPeriodic() {
         SwerveModuleState[] swerveStates = s_Swerve.getModuleStates();
@@ -194,6 +174,5 @@ public class RobotContainerTeleop implements RobotContainer {
             SmartDashboard.putNumber(String.format("SwerveSpeed%d", i), state.speedMetersPerSecond);
         }
         s_Shooter.dashboardPeriodic();
-
     }
 }
