@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.CtreConfigs;
 import frc.lib.Constants;
 import frc.lib.krakentalon.krakenTalonConstants;
@@ -66,12 +67,14 @@ public class Swerve extends SubsystemBase {
                 -translation.getY(),
                 rotation);
 
-        this.latestSpeeds = speeds;
-
         driveChassisSpeeds(speeds, isOpenLoop);
     }
 
     public void driveChassisSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {
+        this.latestSpeeds = speeds;
+        SmartDashboard.putNumber("ChassisSpeedX", speeds.vxMetersPerSecond);
+        SmartDashboard.putNumber("ChassisSpeedY", speeds.vyMetersPerSecond);
+        SmartDashboard.putNumber("ChassisSpeedTheta", speeds.omegaRadiansPerSecond);
         SwerveModuleState[] swerveModuleStates = krakenTalonConstants.Swerve.driveTrainConfig.kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, krakenTalonConstants.Swerve.maxSpeed);
 
@@ -118,7 +121,11 @@ public class Swerve extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return swerveOdometry.getPoseMeters();
+        Pose2d pose = swerveOdometry.getPoseMeters();
+        SmartDashboard.putNumber("SwervePoseX", pose.getX());
+        SmartDashboard.putNumber("SwervePoseY", pose.getY());
+        SmartDashboard.putNumber("SwervePoseTheta", pose.getRotation().getDegrees());
+        return pose;
     }
 
     public void setPose(Pose2d pose) {

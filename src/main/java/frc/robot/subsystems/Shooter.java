@@ -59,7 +59,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void sendBack() {
-        shooterIntakeMotor.set(0.05);
+        shooterIntakeMotor.set(0.1);
     }
 
     public boolean isRevved() {

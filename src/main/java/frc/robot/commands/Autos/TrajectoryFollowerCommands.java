@@ -11,13 +11,11 @@ import frc.robot.subsystems.Swerve;
 
 import frc.lib.krakentalon.krakenTalonConstants;
 
-
 public class TrajectoryFollowerCommands {
-
-    private Swerve s_swerve;
+    private final Swerve s_swerve;
     private HolonomicDriveController controller;
-    private HolonomicPathFollowerConfig config;
-    private boolean isBlue;
+    private final HolonomicPathFollowerConfig config;
+    private final boolean isBlue;
     public TrajectoryFollowerCommands(Swerve subsystem, boolean isBlueAlliance) {
         this.isBlue = isBlueAlliance;
         this.config = new HolonomicPathFollowerConfig(
@@ -25,18 +23,13 @@ public class TrajectoryFollowerCommands {
                 new PIDConstants(100, 1,0),
                 krakenTalonConstants.Swerve.maxSpeed,
                 krakenTalonConstants.Swerve.swerveRadius,
-                new ReplanningConfig(false, false)
-                );
+                new ReplanningConfig(true, false)
+        );
         s_swerve = subsystem;
-
-
-
     }
 
     public FollowPathHolonomic followPath(String chosenPath) {
-
         PathPlannerPath path = PathPlannerPath.fromPathFile(chosenPath);
-
         return new FollowPathHolonomic(
                 path,
                 s_swerve::getPose,
@@ -45,8 +38,6 @@ public class TrajectoryFollowerCommands {
                 this.config,
                 () -> this.isBlue,
                 s_swerve
-
-
         );
     }
 }
