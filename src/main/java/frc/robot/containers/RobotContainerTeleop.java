@@ -137,7 +137,7 @@ public class RobotContainerTeleop implements RobotContainer {
         driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, setRed, sendBack.withTimeout(1), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
         driver.rightTrigger().whileTrue(revShooter);//onTrue(revShooter.onlyIf(s_Shooter::isShooterStopped));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
         driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote, setWhite));
-        driver.a().onTrue(rejectNoteIntake);
+        driver.a().whileTrue(rejectNoteIntake);
       
         // teloscopicControl.x().onTrue(lightOn);
         // teloscopicControl.y().onTrue(lightOff);
