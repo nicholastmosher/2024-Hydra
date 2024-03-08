@@ -62,14 +62,14 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
-    private final Vision v_Vision;
+    // private final Vision v_Vision;
 
     private final TrajectoryFollowerCommands pathFollower;
     private final FeedNote feedNote;
     private final IntakingCommandGroup intaking;
     private final RevShooter revShooter;
-    private final limeLightOff lightOff;
-    private final limeLightOn lightOn;
+    // private final limeLightOff lightOff;
+    // private final limeLightOn lightOn;
     private final RejectNoteIntake rejectNoteIntake;
     private final SendBack sendBack;
     private final StopIntake stopIntake;
@@ -89,12 +89,12 @@ public class RobotContainerTeleop implements RobotContainer {
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
-        v_Vision = new  Vision();
+        //v_Vision = new  Vision();
         feedNote = new FeedNote(s_Shooter, i_Intake);
         intaking = new IntakingCommandGroup(i_Intake, s_Shooter);
         revShooter = new RevShooter(s_Shooter);
-        lightOff = new limeLightOff(v_Vision);
-        lightOn = new limeLightOn(v_Vision);
+        // lightOff = new limeLightOff(v_Vision);
+        // lightOn = new limeLightOn(v_Vision);
         
 
         sendBack = new SendBack(s_Shooter);
@@ -139,8 +139,9 @@ public class RobotContainerTeleop implements RobotContainer {
         driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote, setWhite));
         driver.a().onTrue(rejectNoteIntake);
       
-        teloscopicControl.x().onTrue(lightOn);
-        teloscopicControl.y().onTrue(lightOff);
+        // teloscopicControl.x().onTrue(lightOn);
+        // teloscopicControl.y().onTrue(lightOff);
+        //teloscopicControl.rightBumper().whileTrue(sendBack);
       
    
 
@@ -170,9 +171,9 @@ public class RobotContainerTeleop implements RobotContainer {
 //
 //        }
 //        return autoCommand;
-        //return pathFollower.followPath("shortline");
+        return pathFollower.followPath("Line"); 
 
-        return new SequentialCommandGroup(new ParallelDeadlineGroup(feedNote, revShooter), s_Swerve.getDefaultCommand());
+        // return new SequentialCommandGroup(new ParallelDeadlineGroup(feedNote, revShooter), s_Swerve.getDefaultCommand());
     }
 
 //    @Override

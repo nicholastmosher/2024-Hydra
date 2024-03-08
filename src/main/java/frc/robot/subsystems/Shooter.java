@@ -43,7 +43,7 @@ public class Shooter extends SubsystemBase {
 
     public void startShooter() {
 //        shooterTopMotor.set(this.config.shooterSpeed);
-        shooterTopMotor.set(0.4);
+        shooterTopMotor.set(0.5);
         //shooterPID.setReference(config.targetVelocity, CANSparkBase.ControlType.kVelocity);
     }
 

@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
         blinkin = new BlinkinLEDController();
         blinkin.setTeamColor();
         mRobotContainer = new RobotContainerTeleop(robotConfig, blinkin);
-        CameraServer.startAutomaticCapture();
+        //CameraServer.startAutomaticCapture();
 
 
 
@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainerTeleop} class. */
     @Override
     public void autonomousInit() {
-        AutonomousOptions sp = positionChooser.getSelected();
+        // AutonomousOptions sp = positionChooser.getSelected();
         m_autonomousCommand = mRobotContainer.getAutonomousCommand();
         //m_InitCommand = mRobotContainer.Initialize();
 

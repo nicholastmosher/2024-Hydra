@@ -21,11 +21,11 @@ public class TrajectoryFollowerCommands {
     public TrajectoryFollowerCommands(Swerve subsystem, boolean isBlueAlliance) {
         this.isBlue = isBlueAlliance;
         this.config = new HolonomicPathFollowerConfig(
-                new PIDConstants(1, 0 ,0),
-                new PIDConstants(1, 0,0),
+                new PIDConstants(100, 1 ,0),
+                new PIDConstants(100, 1,0),
                 krakenTalonConstants.Swerve.maxSpeed,
                 krakenTalonConstants.Swerve.swerveRadius,
-                new ReplanningConfig(true, false)
+                new ReplanningConfig(false, false)
                 );
         s_swerve = subsystem;
 
