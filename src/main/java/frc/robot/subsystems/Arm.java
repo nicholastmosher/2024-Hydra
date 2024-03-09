@@ -98,11 +98,11 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Rotation2d rightMotorAngle = Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
-        Rotation2d leftMotorAngle = Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber(dashboardConfig.ARM_ABSOLUTE_ENCODER, getPosition().getDegrees());
-        SmartDashboard.putNumber(dashboardConfig.ARM_RIGHT_MOTOR_POSITION, rightMotorAngle.getDegrees());
-        SmartDashboard.putNumber(dashboardConfig.ARM_LEFT_MOTOR_POSITION, leftMotorAngle.getDegrees());
-        SmartDashboard.putBoolean("isFullLower", isFullLower());
+        // Rotation2d rightMotorAngle = Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
+        // Rotation2d leftMotorAngle = Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
+        // SmartDashboard.putNumber(dashboardConfig.ARM_ABSOLUTE_ENCODER, getPosition().getDegrees());
+        // SmartDashboard.putNumber(dashboardConfig.ARM_RIGHT_MOTOR_POSITION, rightMotorAngle.getDegrees());
+        // SmartDashboard.putNumber(dashboardConfig.ARM_LEFT_MOTOR_POSITION, leftMotorAngle.getDegrees());
+        // SmartDashboard.putBoolean("isFullLower", isFullLower());
     }
 }

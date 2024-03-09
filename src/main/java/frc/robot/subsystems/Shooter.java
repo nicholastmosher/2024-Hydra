@@ -86,8 +86,8 @@ public class Shooter extends SubsystemBase {
     public void dashboardPeriodic(){
         //SmartDashboard.putNumber(dashboardConfig.SHOOTER_TOP_MOTOR_VELOCITY, shooterTopMotor.getEncoder().getVelocity());
         //SmartDashboard.putNumber(dashboardConfig.SHOOTER_BOTTOM_MOTOR_VELOCITY, shooterBottomMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("shooterVelocity", shooterTopMotor.getEncoder().getVelocity());
-        SmartDashboard.putBoolean("is revved", isRevved());
+        // SmartDashboard.putNumber("shooterVelocity", shooterTopMotor.getEncoder().getVelocity());
+        // SmartDashboard.putBoolean("is revved", isRevved());
     }
 
 }

@@ -59,7 +59,7 @@ public class RobotContainerTeleop implements RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve;
-    private final Arm a_Arm;
+    //private final Arm a_Arm;
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
@@ -87,7 +87,7 @@ public class RobotContainerTeleop implements RobotContainer {
         this.s_Swerve = new Swerve(robotConfig.ctreConfigs);
         this.pathFollower = new TrajectoryFollowerCommands(s_Swerve, true);
 
-        a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
+        //a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
@@ -137,7 +137,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
-        driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, setRed, sendBack.withTimeout(1), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
+        driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, setRed, sendBack.withTimeout(0.7), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
         driver.rightTrigger().whileTrue(revShooter);//onTrue(revShooter.onlyIf(s_Shooter::isShooterStopped));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
         driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote, setWhite));
         driver.a().whileTrue(rejectNoteIntake);
@@ -192,12 +192,12 @@ public class RobotContainerTeleop implements RobotContainer {
 
     @Override
     public void robotPeriodic() {
-        SwerveModuleState[] swerveStates = s_Swerve.getModuleStates();
-        for (int i = 0; i < swerveStates.length; i++) {
-            SwerveModuleState state = swerveStates[i];
-            SmartDashboard.putNumber(String.format("SwerveSpeed%d", i), state.speedMetersPerSecond);
-        }
-        s_Shooter.dashboardPeriodic();
+        // SwerveModuleState[] swerveStates = s_Swerve.getModuleStates();
+        // for (int i = 0; i < swerveStates.length; i++) {
+        //     SwerveModuleState state = swerveStates[i];
+        //     SmartDashboard.putNumber(String.format("SwerveSpeed%d", i), state.speedMetersPerSecond);
+        // }
+        // s_Shooter.dashboardPeriodic();
 
     }
 }
