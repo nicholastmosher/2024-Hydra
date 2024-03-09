@@ -46,9 +46,8 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
-        positionChooser.setDefaultOption("DRIVE", AutonomousOptions.DRIVE);
-        positionChooser.addOption("DriveOutMiddle", AutonomousOptions.DRIVEMIDDLE);
-        positionChooser.addOption("shoot and drive", AutonomousOptions.SHOOTNDRIVE);
+        positionChooser.setDefaultOption("TwoNoteCenter", AutonomousOptions.TWO_NOTE_CENTER);
+        positionChooser.addOption("ShootNote", AutonomousOptions.SHOOT_NOTE);
         SmartDashboard.putData("AutonomousSelection", positionChooser);
         SmartDashboard.putString("Version", "2");
         blinkin = new BlinkinLEDController();
@@ -83,8 +82,8 @@ public class Robot extends TimedRobot {
     /** This autonomous runs the autonomous command selected by your {@link RobotContainerTeleop} class. */
     @Override
     public void autonomousInit() {
-        // AutonomousOptions sp = positionChooser.getSelected();
-        m_autonomousCommand1 = mRobotContainer.getAutonomousCommand1();
+        AutonomousOptions sp = positionChooser.getSelected();
+        m_autonomousCommand1 = mRobotContainer.getAutonomousCommand(sp);
         //m_InitCommand = mRobotContainer.Initialize();
 
         // schedule the autonomous command (example)

@@ -175,44 +175,66 @@ public class RobotContainerTeleop implements RobotContainer {
         //.onFalse(new InstantCommand(s_Shooter::stopFeed))
     }
 
+    private Command swerveMoveBack() {
+        return new AutoSwerve(s_Swerve, 0, 0.3, 0, true);
+
+    }
+    private Command swerveMoveForward() {
+        return new AutoSwerve(s_Swerve, 0, -0.3, 0, true);
+
+    }
+
+
+    private Command twoNoteCenterAuto() {
+        Command SwerveMoveBack = swerveMoveBack();
+        Command SwerveMoveForward = swerveMoveForward();
+        Command firstShoot = new SequentialCommandGroup(
+            revAuto.withTimeout(1.5), 
+            shootAuto.withTimeout(1), 
+            stopShooterAuto.withTimeout(0.5)
+        );
+        Command backPickup = new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack.withTimeout(2));
+        Command forwardAndRev = new ParallelCommandGroup(revAuto2, SwerveMoveForward).withTimeout(2.3);
+        Command shoot = new SequentialCommandGroup(shootAuto2.withTimeout(1), stopShooterAuto2.withTimeout(0.5));
+        Command twoNoteAuto = new SequentialCommandGroup(firstShoot, backPickup, forwardAndRev, shoot);
+        return twoNoteAuto;
+    }
+
+    private Command shootNote() {
+        return new SequentialCommandGroup(
+            revAuto.withTimeout(1.5), 
+            shootAuto.withTimeout(1), 
+            stopShooterAuto.withTimeout(0.5)
+        );
+    }
+
+    // private Command centerShootWaitBackup() {
+    //     Command wait = new InstantCommand(() -> {});
+    //     return new SequentialCommandGroup(
+    //         shootNote(),
+    //         wait.withTimeout(10),
+            
+    //     );
+    // }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
     @Override
-    public Command getAutonomousCommand1() {
-//        Command autoCommand = new TeleopSwerve(s_Swerve);
-        Command SwerveMoveBack = new AutoSwerve(s_Swerve, 0, 0.3, 0, true);
-        Command SwerveMoveForward = new AutoSwerve(s_Swerve, 0, -0.3, 0, true);
-//
-//        switch(sp) {
-//            case DRIVE:
-//                break;
-//            case DRIVEMIDDLE:
-//                autCommand = new AutoSequencePlaceCube(m_robotDrive, m_Arm, m_vision, m_grabberSubsystem, true);
-//                break;
-//            case SHOOTNDRIVE:
-//                autCommand = new AutoSequencePlaceCube(m_robotDrive, m_Arm, m_vision, m_grabberSubsystem, false);
-//                break;
-//
-//        }
-//        return autoCommand;
-        //return pathFollower.followPath("Line"); 
-        Command firstShoot;
-        return new SequentialCommandGroup(
-            revAuto.withTimeout(1.5), 
-            shootAuto.withTimeout(1), 
-            stopShooterAuto.withTimeout(0.5),
-            new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack.withTimeout(2)),
-            new ParallelCommandGroup(revAuto2, SwerveMoveForward).withTimeout(2.3),
-            shootAuto2.withTimeout(1),
-            stopShooterAuto2.withTimeout(0.5)
-        );
-        //return new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack);
-    }
+    public Command getAutonomousCommand(AutonomousOptions plan) {
 
-    
+        switch (plan) {
+            case TWO_NOTE_CENTER:
+                return twoNoteCenterAuto();
+            case SHOOT_NOTE:
+                return shootNote();
+            default:
+                return shootNote();
+        }
+
+    }
 
 //    @Override
 //    public Command Initialize() {

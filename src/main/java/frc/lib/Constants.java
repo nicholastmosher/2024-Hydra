@@ -40,6 +40,6 @@ public final class Constants {
         public static final double k_offset = 8.0;
         }
     public static enum AutonomousOptions {
-        DRIVE, SHOOTNDRIVE, DRIVEMIDDLE;
+        TWO_NOTE_CENTER, SHOOT_NOTE;
     }
 }

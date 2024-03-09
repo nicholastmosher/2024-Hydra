@@ -1,6 +1,7 @@
 package frc.robot.interfaces;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib.Constants.AutonomousOptions;
 
 public interface RobotContainer {
     /**
@@ -8,7 +9,7 @@ public interface RobotContainer {
      */
     default void robotPeriodic() {}
 
-    Command getAutonomousCommand1();
+    Command getAutonomousCommand(AutonomousOptions auto);
 
 //    Command Initialize();
 
