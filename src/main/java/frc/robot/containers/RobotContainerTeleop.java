@@ -15,7 +15,8 @@ import frc.lib.Constants;
 import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
 import frc.robot.classes.BlinkinLEDController;
-import frc.robot.commands.Drive.TeleopSwerve;
+import frc.robot.commands.Drive.DefensePos;
+import frc.robot.commands.Autos.ShootAuto;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
 import frc.robot.commands.Drive.ZeroHeading;
 import frc.robot.commands.Initialize.ClimberInit;
@@ -76,6 +77,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final StopShooter stopShooter;
     private final SetRed setRed;
     private final SetWhite setWhite;
+    private final ShootAuto shootAuto;
 
 
 
@@ -103,9 +105,10 @@ public class RobotContainerTeleop implements RobotContainer {
         stopShooter = new StopShooter(s_Shooter);
         setRed = new SetRed(blinkin);
         setWhite = new SetWhite(blinkin);
+        shootAuto = new ShootAuto(s_Shooter);
 
        s_Swerve.setDefaultCommand(
-           new TeleopSwerve(
+           new DefensePos(
                s_Swerve,
                () -> -driver.getRawAxis(leftxAxis),
                () -> -driver.getRawAxis(leftyAxis),
@@ -171,7 +174,8 @@ public class RobotContainerTeleop implements RobotContainer {
 //
 //        }
 //        return autoCommand;
-        return pathFollower.followPath("Line"); 
+        //return pathFollower.followPath("Line"); 
+        return shootAuto.withTimeout(1.5);
 
         // return new SequentialCommandGroup(new ParallelDeadlineGroup(feedNote, revShooter), s_Swerve.getDefaultCommand());
     }

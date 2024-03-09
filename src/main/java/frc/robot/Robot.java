@@ -19,7 +19,6 @@ import frc.robot.containers.RobotContainerTeleop;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.cameraserver.CameraServer;
 
 
 /**
@@ -55,12 +54,6 @@ public class Robot extends TimedRobot {
         blinkin = new BlinkinLEDController();
         blinkin.setTeamColor();
         mRobotContainer = new RobotContainerTeleop(robotConfig, blinkin);
-        //CameraServer.startAutomaticCapture();
-
-
-
-        // mRobotContainer = new RobotContainerTest(robotConfig);
-        CameraServer.startAutomaticCapture();
     }
 
     /**
@@ -95,7 +88,7 @@ public class Robot extends TimedRobot {
         //m_InitCommand = mRobotContainer.Initialize();
 
         // schedule the autonomous command (example)
-        if (m_autonomousCommand != null && m_InitCommand !=null) {
+        if (m_autonomousCommand != null) {
             //m_InitCommand.schedule();
             m_autonomousCommand.schedule();
         }
