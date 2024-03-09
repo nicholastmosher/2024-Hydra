@@ -16,7 +16,6 @@ import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
 import frc.robot.classes.BlinkinLEDController;
 import frc.robot.commands.Drive.AutoSwerve;
-import frc.robot.commands.Drive.DefensePos;
 import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Autos.RevAuto;
 import frc.robot.commands.Autos.ShootAuto;
@@ -139,7 +138,7 @@ public class RobotContainerTeleop implements RobotContainer {
        );
 
         c_Climber.setDefaultCommand(
-                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis)), c_Climber)
+                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis), teloscopicControl.getRawAxis(rightyAxis)), c_Climber)
         );
 //        a_Arm.setDefaultCommand(
 //                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
@@ -177,22 +176,16 @@ public class RobotContainerTeleop implements RobotContainer {
 
     private Command swerveMoveBack() {
         return new AutoSwerve(s_Swerve, 0, 0.3, 0, true);
-
     }
+
     private Command swerveMoveForward() {
         return new AutoSwerve(s_Swerve, 0, -0.3, 0, true);
-
     }
-
 
     private Command twoNoteCenterAuto() {
         Command SwerveMoveBack = swerveMoveBack();
         Command SwerveMoveForward = swerveMoveForward();
-        Command firstShoot = new SequentialCommandGroup(
-            revAuto.withTimeout(1.5), 
-            shootAuto.withTimeout(1), 
-            stopShooterAuto.withTimeout(0.5)
-        );
+        Command firstShoot = shootNote();
         Command backPickup = new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack.withTimeout(2));
         Command forwardAndRev = new ParallelCommandGroup(revAuto2, SwerveMoveForward).withTimeout(2.3);
         Command shoot = new SequentialCommandGroup(shootAuto2.withTimeout(1), stopShooterAuto2.withTimeout(0.5));
