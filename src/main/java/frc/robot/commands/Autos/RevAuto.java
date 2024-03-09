@@ -2,10 +2,10 @@ package frc.robot.commands.Autos;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 
-public class ShootAuto extends Command{
+public class RevAuto extends Command{
     Shooter shooter;
 
-    public ShootAuto(Shooter subsystem) {
+    public RevAuto(Shooter subsystem) {
         shooter = subsystem;
         addRequirements();
     }
@@ -13,7 +13,6 @@ public class ShootAuto extends Command{
     @Override
     public void execute() {
         shooter.startShooter();
-        shooter.feedNote();
     }
 
 //    @Override

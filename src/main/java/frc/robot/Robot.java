@@ -85,11 +85,10 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         // AutonomousOptions sp = positionChooser.getSelected();
         m_autonomousCommand1 = mRobotContainer.getAutonomousCommand1();
-        m_autonomousCommand2 = mRobotContainer.getAutonomousCommand2();
         //m_InitCommand = mRobotContainer.Initialize();
 
         // schedule the autonomous command (example)
-        if (m_autonomousCommand1 != null && m_autonomousCommand2 != null) {
+        if (m_autonomousCommand1 != null) {
             //m_InitCommand.schedule();
             m_autonomousCommand1.schedule();
             // m_autonomousCommand2.schedule();

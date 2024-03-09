@@ -9,7 +9,6 @@ public interface RobotContainer {
     default void robotPeriodic() {}
 
     Command getAutonomousCommand1();
-    Command getAutonomousCommand2();
 
 //    Command Initialize();
 
