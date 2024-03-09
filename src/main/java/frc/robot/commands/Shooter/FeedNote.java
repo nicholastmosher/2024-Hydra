@@ -16,16 +16,13 @@ public class FeedNote extends Command{
     @Override
     public void execute() {
         //shooter.shootNote();
-        if(shooter.isRevved()) {
-            shooter.feedNote();
-        } else {
-            shooter.stopFeed();
-        }
-
-    }
-
-    public void excecuteNoLimit() {
+        // if(shooter.isRevved()) {
+        //     shooter.feedNote();
+        // } else {
+        //     shooter.stopFeed();
+        // }
         shooter.feedNote();
+
     }
 
     @Override
@@ -35,7 +32,7 @@ public class FeedNote extends Command{
 
     @Override
     public boolean isFinished() {
-        return !intake.endCondition();
+        return false;//!intake.endCondition();
     }
 
 

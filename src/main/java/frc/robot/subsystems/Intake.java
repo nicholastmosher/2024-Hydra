@@ -50,7 +50,7 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("Is Intaked", endCondition());
+        // SmartDashboard.putBoolean("Is Intaked", endCondition());
         // SmartDashboard.putBoolean("ColorSensorStatusConnected", colorSensor.isConnected());
         // SmartDashboard.putNumber("SensorDist", colorSensor.getProximity());
     }

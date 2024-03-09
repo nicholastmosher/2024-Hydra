@@ -15,7 +15,9 @@ import frc.lib.Constants;
 import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
 import frc.robot.classes.BlinkinLEDController;
+import frc.robot.commands.Drive.AutoSwerve;
 import frc.robot.commands.Drive.DefensePos;
+import frc.robot.commands.Drive.TeleopSwerve;
 import frc.robot.commands.Autos.ShootAuto;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
 import frc.robot.commands.Drive.ZeroHeading;
@@ -27,6 +29,7 @@ import frc.robot.commands.Vision.limeLightOn;
 import frc.robot.commands.Intake.RejectNoteIntake;
 import frc.robot.commands.Light.SetRed;
 import frc.robot.commands.Light.SetWhite;
+import frc.robot.commands.Shooter.SendBackSecond;
 import frc.robot.commands.Shooter.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
@@ -77,6 +80,9 @@ public class RobotContainerTeleop implements RobotContainer {
     private final StopShooter stopShooter;
     private final SetRed setRed;
     private final SetWhite setWhite;
+    private final SendBackSecond sendBackShooter;
+
+    private final IntakingCommandGroup intakingAuto;
     private final ShootAuto shootAuto;
 
 
@@ -98,6 +104,7 @@ public class RobotContainerTeleop implements RobotContainer {
         // lightOff = new limeLightOff(v_Vision);
         // lightOn = new limeLightOn(v_Vision);
         
+        
 
         sendBack = new SendBack(s_Shooter);
         rejectNoteIntake = new RejectNoteIntake(i_Intake);
@@ -105,10 +112,13 @@ public class RobotContainerTeleop implements RobotContainer {
         stopShooter = new StopShooter(s_Shooter);
         setRed = new SetRed(blinkin);
         setWhite = new SetWhite(blinkin);
+        sendBackShooter = new SendBackSecond(s_Shooter);
+
         shootAuto = new ShootAuto(s_Shooter);
+        intakingAuto = new IntakingCommandGroup(i_Intake, s_Shooter);
 
        s_Swerve.setDefaultCommand(
-           new DefensePos(
+           new TeleopSwerve(
                s_Swerve,
                () -> -driver.getRawAxis(leftxAxis),
                () -> -driver.getRawAxis(leftyAxis),
@@ -139,12 +149,13 @@ public class RobotContainerTeleop implements RobotContainer {
         driver.y().onTrue(new InstantCommand(s_Swerve::zeroHeading));
         driver.leftTrigger().onTrue(new SequentialCommandGroup(intaking, setRed, sendBack.withTimeout(0.7), stopIntake));//.onFalse(new SequentialCommandGroup(sendBack.withTimeout(1), stopIntake));
         driver.rightTrigger().whileTrue(revShooter);//onTrue(revShooter.onlyIf(s_Shooter::isShooterStopped));//toggleOnTrue(new SequentialCommandGroup(revShooter.onlyIf()stopShooter.onlyIf(s_Shooter::isShooterStopped)));//whileTrue(revShooter).onFalse(stopShooter);//.toggleOnFalse(new InstantCommand(s_Shooter::stopShoot));
-        driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote, setWhite));
+        driver.rightBumper().onTrue(new SequentialCommandGroup(feedNote.withTimeout(1), setWhite));
         driver.a().whileTrue(rejectNoteIntake);
       
         // teloscopicControl.x().onTrue(lightOn);
         // teloscopicControl.y().onTrue(lightOff);
         //teloscopicControl.rightBumper().whileTrue(sendBack);
+        teloscopicControl.rightBumper().onTrue(sendBackShooter.withTimeout(0.7));
       
    
 
@@ -159,7 +170,7 @@ public class RobotContainerTeleop implements RobotContainer {
      * @return the command to run in autonomous
      */
     @Override
-    public Command getAutonomousCommand() {
+    public Command getAutonomousCommand1() {
 //        Command autoCommand = new TeleopSwerve(s_Swerve);
 //
 //        switch(sp) {
@@ -175,9 +186,15 @@ public class RobotContainerTeleop implements RobotContainer {
 //        }
 //        return autoCommand;
         //return pathFollower.followPath("Line"); 
-        return shootAuto.withTimeout(1.5);
-
+        return shootAuto.withTimeout(1.5);//new SequentialCommandGroup(shootAuto.withTimeout(0.3), new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack));//.withTimeout(2));//SwerveMoveBack;//shootAuto.withTimeout(1.5);
         // return new SequentialCommandGroup(new ParallelDeadlineGroup(feedNote, revShooter), s_Swerve.getDefaultCommand());
+    }
+
+    
+    @Override
+    public Command getAutonomousCommand2() {
+        Command SwerveMoveBack = new AutoSwerve(s_Swerve, 0, 0.3, 0, true);
+        return new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack);
     }
 
 //    @Override
@@ -200,4 +217,5 @@ public class RobotContainerTeleop implements RobotContainer {
         // s_Shooter.dashboardPeriodic();
 
     }
+
 }

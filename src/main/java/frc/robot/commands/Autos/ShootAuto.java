@@ -7,7 +7,7 @@ public class ShootAuto extends Command{
 
     public ShootAuto(Shooter subsystem) {
         shooter = subsystem;
-        addRequirements(shooter);
+        addRequirements();
     }
 
     @Override

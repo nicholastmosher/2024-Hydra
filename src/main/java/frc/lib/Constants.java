@@ -6,7 +6,7 @@ import frc.lib.config.*;
 
 public final class Constants {
 
-    public static IntakeConfig intakeConfig = new IntakeConfig(50, -0.6, 2047);
+    public static IntakeConfig intakeConfig = new IntakeConfig(50, -0.8, 2047);
 
     public static ArmConfig armConfig = new ArmConfig(51, 52, new PidConfig(1.0, 0.0, 0.0), Rotation2d.fromDegrees(2), Rotation2d.fromDegrees(2), Rotation2d.fromDegrees(232.44-162.84), Rotation2d.fromRotations(1).getDegrees(), Rotation2d.fromDegrees(162.84), new DigitalInput(2));
 

@@ -14,7 +14,6 @@ import frc.lib.CtreConfigs;
 import frc.lib.config.DashboardConfig;
 import frc.lib.config.RobotConfig;
 import frc.robot.classes.BlinkinLEDController;
-import frc.robot.containers.RobotContainerTest;
 import frc.robot.containers.RobotContainerTeleop;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.Climber;
@@ -31,7 +30,8 @@ public class Robot extends TimedRobot {
     public final CtreConfigs ctreConfigs = new CtreConfigs();
     public final DashboardConfig dashboardConfig = new DashboardConfig();
     public final RobotConfig robotConfig = new RobotConfig(ctreConfigs, dashboardConfig);
-    private Command m_autonomousCommand;
+    private Command m_autonomousCommand1;
+    private Command m_autonomousCommand2;
     private Command m_InitCommand;
     private RobotContainer mRobotContainer;
     private BlinkinLEDController blinkin;
@@ -84,13 +84,15 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         // AutonomousOptions sp = positionChooser.getSelected();
-        m_autonomousCommand = mRobotContainer.getAutonomousCommand();
+        m_autonomousCommand1 = mRobotContainer.getAutonomousCommand1();
+        m_autonomousCommand2 = mRobotContainer.getAutonomousCommand2();
         //m_InitCommand = mRobotContainer.Initialize();
 
         // schedule the autonomous command (example)
-        if (m_autonomousCommand != null) {
+        if (m_autonomousCommand1 != null && m_autonomousCommand2 != null) {
             //m_InitCommand.schedule();
-            m_autonomousCommand.schedule();;
+            m_autonomousCommand1.schedule();
+            // m_autonomousCommand2.schedule();
         }
     }
 
@@ -104,8 +106,9 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.cancel();
+        if (m_autonomousCommand1 != null && m_autonomousCommand2 != null) {
+            m_autonomousCommand1.cancel();
+            m_autonomousCommand2.cancel();
         }
     }
 

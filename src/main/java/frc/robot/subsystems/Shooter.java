@@ -62,6 +62,10 @@ public class Shooter extends SubsystemBase {
         shooterIntakeMotor.set(0.1);
     }
 
+    public void sendBackShooter() {
+        shooterTopMotor.set(-0.05);
+    }
+
     public boolean isRevved() {
         return true;//shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
     }
