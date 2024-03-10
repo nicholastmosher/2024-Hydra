@@ -19,8 +19,7 @@ public final class Constants {
     public static SwerveModuleConfig mod0frontleftConfig = new SwerveModuleConfig(11, 12, 13, Rotation2d.fromDegrees(-0.1+45+-90));
     public static SwerveModuleConfig mod1frontrightConfig = new SwerveModuleConfig(21, 22, 23, Rotation2d.fromDegrees(-0.2+72-90));
     public static SwerveModuleConfig mod2backleftConfig = new SwerveModuleConfig(31, 32, 33, Rotation2d.fromDegrees(-0.44-10-90-180));
-    public static SwerveModuleConfig mod3backrightConfig = new SwerveModuleConfig(41, 42, 43, Rotation2d.fromDegrees(-0.10+45-
-            90));
+    public static SwerveModuleConfig mod3backrightConfig = new SwerveModuleConfig(41, 42, 43, Rotation2d.fromDegrees(-0.10+45-90));
 
     public final class Debug {
         //set to false to allow compiler to identify and eliminate
@@ -40,6 +39,6 @@ public final class Constants {
         public static final double k_offset = 8.0;
         }
     public static enum AutonomousOptions {
-        TWO_NOTE_CENTER, SHOOT_NOTE;
+        TWO_NOTE_CENTER, SHOOT_NOTE, RIGHTSPEAKERSIDESHOOTANDMOVEBACK;
     }
 }

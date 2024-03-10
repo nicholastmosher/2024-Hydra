@@ -48,6 +48,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         positionChooser.setDefaultOption("TwoNoteCenter", AutonomousOptions.TWO_NOTE_CENTER);
         positionChooser.addOption("ShootNote", AutonomousOptions.SHOOT_NOTE);
+        positionChooser.addOption("shootandmovebackright side", AutonomousOptions.RIGHTSPEAKERSIDESHOOTANDMOVEBACK);
         SmartDashboard.putData("AutonomousSelection", positionChooser);
         SmartDashboard.putString("Version", "2");
         blinkin = new BlinkinLEDController();

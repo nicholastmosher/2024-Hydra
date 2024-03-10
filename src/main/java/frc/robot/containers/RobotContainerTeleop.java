@@ -182,6 +182,10 @@ public class RobotContainerTeleop implements RobotContainer {
         return new AutoSwerve(s_Swerve, 0, -0.3, 0, true);
     }
 
+    private Command moveBackAmpSide() {
+        return new AutoSwerve(s_Swerve, -0.2, 0.25, 0, true).withTimeout(4);
+    }
+
     private Command twoNoteCenterAuto() {
         Command SwerveMoveBack = swerveMoveBack();
         Command SwerveMoveForward = swerveMoveForward();
@@ -201,6 +205,10 @@ public class RobotContainerTeleop implements RobotContainer {
         );
     }
 
+    private Command rightSpeakerSideShootandMoveBack() {
+        return new SequentialCommandGroup(shootNote(), moveBackAmpSide());
+    }
+
     // private Command centerShootWaitBackup() {
     //     Command wait = new InstantCommand(() -> {});
     //     return new SequentialCommandGroup(
@@ -217,12 +225,14 @@ public class RobotContainerTeleop implements RobotContainer {
      */
     @Override
     public Command getAutonomousCommand(AutonomousOptions plan) {
-
+        //return moveBackAmpSide();
         switch (plan) {
             case TWO_NOTE_CENTER:
                 return twoNoteCenterAuto();
             case SHOOT_NOTE:
                 return shootNote();
+            case RIGHTSPEAKERSIDESHOOTANDMOVEBACK:
+                return rightSpeakerSideShootandMoveBack();
             default:
                 return shootNote();
         }
@@ -247,6 +257,9 @@ public class RobotContainerTeleop implements RobotContainer {
         //     SmartDashboard.putNumber(String.format("SwerveSpeed%d", i), state.speedMetersPerSecond);
         // }
         // s_Shooter.dashboardPeriodic();
+        SmartDashboard.putNumber("xaxis", driver.getRawAxis(leftxAxis));
+        SmartDashboard.putNumber("yaxis", driver.getRawAxis(leftyAxis));
+
 
     }
 
