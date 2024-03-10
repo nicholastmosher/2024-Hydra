@@ -39,6 +39,6 @@ public final class Constants {
         public static final double k_offset = 8.0;
         }
     public static enum AutonomousOptions {
-        TWO_NOTE_CENTER, SHOOT_NOTE, RIGHTSPEAKERSIDESHOOTANDMOVEBACK;
+        TWO_NOTE_CENTER, SHOOT_NOTE,SHOOT_NOTE_MOVEBACK, RIGHTSPEAKERSIDESHOOTANDMOVEBACK;
     }
 }

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.lib.Constants;
+import frc.lib.Constants.AutonomousOptions;
 import frc.lib.config.RobotConfig;
 import frc.robot.Robot;
 import frc.robot.classes.BlinkinLEDController;
@@ -23,14 +24,11 @@ import frc.robot.commands.Autos.StopShooterAuto;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
 import frc.robot.commands.Drive.ZeroHeading;
 import frc.robot.commands.Initialize.ClimberInit;
-import frc.robot.commands.Shooter.FeedNote;
-import frc.robot.commands.Shooter.RevShooter;
 import frc.robot.commands.Vision.limeLightOff;
 import frc.robot.commands.Vision.limeLightOn;
 import frc.robot.commands.Intake.RejectNoteIntake;
 import frc.robot.commands.Light.SetRed;
 import frc.robot.commands.Light.SetWhite;
-import frc.robot.commands.Shooter.SendBackSecond;
 import frc.robot.commands.Shooter.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
@@ -174,6 +172,14 @@ public class RobotContainerTeleop implements RobotContainer {
         //.onFalse(new InstantCommand(s_Shooter::stopFeed))
     }
 
+    private Command swerveMoveRight() {
+        return new AutoSwerve(s_Swerve, 0.3, 0, 0, true);
+    }
+
+    private Command swerveMoveLeft() {
+        return new AutoSwerve(s_Swerve, 0.3, 0, 0, true);
+    }
+
     private Command swerveMoveBack() {
         return new AutoSwerve(s_Swerve, 0, 0.3, 0, true);
     }
@@ -186,6 +192,10 @@ public class RobotContainerTeleop implements RobotContainer {
         return new AutoSwerve(s_Swerve, -0.2, 0.25, 0, true).withTimeout(4);
     }
 
+    private Command moveBackSource() {
+        return new AutoSwerve(s_Swerve, -0.2, -0.25, 0, true).withTimeout(4);
+    }
+
     private Command twoNoteCenterAuto() {
         Command SwerveMoveBack = swerveMoveBack();
         Command SwerveMoveForward = swerveMoveForward();
@@ -194,6 +204,19 @@ public class RobotContainerTeleop implements RobotContainer {
         Command forwardAndRev = new ParallelCommandGroup(revAuto2, SwerveMoveForward).withTimeout(2.3);
         Command shoot = new SequentialCommandGroup(shootAuto2.withTimeout(1), stopShooterAuto2.withTimeout(0.5));
         Command twoNoteAuto = new SequentialCommandGroup(firstShoot, backPickup, forwardAndRev, shoot);
+        return twoNoteAuto;
+    }
+
+    private Command twoNoteCenterAutoWithBackup() {
+        Command SwerveMoveBack = swerveMoveBack();
+        Command SwerveMoveForward = swerveMoveForward();
+        Command firstShoot = shootNote();
+        Command backPickup = new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack.withTimeout(2));
+        Command forwardAndRev = new ParallelCommandGroup(revAuto2, SwerveMoveForward).withTimeout(2.3);
+        Command shoot = new SequentialCommandGroup(shootAuto2.withTimeout(1), stopShooterAuto2.withTimeout(0.5));
+        //Command swerveMoveLeft = swerveMoveLeft();
+        Command moveBackAmpSide = moveBackAmpSide();
+        Command twoNoteAuto = new SequentialCommandGroup(firstShoot, backPickup, forwardAndRev, shoot, moveBackAmpSide);
         return twoNoteAuto;
     }
 
@@ -231,6 +254,8 @@ public class RobotContainerTeleop implements RobotContainer {
                 return twoNoteCenterAuto();
             case SHOOT_NOTE:
                 return shootNote();
+            case SHOOT_NOTE_MOVEBACK:
+                return twoNoteCenterAutoWithBackup();
             case RIGHTSPEAKERSIDESHOOTANDMOVEBACK:
                 return rightSpeakerSideShootandMoveBack();
             default:
