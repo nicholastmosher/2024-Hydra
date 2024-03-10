@@ -172,6 +172,22 @@ public class RobotContainerTeleop implements RobotContainer {
         //.onFalse(new InstantCommand(s_Shooter::stopFeed))
     }
 
+    private Command revAuto() {
+        return new RevAuto(s_Shooter);
+    }
+
+    private Command intakingAuto() {
+        return new IntakingCommandGroup(i_Intake, s_Shooter);
+    }
+
+    private Command shootAuto() {
+        return new ShootAuto(s_Shooter);
+    }
+
+    private Command stopShooterAuto() {
+        return new StopShooterAuto(s_Shooter);
+    }
+
     private Command swerveMoveRight() {
         return new AutoSwerve(s_Swerve, 0.3, 0, 0, true);
     }
@@ -182,6 +198,23 @@ public class RobotContainerTeleop implements RobotContainer {
 
     private Command swerveMoveBack() {
         return new AutoSwerve(s_Swerve, 0, 0.3, 0, true);
+    }
+
+    private Command swerveBackRight() {
+        return new AutoSwerve(s_Swerve, 0.3, 0.3, 0, true);
+    }
+
+    private Command swerveBackLeft() {
+        return new AutoSwerve(s_Swerve, -0.3, 0.3, 0, true);
+    }
+
+    private Command swerveFrontLeft() {
+        return new AutoSwerve(s_Swerve, -0.3, -0.3, 0, true);
+    }
+
+    private Command swerveFrontRight() {
+        return new AutoSwerve(s_Swerve, 0.3
+        , -0.3, 0, true);
     }
 
     private Command swerveMoveForward() {
@@ -196,23 +229,78 @@ public class RobotContainerTeleop implements RobotContainer {
         return new AutoSwerve(s_Swerve, -0.2, -0.25, 0, true).withTimeout(4);
     }
 
+    private Command intakeCommand() {
+        return new IntakingCommandGroup(i_Intake, s_Shooter);
+    }
+
     private Command twoNoteCenterAuto() {
         Command SwerveMoveBack = swerveMoveBack();
         Command SwerveMoveForward = swerveMoveForward();
         Command firstShoot = shootNote();
-        Command backPickup = new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack.withTimeout(2));
-        Command forwardAndRev = new ParallelCommandGroup(revAuto2, SwerveMoveForward).withTimeout(2.3);
+        Command backPickup = new ParallelDeadlineGroup(intakingAuto(), SwerveMoveBack.withTimeout(2));
+        Command forwardAndRev = new ParallelCommandGroup(revAuto(), SwerveMoveForward).withTimeout(2.3);
         Command shoot = new SequentialCommandGroup(shootAuto2.withTimeout(1), stopShooterAuto2.withTimeout(0.5));
         Command twoNoteAuto = new SequentialCommandGroup(firstShoot, backPickup, forwardAndRev, shoot);
         return twoNoteAuto;
+    }
+
+    private Command backRightPickup() {
+        return new ParallelDeadlineGroup(
+            intakeCommand(),
+            swerveBackRight()
+        );
+    }
+
+    private Command backLeftPickup() {
+        return new ParallelDeadlineGroup(
+            intakeCommand(),
+            swerveBackLeft()
+        );
+    }
+
+    private Command rightAuto() {
+        return new SequentialCommandGroup(
+            backRightPickup().withTimeout(2),
+            swerveFrontLeft().withTimeout(2),
+            shootNote()
+        );
+    }
+
+    private Command threeNoteCenterRightAuto() {
+        Command backRightPickup = new ParallelDeadlineGroup(
+            intakingAuto(),
+            swerveBackRight()
+        );
+
+        return new SequentialCommandGroup(
+            twoNoteCenterAuto(),
+            backRightPickup.withTimeout(2),
+            swerveFrontLeft().withTimeout(2),
+            shootNote()
+        );
+    }
+
+    private Command threeNoteCenterLeftAuto() {
+        Command intakingAuto = intakeCommand();
+        Command backLeftPickup = new ParallelDeadlineGroup(
+            intakingAuto(),
+            swerveBackLeft()
+        );
+
+        return new SequentialCommandGroup(
+            twoNoteCenterAuto(),
+            backLeftPickup.withTimeout(2),
+            swerveFrontRight().withTimeout(2),
+            shootNote()
+        );
     }
 
     private Command twoNoteCenterAutoWithBackup() {
         Command SwerveMoveBack = swerveMoveBack();
         Command SwerveMoveForward = swerveMoveForward();
         Command firstShoot = shootNote();
-        Command backPickup = new ParallelDeadlineGroup(intakingAuto, SwerveMoveBack.withTimeout(2));
-        Command forwardAndRev = new ParallelCommandGroup(revAuto2, SwerveMoveForward).withTimeout(2.3);
+        Command backPickup = new ParallelDeadlineGroup(intakingAuto(), SwerveMoveBack.withTimeout(2));
+        Command forwardAndRev = new ParallelCommandGroup(revAuto(), SwerveMoveForward).withTimeout(2.3);
         Command shoot = new SequentialCommandGroup(shootAuto2.withTimeout(1), stopShooterAuto2.withTimeout(0.5));
         //Command swerveMoveLeft = swerveMoveLeft();
         Command moveBackAmpSide = moveBackAmpSide();
@@ -222,9 +310,9 @@ public class RobotContainerTeleop implements RobotContainer {
 
     private Command shootNote() {
         return new SequentialCommandGroup(
-            revAuto.withTimeout(1.5), 
-            shootAuto.withTimeout(1), 
-            stopShooterAuto.withTimeout(0.5)
+            revAuto().withTimeout(1.5), 
+            shootAuto().withTimeout(1), 
+            stopShooterAuto().withTimeout(0.5)
         );
     }
 
@@ -258,6 +346,10 @@ public class RobotContainerTeleop implements RobotContainer {
                 return twoNoteCenterAutoWithBackup();
             case RIGHTSPEAKERSIDESHOOTANDMOVEBACK:
                 return rightSpeakerSideShootandMoveBack();
+            case THREE_NOTES_RIGHT:
+                return threeNoteCenterRightAuto();
+            case THREE_NOTES_LEFT:
+                return threeNoteCenterLeftAuto();
             default:
                 return shootNote();
         }
