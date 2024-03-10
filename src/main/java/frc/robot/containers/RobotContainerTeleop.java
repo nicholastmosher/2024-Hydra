@@ -205,16 +205,15 @@ public class RobotContainerTeleop implements RobotContainer {
     }
 
     private Command swerveBackLeft() {
-        return new AutoSwerve(s_Swerve, -0.3, 0.3, 0, true);
+        return new AutoSwerve(s_Swerve, -0.3, 0.3, 0.1, true);
     }
 
     private Command swerveFrontLeft() {
-        return new AutoSwerve(s_Swerve, -0.3, -0.3, 0, true);
+        return new AutoSwerve(s_Swerve, -0.2875, -0.3, 0, true);
     }
 
     private Command swerveFrontRight() {
-        return new AutoSwerve(s_Swerve, 0.3
-        , -0.3, 0, true);
+        return new AutoSwerve(s_Swerve, 0.3, -0.35, -0.1, true);
     }
 
     private Command swerveMoveForward() {
