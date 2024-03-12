@@ -11,17 +11,18 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.Constants;
 import frc.lib.config.IntakeConfig;
+import frc.robot.classes.ColorSensorController;
 
 public class Intake extends SubsystemBase {
-    private final I2C.Port colorSensorPort = I2C.Port.kOnboard;
     private final CANSparkMax intakeMotor;
-    private final ColorSensorV3 colorSensor = new ColorSensorV3(colorSensorPort);
 
     public final IntakeConfig config;
+    public final ColorSensorController colorSensor;
 
-    public Intake(IntakeConfig config) {
+    public Intake(IntakeConfig config, ColorSensorController colorSensorController) {
         this.config = config;
         intakeMotor = new CANSparkMax(this.config.intakeMotorId, CANSparkLowLevel.MotorType.kBrushless);
+        colorSensor = colorSensorController;
     }
 
     public void setIntakeMotor(boolean invert) {
@@ -30,11 +31,6 @@ public class Intake extends SubsystemBase {
             return;
         }
         intakeMotor.set(-this.config.intakeMotorSpeed);
-    }
-
-    public boolean endCondition() {
-        return colorSensor.getProximity() > (config.proximity - 50) && colorSensor.getProximity() < (config.proximity + 50);
-
     }
 
     public void stopIntakeMotor() {
@@ -48,11 +44,8 @@ public class Intake extends SubsystemBase {
         return false;
     }
 
-    @Override
-    public void periodic() {
-        // SmartDashboard.putBoolean("Is Intaked", endCondition());
-        // SmartDashboard.putBoolean("ColorSensorStatusConnected", colorSensor.isConnected());
-        // SmartDashboard.putNumber("SensorDist", colorSensor.getProximity());
+    public boolean isIntaked() {
+        return colorSensor.isSeen();
     }
 
 }

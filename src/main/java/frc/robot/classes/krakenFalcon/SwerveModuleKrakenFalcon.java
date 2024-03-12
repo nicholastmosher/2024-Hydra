@@ -1,4 +1,4 @@
-package frc.robot.classes;
+package frc.robot.classes.krakenFalcon;
 
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -12,9 +12,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.CtreConfigs;
 import frc.lib.config.SwerveModuleConfig;
-import frc.lib.krakentalon.krakenTalonConstants;
+import frc.lib.config.krakenTalonConstants;
 import frc.lib.util.Conversions;
-import frc.robot.interfaces.SwerveModule;
+
 
 public class SwerveModuleKrakenFalcon implements SwerveModule {
     private final Rotation2d angleOffset;

@@ -1,12 +1,8 @@
 package frc.robot.commands.Drive;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import frc.lib.Constants;
-import frc.lib.krakentalon.krakenTalonConstants;
+import frc.lib.config.krakenTalonConstants;
 import frc.robot.subsystems.Swerve;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;

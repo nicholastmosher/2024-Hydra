@@ -1,4 +1,4 @@
-package frc.lib.krakentalon;
+package frc.lib.config;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;

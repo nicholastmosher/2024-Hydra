@@ -23,6 +23,6 @@ public class RejectNoteIntake extends Command {
 
     @Override
     public boolean isFinished() {
-        return intake.endCondition();
+         return false;
     }
 }

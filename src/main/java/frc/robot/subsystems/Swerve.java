@@ -3,9 +3,9 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.CtreConfigs;
 import frc.lib.Constants;
-import frc.lib.krakentalon.krakenTalonConstants;
-import frc.robot.interfaces.SwerveModule;
-import frc.robot.classes.SwerveModuleKrakenFalcon;
+import frc.lib.config.krakenTalonConstants;
+import frc.robot.classes.krakenFalcon.SwerveModule;
+import frc.robot.classes.krakenFalcon.SwerveModuleKrakenFalcon;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;

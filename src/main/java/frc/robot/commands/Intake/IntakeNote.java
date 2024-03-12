@@ -24,10 +24,7 @@ public class IntakeNote extends Command {
 
     @Override
     public boolean isFinished() {
-        return intake.endCondition();
+        return intake.isIntaked();
     }
-}
-
-class Test extends NamedCommands {
 
 }

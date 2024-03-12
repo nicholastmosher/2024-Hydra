@@ -1,26 +1,27 @@
-package frc.robot.commands.Shooter;
+package frc.robot.commands.Indexer;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
-public class RevShooter extends Command {
-    Shooter shooter;
+public class FeedNote extends Command {
+    Indexer indexer;
 
-    public RevShooter(Shooter subsystem) {
-        shooter = subsystem;
-        addRequirements(shooter);
+    public FeedNote(Indexer subsystem) {
+        indexer = subsystem;
+        addRequirements(indexer);
     }
 
     @Override
     public void execute() {
-        shooter.startShooter();
+        indexer.feedNote();
     }
 
     @Override
     public void end(boolean interrupted) {
-        shooter.stopShoot();
+        indexer.stopIndexer();
     }
 
     @Override

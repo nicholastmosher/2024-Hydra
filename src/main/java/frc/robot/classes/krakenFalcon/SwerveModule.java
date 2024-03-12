@@ -1,4 +1,4 @@
-package frc.robot.interfaces;
+package frc.robot.classes.krakenFalcon;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;

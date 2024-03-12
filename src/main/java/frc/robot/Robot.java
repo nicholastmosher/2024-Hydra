@@ -1,31 +1,15 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib.Constants;
 import frc.lib.Constants.AutonomousOptions;
 import frc.lib.CtreConfigs;
 import frc.lib.config.DashboardConfig;
 import frc.lib.config.RobotConfig;
-import frc.robot.classes.BlinkinLEDController;
 import frc.robot.containers.RobotContainerTeleop;
-import frc.robot.interfaces.RobotContainer;
-import frc.robot.subsystems.Climber;
 import edu.wpi.first.wpilibj.TimedRobot;
-
-
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
 public class Robot extends TimedRobot {
     public final CtreConfigs ctreConfigs = new CtreConfigs();
     public final DashboardConfig dashboardConfig = new DashboardConfig();
@@ -33,8 +17,7 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand1;
     private Command m_autonomousCommand2;
     private Command m_InitCommand;
-    private RobotContainer mRobotContainer;
-    private BlinkinLEDController blinkin;
+    private RobotContainerTeleop mRobotContainer;
 
     private final SendableChooser<AutonomousOptions> positionChooser = new SendableChooser<>();
 
@@ -55,9 +38,7 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putData("AutonomousSelection", positionChooser);
         SmartDashboard.putString("Version", "2");
-        blinkin = new BlinkinLEDController();
-        blinkin.setTeamColor();
-        mRobotContainer = new RobotContainerTeleop(robotConfig, blinkin);
+        mRobotContainer = new RobotContainerTeleop(robotConfig);
 
     }
 
@@ -75,7 +56,6 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        mRobotContainer.robotPeriodic();
     }
 
     /** This function is called once each time the robot enters Disabled mode. */

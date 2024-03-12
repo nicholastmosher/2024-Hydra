@@ -5,7 +5,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 
 import com.ctre.phoenix6.signals.InvertedValue;
-import frc.lib.krakentalon.krakenTalonConstants;
+import frc.lib.config.krakenTalonConstants;
 
 public final class CtreConfigs {
     public TalonFXConfiguration swerveAngleFXConfig = new TalonFXConfiguration();
