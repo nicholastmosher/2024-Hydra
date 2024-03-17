@@ -87,7 +87,7 @@ public class RobotContainerTeleop implements RobotContainer {
         this.pathFollower = new TrajectoryFollowerCommands(s_Swerve, true);
 
 
-        a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
+        //a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
