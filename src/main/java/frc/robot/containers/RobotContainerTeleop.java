@@ -15,10 +15,12 @@ import frc.robot.Robot;
 import frc.robot.classes.BlinkinLEDController;
 import frc.robot.commands.Drive.AutoSwerve;
 import frc.robot.commands.Drive.TeleopSwerve;
+import frc.robot.commands.Drive.debug.DiagnoseSteering;
 import frc.robot.commands.Autos.RevAuto;
 import frc.robot.commands.Autos.ShootAuto;
 import frc.robot.commands.Autos.StopShooterAuto;
 import frc.robot.commands.Autos.TrajectoryFollowerCommands;
+import frc.robot.commands.Drive.debug.DiagnoseSwerveTranslation;
 import frc.robot.commands.Shooter.FeedNote;
 import frc.robot.commands.Shooter.RevShooter;
 import frc.robot.commands.Vision.limeLightOff;
@@ -30,6 +32,7 @@ import frc.robot.commands.Shooter.*;
 import frc.robot.interfaces.RobotContainer;
 import frc.robot.subsystems.*;
 import frc.robot.commands.CommandGroups.Intake.*;
+import frc.robot.commands.CPX.CpxSet;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -56,6 +59,7 @@ public class RobotContainerTeleop implements RobotContainer {
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
+    private final CPX c_Cpx;
     // private final Vision v_Vision;
 
     private final TrajectoryFollowerCommands pathFollower;
@@ -71,6 +75,8 @@ public class RobotContainerTeleop implements RobotContainer {
     private final SetRed setRed;
     private final SetWhite setWhite;
     private final SendBackSecond sendBackShooter;
+    private final CpxSet cpxOn;
+    private final CpxSet cpxOff;
 
     private final IntakingCommandGroup intakingAuto;
     private final RevAuto revAuto;
@@ -79,6 +85,9 @@ public class RobotContainerTeleop implements RobotContainer {
     private final ShootAuto shootAuto2;
     private final StopShooterAuto stopShooterAuto;
     private final StopShooterAuto stopShooterAuto2;
+
+
+    private final DiagnoseSwerveTranslation diagnoseSteering;
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -91,6 +100,7 @@ public class RobotContainerTeleop implements RobotContainer {
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
+        c_Cpx = new CPX();
 
         // Commands
         feedNote = new FeedNote(s_Shooter, i_Intake);
@@ -103,6 +113,8 @@ public class RobotContainerTeleop implements RobotContainer {
         setRed = new SetRed(blinkin);
         setWhite = new SetWhite(blinkin);
         sendBackShooter = new SendBackSecond(s_Shooter);
+        cpxOn = new CpxSet(c_Cpx,true);
+        cpxOff = new CpxSet(c_Cpx,false);
 
         revAuto = new RevAuto(s_Shooter);
         revAuto2 = new RevAuto(s_Shooter);
@@ -112,7 +124,7 @@ public class RobotContainerTeleop implements RobotContainer {
         stopShooterAuto = new StopShooterAuto(s_Shooter);
         stopShooterAuto2 = new StopShooterAuto(s_Shooter);
 
-
+        diagnoseSteering = new DiagnoseSwerveTranslation(s_Swerve);
 
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -128,7 +140,7 @@ public class RobotContainerTeleop implements RobotContainer {
 //                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis), teloscopicControl.getRawAxis(rightyAxis)), c_Climber)
 //        );
         a_Arm.setDefaultCommand(
-                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
+                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRightY()), a_Arm)
         );
 
         // Configure the button bindings
@@ -153,6 +165,9 @@ public class RobotContainerTeleop implements RobotContainer {
         // teloscopicControl.y().onTrue(lightOff);
         //teloscopicControl.rightBumper().whileTrue(sendBack);
         teloscopicControl.rightBumper().onTrue(sendBackShooter.withTimeout(0.7));
+        teloscopicControl.a().onTrue(diagnoseSteering);
+        teloscopicControl.x().onTrue(cpxOn);
+        teloscopicControl.y().onTrue(cpxOff);
 
 
 

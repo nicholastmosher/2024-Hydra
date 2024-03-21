@@ -38,22 +38,24 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     private int frameCount = 0;
     private static final int frameReset = 10;
 
-    public SwerveModuleKrakenFalcon(CtreConfigs ctreConfigs, SwerveModuleConfig moduleConstants, int moduleNumber) {
+    public SwerveModuleKrakenFalcon(CtreConfigs ctreConfigs, SwerveModuleConfig moduleConfig, int moduleNumber) {
         this.ctreConfigs = ctreConfigs;
-        this.angleOffset = moduleConstants.angleOffset;
+        this.angleOffset = moduleConfig.angleOffset;
         this.mModule = moduleNumber;
 
         /* Angle Encoder Config */
-        angleEncoder = new CANcoder(moduleConstants.cancoderID);
+        angleEncoder = new CANcoder(moduleConfig.cancoderID);
         angleEncoder.getConfigurator().apply(ctreConfigs.swerveCANcoderConfig);
 
         /* Angle Motor Config */
-        mAngleMotor = new TalonFX(moduleConstants.angleMotorID);
+        mAngleMotor = new TalonFX(moduleConfig.angleMotorID);
+        mAngleMotor.setInverted(moduleConfig.angleInvert);
         mAngleMotor.getConfigurator().apply(ctreConfigs.swerveAngleFXConfig);
         resetToAbsolute();
 
         /* Drive Motor Config */
-        mDriveMotor = new TalonFX(moduleConstants.driveMotorID);
+        mDriveMotor = new TalonFX(moduleConfig.driveMotorID);
+        mDriveMotor.setInverted(moduleConfig.driveInvert);
         mDriveMotor.getConfigurator().apply(ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
     }

@@ -66,15 +66,7 @@ public class Arm extends SubsystemBase {
     }
 
     public void moveArm(double input) {
-        if (!isFullLower()) {
-            armRightMotor.set(input);
-        } else {
-            if (input >0) {
-                armRightMotor.set(input);
-            } else {
-                armRightMotor.stopMotor();
-            }
-        }
+        armRightMotor.set(input);
 
     }
 
