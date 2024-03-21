@@ -52,7 +52,7 @@ public class RobotContainerTeleop implements RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve;
-    //private final Arm a_Arm;
+    private final Arm a_Arm;
     private final Intake i_Intake;
     private final Shooter s_Shooter;
     private final Climber c_Climber;
@@ -87,7 +87,7 @@ public class RobotContainerTeleop implements RobotContainer {
         this.pathFollower = new TrajectoryFollowerCommands(s_Swerve, true);
 
 
-        //a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
+        a_Arm = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
         i_Intake = new Intake(Constants.intakeConfig);
         s_Shooter = new Shooter(Constants.shooterConfig);
         c_Climber = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
@@ -124,12 +124,12 @@ public class RobotContainerTeleop implements RobotContainer {
             )
         );
 
-        c_Climber.setDefaultCommand(
-                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis), teloscopicControl.getRawAxis(rightyAxis)), c_Climber)
-        );
-//        a_Arm.setDefaultCommand(
-//                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
+//        c_Climber.setDefaultCommand(
+//                new InstantCommand(() -> c_Climber.joystickControl(teloscopicControl.getRawAxis(leftyAxis), teloscopicControl.getRawAxis(rightyAxis)), c_Climber)
 //        );
+        a_Arm.setDefaultCommand(
+                new InstantCommand(() -> a_Arm.moveArm(teloscopicControl.getRawAxis(rightyAxis)), a_Arm)
+        );
 
         // Configure the button bindings
         configureButtonBindings();
