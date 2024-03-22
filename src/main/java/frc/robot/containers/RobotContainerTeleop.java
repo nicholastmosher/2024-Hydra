@@ -112,8 +112,9 @@ public class RobotContainerTeleop {
         /* pilot Buttons */
         pilot.leftTrigger().onTrue(intakeCommand);
         pilot.rightTrigger().whileTrue(prepareShootCommand);
-        pilot.leftBumper().onTrue(feedNoteCommand);
+        pilot.rightBumper().onTrue(feedNoteCommand.withTimeout(1));
         pilot.a().whileTrue(rejectNoteIntakeCommand);
+        pilot.y().onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
 
         /* Copilot Buttons */
         copilot.rightBumper().onTrue(manualFeedBackCommand.withTimeout(0.7));

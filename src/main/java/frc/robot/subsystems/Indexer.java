@@ -22,7 +22,7 @@ public class Indexer extends SubsystemBase {
         indexerMotor.set(config.shooterIntakeSpeed);
     }
     public void feedNote() {
-        indexerMotor.set(config.indexerFeedSpeed);
+        indexerMotor.set(-0.5);
     }
     public void stopIndexer() {
         indexerMotor.stopMotor();

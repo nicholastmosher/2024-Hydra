@@ -11,7 +11,7 @@ public final class Constants {
     public static IntakeConfig intakeConfig = new IntakeConfig(50, -0.8);
     public static ArmConfig armConfig = new ArmConfig(51, 52, new PidConfig(1.0, 0.0, 0.0), Rotation2d.fromDegrees(2), Rotation2d.fromDegrees(2), Rotation2d.fromDegrees(232.44-162.84), Rotation2d.fromRotations(1).getDegrees(), Rotation2d.fromDegrees(162.84), new DigitalInput(2));
     public static ShooterConfig shooterConfig = new ShooterConfig(53, 54, -0.2, 10000);
-    public static IndexerConfig indexerConfig = new IndexerConfig(55, 0.5, 0.15);
+    public static IndexerConfig indexerConfig = new IndexerConfig(55, -0.5, 0.15);
     public static LightConfig lightConfig = new LightConfig(0, 1, 1.5, 0);
     public static ColorSensorConfig colorSensorConfig = new ColorSensorConfig(2047);
 

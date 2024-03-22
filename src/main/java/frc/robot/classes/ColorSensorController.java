@@ -10,6 +10,12 @@ public class ColorSensorController {
 
     public ColorSensorController(ColorSensorConfig colorSensorConfig) {
         config = colorSensorConfig;
+        if (colorSensor.isConnected()) {
+            System.out.println("color sensor connected");
+        }
+        if (!colorSensor.isConnected()) {
+            System.out.println("color sensor not connected");
+        }
     }
 
     public boolean isSeen() {
