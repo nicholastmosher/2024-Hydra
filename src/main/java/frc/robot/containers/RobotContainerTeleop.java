@@ -98,13 +98,13 @@ public class RobotContainerTeleop {
                 )
         );
 
-        // ClimberSubsystem.setDefaultCommand(
-        //         new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getLeftY(), copilot.getRightY()), ClimberSubsystem)
-        // );
+         ClimberSubsystem.setDefaultCommand(
+                 new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getLeftY(), copilot.getRightY()), ClimberSubsystem)
+         );
 
-        // LightSubsystem.setDefaultCommand(
-        //         new InstantCommand(LightSubsystem::lightControl, LightSubsystem)
-        // );
+//         LightSubsystem.setDefaultCommand(
+//                 new InstantCommand(LightSubsystem::lightControl, LightSubsystem)
+//         );
 
         configureButtonBindings();
     }
@@ -119,6 +119,7 @@ public class RobotContainerTeleop {
 
         /* Copilot Buttons */
         copilot.rightBumper().onTrue(manualFeedBackCommand.withTimeout(0.7));
+
         
     }
 

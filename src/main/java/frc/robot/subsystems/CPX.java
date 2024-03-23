@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class CPX extends SubsystemBase {
 
 
-//    DigitalOutput output = new DigitalOutput(2);
+    DigitalOutput output = new DigitalOutput(3);
 
     public void set(boolean status){
-//        output.set(status);
+        output.set(status);
     }
 
 
