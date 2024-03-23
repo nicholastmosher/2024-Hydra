@@ -13,31 +13,28 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Vision;
 
 
 public class TeleopSwerve extends Command {
     private Swerve s_Swerve;
+    private Vision s_Vision;
     private DoubleSupplier y;
     private DoubleSupplier x;
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier autoAimSup;
     private BooleanSupplier autoIntakeAlignSup;
-    private LimelightController shootLimelight;
-    private LimelightController intakeLimelight;
-    private PIDController shootPID;
-    private PIDController intakePID;
 
     public TeleopSwerve(
             Swerve s_Swerve,
+            Vision s_Vision,
             DoubleSupplier x,
             DoubleSupplier y,
             DoubleSupplier rotationSup,
             BooleanSupplier robotCentricSup,
             BooleanSupplier autoAimSup,
-            BooleanSupplier autoIntakeAlignSup,
-            LimelightController shootLimelight,
-            LimelightController intakeLimelight
+            BooleanSupplier autoIntakeAlignSup
     ) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
@@ -48,10 +45,7 @@ public class TeleopSwerve extends Command {
         this.robotCentricSup = robotCentricSup;
         this.autoAimSup = autoAimSup;
         this.autoIntakeAlignSup = autoIntakeAlignSup;
-        this.shootLimelight = shootLimelight;
-        this.intakeLimelight = intakeLimelight;
-        this.shootPID = new PIDController(1, 0, 0);
-        this.intakePID = new PIDController(0.01, 0, 0);
+        this.s_Vision = s_Vision;
     }
 
     @Override
@@ -62,15 +56,12 @@ public class TeleopSwerve extends Command {
         double y = MathUtil.applyDeadband(this.y.getAsDouble(), krakenTalonConstants.stickDeadband);
         double x = MathUtil.applyDeadband(this.x.getAsDouble(), krakenTalonConstants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), krakenTalonConstants.stickDeadband);
-        double shootOrient = shootPID.calculate(shootLimelight.getYawToSpeaker(), 0);
-        double intakeOrient = intakePID.calculate(intakeLimelight.getYawToNote(), 0);
-        SmartDashboard.putNumber("intakeorient", intakeLimelight.getYawToNote());
-        SmartDashboard.putNumber("intakePID", intakeOrient);
-//        if (autoAimSup.getAsBoolean() && !autoIntakeAlignSup.getAsBoolean()) {
-//            rotationVal = shootOrient;
-//        }
+        if (autoAimSup.getAsBoolean() && !autoIntakeAlignSup.getAsBoolean()) {
+            rotationVal = s_Vision.getAngleToShootAngle();
+        }
+
         if (autoIntakeAlignSup.getAsBoolean() && !autoAimSup.getAsBoolean()) {
-            rotationVal = intakeOrient;
+            rotationVal = s_Vision.getAngleToNote();
         }
 
         Translation2d translation = new Translation2d(x*krakenTalonConstants.Swerve.maxSpeed, y*krakenTalonConstants.Swerve.maxSpeed);

@@ -1,9 +1,0 @@
-package frc.lib.config;
-
-public class LimelightConfig() {
-
-   
-    public LimelightConfig() {
-        
-    }
-}

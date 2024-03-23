@@ -18,14 +18,9 @@ import frc.robot.commands.CommandGroups.ShootCommands.PrepareShootCommandGroup;
 import frc.robot.commands.Drive.TeleopSwerve;
 
 import frc.robot.commands.Indexer.FeedNote;
+import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.RejectNoteIntake;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Climber;
-import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Light;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.*;
 
 public class RobotContainerTeleop {
     /* Controllers */
@@ -40,11 +35,10 @@ public class RobotContainerTeleop {
     private final Climber ClimberSubsystem;
     private final Indexer IndexerSubsystem;
     private final Light LightSubsystem;
+    private final Vision VisionSubsystem;
 
     /* Util Classes */
     private final ColorSensorController colorSensorController;
-    private final LimelightController limelightShootController;
-    private final LimelightController limelightIntakeController;
     //private final AutoCommands autoCommandsConstructor;
 
     /* Teleop Commands */
@@ -61,9 +55,6 @@ public class RobotContainerTeleop {
 
         /* Util Classes */
         colorSensorController = new ColorSensorController(Constants.colorSensorConfig);
-        limelightShootController = new LimelightController("limelight-shoot");
-
-        limelightIntakeController = new LimelightController("limelight-intake");
 
         /* Subsystems */
         SwerveSubsystem = new Swerve(robotConfig.ctreConfigs);
@@ -73,6 +64,7 @@ public class RobotContainerTeleop {
         IndexerSubsystem = new Indexer(Constants.indexerConfig);
         ClimberSubsystem = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
         LightSubsystem = new Light(Constants.lightConfig, colorSensorController);
+        VisionSubsystem = new Vision(Constants.visionConfig);
 
         /* Teleop Commands */
         intakeCommand = new IntakeCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
@@ -87,14 +79,13 @@ public class RobotContainerTeleop {
         SwerveSubsystem.setDefaultCommand(
                 new TeleopSwerve(
                         SwerveSubsystem,
+                        VisionSubsystem,
                         () -> -pilot.getLeftX(),
                         () -> -pilot.getLeftY(),
                         () -> -pilot.getRightX(),
                         pilot.leftBumper(),
                         pilot.rightTrigger(),
-                        pilot.leftTrigger(),
-                        limelightShootController,
-                        limelightIntakeController
+                        pilot.leftTrigger()
                 )
         );
 
@@ -141,5 +132,10 @@ public class RobotContainerTeleop {
         //         return 
         // }
         return new InstantCommand();
+    }
+
+
+    public void robotPeriodic() {
+        VisionSubsystem.periodic();
     }
 }

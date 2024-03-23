@@ -14,8 +14,8 @@ public final class Constants {
     public static IndexerConfig indexerConfig = new IndexerConfig(55, -0.5, 0.15);
     public static LightConfig lightConfig = new LightConfig(0, 1, 1.5, 0);
     public static ColorSensorConfig colorSensorConfig = new ColorSensorConfig(2047);
-
     public static ClimberConfig climberConfig = new ClimberConfig(59, 58, 1.0, -1.0, new DigitalInput(1), new DigitalInput(0));
+    public static VisionConfig visionConfig = new VisionConfig("limelight-intake", "limelight-shoot");
 
     public static SwerveModuleConfig mod0frontleftConfig = new SwerveModuleConfig(11, false, 12, false, 13, Rotation2d.fromRotations(0.95));
     public static SwerveModuleConfig mod1frontrightConfig = new SwerveModuleConfig(21, false, 22, false, 23, Rotation2d.fromRotations(-0.08));
