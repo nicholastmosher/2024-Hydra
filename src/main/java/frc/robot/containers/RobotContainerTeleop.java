@@ -62,6 +62,7 @@ public class RobotContainerTeleop {
         /* Util Classes */
         colorSensorController = new ColorSensorController(Constants.colorSensorConfig);
         limelightShootController = new LimelightController("limelight-shoot");
+
         limelightIntakeController = new LimelightController("limelight-intake");
 
         /* Subsystems */
@@ -110,7 +111,7 @@ public class RobotContainerTeleop {
 
     private void configureButtonBindings() {
         /* pilot Buttons */
-        pilot.leftTrigger().onTrue(intakeCommand);
+        //pilot.leftTrigger().onTrue(intakeCommand);
         pilot.rightTrigger().whileTrue(prepareShootCommand);
         pilot.rightBumper().onTrue(feedNoteCommand.withTimeout(1));
         pilot.a().whileTrue(rejectNoteIntakeCommand);

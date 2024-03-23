@@ -165,9 +165,9 @@ public class Swerve extends SubsystemBase {
     public void periodic() {
         swerveOdometry.update(getGyroYaw(), getModulePositions());
 
-         for (int i = 0; i < mSwerveMods.length; i++) {
-             SwerveModule mod = mSwerveMods[i];
-             mod.dashboardPeriodic();
-         }
+//         for (int i = 0; i < mSwerveMods.length; i++) {
+//             SwerveModule mod = mSwerveMods[i];
+//             mod.dashboardPeriodic();
+//         }
     }
 }

@@ -60,7 +60,13 @@ public class LimelightController {
     }
 
     public double getYawToNote() {
-        return LimelightHelpers.getTX(llName);
+
+//        if (NetworkTableInstance.getDefault().getTable("limelight-intake").getValue("tx").isDouble()) {
+//            SmartDashboard.putNumber("smth", NetworkTableInstance.getDefault().getTable("limelight-intake").getValue("tx").getDouble());
+//        } else {
+//
+//        }
+        return LimelightHelpers.getTX("limelight-intake");
     }
 
 

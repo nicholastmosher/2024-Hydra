@@ -51,7 +51,7 @@ public class TeleopSwerve extends Command {
         this.shootLimelight = shootLimelight;
         this.intakeLimelight = intakeLimelight;
         this.shootPID = new PIDController(1, 0, 0);
-        this.intakePID = new PIDController(1, 0, 0);
+        this.intakePID = new PIDController(0.01, 0, 0);
     }
 
     @Override
@@ -64,14 +64,17 @@ public class TeleopSwerve extends Command {
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), krakenTalonConstants.stickDeadband);
         double shootOrient = shootPID.calculate(shootLimelight.getYawToSpeaker(), 0);
         double intakeOrient = intakePID.calculate(intakeLimelight.getYawToNote(), 0);
-        if (autoAimSup.getAsBoolean() && !autoIntakeAlignSup.getAsBoolean()) {
-            rotationVal = shootOrient;
-        }
+        SmartDashboard.putNumber("intakeorient", intakeLimelight.getYawToNote());
+        SmartDashboard.putNumber("intakePID", intakeOrient);
+//        if (autoAimSup.getAsBoolean() && !autoIntakeAlignSup.getAsBoolean()) {
+//            rotationVal = shootOrient;
+//        }
         if (autoIntakeAlignSup.getAsBoolean() && !autoAimSup.getAsBoolean()) {
             rotationVal = intakeOrient;
         }
 
         Translation2d translation = new Translation2d(x*krakenTalonConstants.Swerve.maxSpeed, y*krakenTalonConstants.Swerve.maxSpeed);
+        Translation2d dummytranslation = new Translation2d(0, 0);
 
         /* Drive */
         s_Swerve.drive(
@@ -81,8 +84,7 @@ public class TeleopSwerve extends Command {
                 true
         );
 
-        SmartDashboard.putNumber("shootorient",shootOrient);
-        SmartDashboard.putNumber("orienttoNote", intakeOrient);
+        //SmartDashboard.putNumber("shootorient",shootOrient);
 //        SmartDashboard.putNumber("", );
     }
 }
