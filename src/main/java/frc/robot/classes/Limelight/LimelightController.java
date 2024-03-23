@@ -66,7 +66,8 @@ public class LimelightController {
 //        } else {
 //
 //        }
-        return LimelightHelpers.getTX("limelight-intake");
+        double limelightDegrees = LimelightHelpers.getTX("limelight-intake");
+        return limelightDegrees / 27.0;
     }
 
 

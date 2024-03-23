@@ -61,7 +61,7 @@ public class TeleopSwerve extends Command {
 //        }
 
         if (autoIntakeAlignSup.getAsBoolean()) {
-            rotationVal = s_Vision.getAngleToNote();
+            rotationVal = MathUtil.applyDeadband(s_Vision.getAngleToNote(), 0.1);
         }
 
         Translation2d translation = new Translation2d(x*krakenTalonConstants.Swerve.maxSpeed, y*krakenTalonConstants.Swerve.maxSpeed);
@@ -70,7 +70,7 @@ public class TeleopSwerve extends Command {
         /* Drive */
         s_Swerve.drive(
                 translation,
-                rotationVal * krakenTalonConstants.Swerve.maxAngularVelocity,
+                rotationVal, //* krakenTalonConstants.Swerve.maxAngularVelocity,
                 !robotCentricSup.getAsBoolean(),
                 true
         );
