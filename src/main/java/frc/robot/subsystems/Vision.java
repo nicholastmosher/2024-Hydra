@@ -15,6 +15,7 @@ public class Vision {
     private final PIDController shootPID;
     private final PIDController intakePID;
     private final RollingAverage intakeAverage = new RollingAverage(5);
+    private final RollingAverage shootAverage = new RollingAverage(5);
 
     private double angleToNote;
     private double angleToShootAngle;
@@ -25,7 +26,7 @@ public class Vision {
         this.config = visionConfig;
         this.shootLimelight = new LimelightController(config.shootLimelightName);
         this.intakeLimelight = new LimelightController(config.intakeLimelightName);
-        this.shootPID = new PIDController(1, 0, 0);
+        this.shootPID = new PIDController(1.25, 0.01, 0.2);
 //        this.intakePID = new PIDController(0.01, 0, 0);
 //        this.intakePID = new CustomPid(0.25, 0.2, 0);
         this.intakePID = new PIDController(2.0, 0.01, .20);
@@ -43,8 +44,9 @@ public class Vision {
 
     public void periodic() {
         intakeAverage.addInput(intakeLimelight.getYawToNote());
+        shootAverage.addInput(shootLimelight.getYawToSpeaker());
         angleToNote = intakePID.calculate(intakeAverage.getOutput(), 0);
-        angleToShootAngle = shootPID.calculate(shootLimelight.getYawToSpeaker(), 0);
+        angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);
         SmartDashboard.putNumber("intakePID", angleToNote);
         SmartDashboard.putNumber("shootPID", angleToNote);
     }

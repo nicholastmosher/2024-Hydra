@@ -111,7 +111,7 @@ public class RobotContainerTeleop {
     private void configureButtonBindings() {
         /* pilot Buttons */
         //pilot.leftTrigger().onTrue(intakeCommand);
-        pilot.rightTrigger().whileTrue(prepareShootCommand);
+        //pilot.rightTrigger().whileTrue(prepareShootCommand);
         pilot.rightBumper().onTrue(feedNoteCommand.withTimeout(1));
         pilot.a().whileTrue(rejectNoteIntakeCommand);
         pilot.y().onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
