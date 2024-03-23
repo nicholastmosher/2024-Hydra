@@ -12,7 +12,7 @@ public class limeLightOff extends Command {
 
   public limeLightOff(Vision l) {
     this.m_vision = l;
-    addRequirements(l);
+    addRequirements();
   }
 
   // Called when the command is initially scheduled.
@@ -23,7 +23,7 @@ public class limeLightOff extends Command {
   @Override
   public void execute() {
 
-    m_vision.off();
+//    m_vision.();
 
   }
 

@@ -1,18 +1,16 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-
 public class CPX extends SubsystemBase {
+    private final DigitalOutput output;
 
-
-    DigitalOutput output = new DigitalOutput(3);
+    public CPX(int dioChannel) {
+        output = new DigitalOutput(dioChannel);
+    }
 
     public void set(boolean status){
         output.set(status);
     }
-
-
 }

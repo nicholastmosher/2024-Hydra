@@ -56,11 +56,11 @@ public class TeleopSwerve extends Command {
         double y = MathUtil.applyDeadband(this.y.getAsDouble(), krakenTalonConstants.stickDeadband);
         double x = MathUtil.applyDeadband(this.x.getAsDouble(), krakenTalonConstants.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), krakenTalonConstants.stickDeadband);
-        if (autoAimSup.getAsBoolean() && !autoIntakeAlignSup.getAsBoolean()) {
-            rotationVal = s_Vision.getAngleToShootAngle();
-        }
+//        if (autoAimSup.getAsBoolean() && !autoIntakeAlignSup.getAsBoolean()) {
+//            rotationVal = s_Vision.getAngleToShootAngle();
+//        }
 
-        if (autoIntakeAlignSup.getAsBoolean() && !autoAimSup.getAsBoolean()) {
+        if (autoIntakeAlignSup.getAsBoolean()) {
             rotationVal = s_Vision.getAngleToNote();
         }
 

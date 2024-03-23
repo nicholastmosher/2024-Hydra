@@ -11,6 +11,7 @@ import frc.robot.classes.Limelight.LimelightHelpers;
 import frc.robot.classes.ColorSensorController;
 import frc.robot.classes.Limelight.LimelightController;
 import frc.robot.commands.Auto.AutoCommands;
+import frc.robot.commands.CPX.CpxSet;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeNoteCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.SendBackCommandGroup;
@@ -36,6 +37,7 @@ public class RobotContainerTeleop {
     private final Indexer IndexerSubsystem;
     private final Light LightSubsystem;
     private final Vision VisionSubsystem;
+    private final CPX CPXSubsystem;
 
     /* Util Classes */
     private final ColorSensorController colorSensorController;
@@ -47,6 +49,9 @@ public class RobotContainerTeleop {
     private final FeedNote feedNoteCommand;
     private final SendBackCommandGroup manualFeedBackCommand;
     private final RejectNoteIntake rejectNoteIntakeCommand;
+    private final CpxSet cpxOn;
+    private final CpxSet cpxOff;
+
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -65,6 +70,7 @@ public class RobotContainerTeleop {
         ClimberSubsystem = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
         LightSubsystem = new Light(Constants.lightConfig, colorSensorController);
         VisionSubsystem = new Vision(Constants.visionConfig);
+        CPXSubsystem = new CPX(3); // TODO create CpxConfig
 
         /* Teleop Commands */
         intakeCommand = new IntakeCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
@@ -72,6 +78,8 @@ public class RobotContainerTeleop {
         feedNoteCommand = new FeedNote(IndexerSubsystem);
         manualFeedBackCommand = new SendBackCommandGroup(IndexerSubsystem, ShooterSubsystem);
         rejectNoteIntakeCommand = new RejectNoteIntake(IntakeSubsystem);
+        cpxOn = new CpxSet(CPXSubsystem, true);
+        cpxOff = new CpxSet(CPXSubsystem, false);
 
         /* Command Constructor for Autos */
         //autoCommandsConstructor = new AutoCommands(SwerveSubsystem, ArmSubsystem, IndexerSubsystem, ShooterSubsystem, IntakeSubsystem, DriverStation.getAlliance().get());
@@ -108,8 +116,12 @@ public class RobotContainerTeleop {
         pilot.a().whileTrue(rejectNoteIntakeCommand);
         pilot.y().onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
 
+
+
         /* Copilot Buttons */
         copilot.rightBumper().onTrue(manualFeedBackCommand.withTimeout(0.7));
+        copilot.x().onTrue(cpxOn);
+        copilot.b().onTrue(cpxOff);
 
         
     }
