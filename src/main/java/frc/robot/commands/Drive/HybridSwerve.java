@@ -35,10 +35,10 @@ public class HybridSwerve extends Command {
     public void execute() {
         SwerveVector driveOutputs = swerveInputs.solve();
 
-        double x = MathUtil.applyDeadband(driveOutputs.x(), 0.1);
-        double y = MathUtil.applyDeadband(driveOutputs.y(), 0.1);
+        double x = driveOutputs.x();
+        double y = driveOutputs.y();
         Translation2d translation = new Translation2d(x, y);
-        double rotation = MathUtil.applyDeadband(driveOutputs.rot(), 0.2);
+        double rotation = driveOutputs.rot();
 
         /* Drive */
         s_Swerve.drive(

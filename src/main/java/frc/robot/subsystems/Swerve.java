@@ -31,21 +31,22 @@ public class Swerve extends SubsystemBase {
     /**
      * Default constructor uses SwerveModuleTalonNeo
      */
-    public Swerve(CtreConfigs ctreConfigs) {
+    public Swerve(CtreConfigs ctreConfigs, Pigeon2 gyro) {
         this(new SwerveModule[]{
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod3backrightConfig, 3),
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod1frontrightConfig, 1),
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod2backleftConfig, 2),
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod0frontleftConfig, 0)
-        });
+        }, gyro);
     }
 
     /**
      * Constructor that allows custom SwerveModules
      */
-    public Swerve(SwerveModule[] modules) {
+    public Swerve(SwerveModule[] modules,Pigeon2 gyro) {
         this.mSwerveMods = modules;
-        gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
+        this.gyro = gyro;
+
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
         swerveOdometry = new SwerveDriveOdometry(krakenTalonConstants.Swerve.driveTrainConfig.kinematics, getGyroYaw(), getModulePositions());

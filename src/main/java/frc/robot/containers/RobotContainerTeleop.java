@@ -1,6 +1,8 @@
 package frc.robot.containers;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -9,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.Constants;
 import frc.lib.Constants.AutonomousOptions;
 import frc.lib.config.RobotConfig;
+import frc.lib.config.krakenTalonConstants;
 import frc.robot.classes.Limelight.LimelightHelpers;
 import frc.robot.classes.ColorSensorController;
 import frc.robot.classes.Limelight.LimelightController;
@@ -70,8 +73,10 @@ public class RobotContainerTeleop {
         /* Util Classes */
         colorSensorController = new ColorSensorController(Constants.colorSensorConfig);
 
+        Pigeon2 gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
+
         /* Subsystems */
-        SwerveSubsystem = new Swerve(robotConfig.ctreConfigs);
+        SwerveSubsystem = new Swerve(robotConfig.ctreConfigs, gyro);
         ArmSubsystem = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
         IntakeSubsystem = new Intake(Constants.intakeConfig, colorSensorController);
         ShooterSubsystem = new Shooter(Constants.shooterConfig);
@@ -98,7 +103,7 @@ public class RobotContainerTeleop {
 
         HybridModes modes = new HybridModes();
         modes.addMode("DriverControl", new SwerveVector(1.0, 1.0, 1.0));
-        modes.addMode("DriverControl2", new SwerveVector(1.0, 1.0, 0.0));
+        modes.addMode("DriverControl2", new SwerveVector(1.0, 1.0, 0.5));
 
         modes.addMode("IntakeCameraControl", new SwerveVector(0.0, 0.0, 0.0));
         modes.addMode("IntakeCameraControl2", new SwerveVector(0.0, 0.0, 1.0));
@@ -106,12 +111,18 @@ public class RobotContainerTeleop {
         modes.addMode("ShootCameraControl", new SwerveVector(0.0, 0.0, 0.0));
         modes.addMode("ShootCameraControl2", new SwerveVector(0.0, 0.0, 1.0));
 
+        modes.addMode("OrientationControl", new SwerveVector(0,0,1));
 
         BlendedSwerve blendedSwerve = new BlendedSwerve();
         blendedSwerve.addComponent(
-                () -> new SwerveVector(-pilot.getLeftX(), -pilot.getLeftY(), -pilot.getRightX()),
                 () -> {
-                    double t = pilot.getLeftTriggerAxis();
+                    double x = MathUtil.applyDeadband(-pilot.getLeftX(), 0.1) * 4.5;
+                    double y = MathUtil.applyDeadband(-pilot.getLeftY(), 0.1) * 4.5;
+                    double rot = MathUtil.applyDeadband(-pilot.getRightX(), 0.1) * 5;
+                    return new SwerveVector(x, y, rot);
+                },
+                () -> {
+                    double t = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
                     SwerveVector control = modes.interpolate("DriverControl", "DriverControl2", t);
                     return control;
                 }
@@ -119,7 +130,7 @@ public class RobotContainerTeleop {
         blendedSwerve.addComponent(
                 () -> new SwerveVector(0, 0, VisionSubsystem.getAngleToNote()),
                 () -> {
-                    double t = pilot.getLeftTriggerAxis();
+                    double t = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
                     SwerveVector control = modes.interpolate("IntakeCameraControl", "IntakeCameraControl2", t);
                     return control;
                 }
@@ -127,9 +138,26 @@ public class RobotContainerTeleop {
         blendedSwerve.addComponent(
                 () -> new SwerveVector(0, 0, VisionSubsystem.getAngleToShootAngle()),
                 () -> {
-                    double t = pilot.getRightTriggerAxis();
+                    double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.1);
                     SwerveVector control = modes.interpolate("ShootCameraControl", "ShootCameraControl2", t);
                     return control;
+                }
+        );
+        PIDController gyroController = new PIDController(.1,0,0);
+        blendedSwerve.addComponent(
+                () -> {
+                    double rotation = gyroController.calculate(gyro.getRotation2d().getDegrees(),0);;
+                    return new SwerveVector(0,0,rotation);
+                },
+                () -> {
+                    boolean active = pilot.povDown().getAsBoolean();
+                    if (active){
+                        // Full rotation control from gyro when D-Down
+                        return new SwerveVector(0, 0, 1);
+                    } else {
+                        // No rotation control from gyro when no D-Down
+                        return new SwerveVector(0, 0, 0);
+                    }
                 }
         );
 
@@ -162,9 +190,9 @@ public class RobotContainerTeleop {
 
     private void configureButtonBindings() {
         /* pilot Buttons */
-        pilot.leftTrigger().whileTrue(intakeCommand);
+        pilot.leftTrigger().onTrue(intakeCommand);
 //        pilot.leftTrigger().onTrue(new InstantCommand(robotStateMachine::toggleIntaking));
-        pilot.rightTrigger().whileTrue(prepareShootCommand);
+        //pilot.rightTrigger().whileTrue(prepareShootCommand);
         pilot.rightBumper().onTrue(feedNoteCommand.withTimeout(1));
         pilot.a().whileTrue(rejectNoteIntakeCommand);
         pilot.y().onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));

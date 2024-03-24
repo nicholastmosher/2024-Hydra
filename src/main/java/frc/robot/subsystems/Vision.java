@@ -16,6 +16,7 @@ public class Vision {
     private final PIDController intakePID;
     private final RollingAverage intakeAverage = new RollingAverage(5);
     private final RollingAverage shootAverage = new RollingAverage(5);
+    private final RollingAverage shootDistAverage = new RollingAverage(5);
 
     private double angleToNote;
     private double angleToShootAngle;
