@@ -50,5 +50,4 @@ public class Vision {
         SmartDashboard.putNumber("intakePID", angleToNote);
         SmartDashboard.putNumber("shootPID", angleToNote);
     }
-
 }

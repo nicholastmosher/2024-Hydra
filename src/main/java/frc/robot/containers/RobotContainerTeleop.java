@@ -1,5 +1,6 @@
 package frc.robot.containers;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -16,11 +17,14 @@ import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeNoteCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.SendBackCommandGroup;
 import frc.robot.commands.CommandGroups.ShootCommands.PrepareShootCommandGroup;
+import frc.robot.commands.Drive.HybridSwerve;
 import frc.robot.commands.Drive.TeleopSwerve;
 
 import frc.robot.commands.Indexer.FeedNote;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.RejectNoteIntake;
+import frc.robot.hybrid.BlendedSwerve;
+import frc.robot.hybrid.SwerveVector;
 import frc.robot.subsystems.*;
 
 public class RobotContainerTeleop {
@@ -84,18 +88,31 @@ public class RobotContainerTeleop {
         /* Command Constructor for Autos */
         //autoCommandsConstructor = new AutoCommands(SwerveSubsystem, ArmSubsystem, IndexerSubsystem, ShooterSubsystem, IntakeSubsystem, DriverStation.getAlliance().get());
 
-        SwerveSubsystem.setDefaultCommand(
-                new TeleopSwerve(
-                        SwerveSubsystem,
-                        VisionSubsystem,
-                        () -> -pilot.getLeftX(),
-                        () -> -pilot.getLeftY(),
-                        () -> -pilot.getRightX(),
-                        pilot.leftBumper(),
-                        pilot.rightTrigger(),
-                        pilot.leftTrigger()
-                )
+        BlendedSwerve blendedSwerve = new BlendedSwerve();
+        blendedSwerve.addComponent(
+                () -> new SwerveVector(-pilot.getLeftX(), -pilot.getLeftY(), -pilot.getRightX()),
+                new SwerveVector(1.0, 1.0, 0.7)
         );
+        blendedSwerve.addComponent(
+                () -> new SwerveVector(0, 0, VisionSubsystem.getAngleToShootAngle()),
+                new SwerveVector(0, 0, 0.3)
+        );
+
+        HybridSwerve hybridSwerve = new HybridSwerve(SwerveSubsystem, VisionSubsystem, blendedSwerve, pilot.leftBumper());
+        SwerveSubsystem.setDefaultCommand(hybridSwerve);
+
+//        SwerveSubsystem.setDefaultCommand(
+//                new TeleopSwerve(
+//                        SwerveSubsystem,
+//                        VisionSubsystem,
+//                        () -> -pilot.getLeftX(),
+//                        () -> -pilot.getLeftY(),
+//                        () -> -pilot.getRightX(),
+//                        pilot.leftBumper(),
+//                        pilot.rightTrigger(),
+//                        pilot.leftTrigger()
+//                )
+//        );
 
          ClimberSubsystem.setDefaultCommand(
                  new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getLeftY(), copilot.getRightY()), ClimberSubsystem)
@@ -116,16 +133,11 @@ public class RobotContainerTeleop {
         pilot.a().whileTrue(rejectNoteIntakeCommand);
         pilot.y().onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
 
-
-
         /* Copilot Buttons */
         copilot.rightBumper().onTrue(manualFeedBackCommand.withTimeout(0.7));
         copilot.x().onTrue(cpxOn);
         copilot.b().onTrue(cpxOff);
-
-        
     }
-
     public Command getAutonomousCommand(AutonomousOptions plan) {
         // switch (plan) {
         //     case TWO_NOTE_CENTER:

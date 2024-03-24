@@ -38,7 +38,7 @@ representation like this:
 
 ```
 P = (
-  (P1x, P1y, P1rot),
+  (P1x, P1y, P1rot), // SwerveVector
   (P2x, P2y, P2rot),
   (P3x, P3y, P3rot),
   (P4x, P4y, P4rot),
@@ -95,7 +95,7 @@ Our weights may similarly be represented by a set of vectors, as follows:
 
 ```
 t = (tx, ty, trot)
-tx = [t1x, t2x, ..., tNx]
+tx = [t1x, t2x, ..., tNx] // tx = Vector<N>
 ty = [t1y, t2y, ..., tNy]
 trot = [t1rot, t2rot, ..., tNrot]
 ```
