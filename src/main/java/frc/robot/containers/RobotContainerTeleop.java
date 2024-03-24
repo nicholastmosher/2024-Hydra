@@ -15,6 +15,7 @@ import frc.lib.config.krakenTalonConstants;
 import frc.robot.classes.Limelight.LimelightHelpers;
 import frc.robot.classes.ColorSensorController;
 import frc.robot.classes.Limelight.LimelightController;
+import frc.robot.commands.Arm.AmpPosition;
 import frc.robot.commands.Auto.AutoCommands;
 import frc.robot.commands.CPX.CpxSet;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
@@ -64,6 +65,8 @@ public class RobotContainerTeleop {
     private final CpxSet cpxOn;
     private final CpxSet cpxOff;
 
+    private final AmpPosition ampPosition;
+
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -77,7 +80,7 @@ public class RobotContainerTeleop {
 
         /* Subsystems */
         SwerveSubsystem = new Swerve(robotConfig.ctreConfigs, gyro);
-        ArmSubsystem = new Arm(Constants.armConfig, robotConfig.dashboardConfig);
+        ArmSubsystem = new Arm(Constants.armConfig);
         IntakeSubsystem = new Intake(Constants.intakeConfig, colorSensorController);
         ShooterSubsystem = new Shooter(Constants.shooterConfig);
         IndexerSubsystem = new Indexer(Constants.indexerConfig);
@@ -97,6 +100,8 @@ public class RobotContainerTeleop {
         rejectNoteIntakeCommand = new RejectNoteIntake(IntakeSubsystem);
         cpxOn = new CpxSet(CPXSubsystem, true);
         cpxOff = new CpxSet(CPXSubsystem, false);
+
+        ampPosition = new AmpPosition(ArmSubsystem);
 
         /* Command Constructor for Autos */
         //autoCommandsConstructor = new AutoCommands(SwerveSubsystem, ArmSubsystem, IndexerSubsystem, ShooterSubsystem, IntakeSubsystem, DriverStation.getAlliance().get());
@@ -177,9 +182,11 @@ public class RobotContainerTeleop {
 //                )
 //        );
 
-         ClimberSubsystem.setDefaultCommand(
-                 new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getLeftY(), copilot.getRightY()), ClimberSubsystem)
-         );
+//         ClimberSubsystem.setDefaultCommand(
+//                 new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getLeftY(), copilot.getRightY()), ClimberSubsystem)
+//         );
+
+         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(copilot.getLeftY(), 0.1)), ArmSubsystem));
 
 //         LightSubsystem.setDefaultCommand(
 //                 new InstantCommand(LightSubsystem::lightControl, LightSubsystem)
@@ -192,7 +199,7 @@ public class RobotContainerTeleop {
         /* pilot Buttons */
         pilot.leftTrigger().onTrue(intakeCommand);
 //        pilot.leftTrigger().onTrue(new InstantCommand(robotStateMachine::toggleIntaking));
-        //pilot.rightTrigger().whileTrue(prepareShootCommand);
+        pilot.rightTrigger().whileTrue(prepareShootCommand);
         pilot.rightBumper().onTrue(feedNoteCommand.withTimeout(1));
         pilot.a().whileTrue(rejectNoteIntakeCommand);
         pilot.y().onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
@@ -201,6 +208,8 @@ public class RobotContainerTeleop {
         copilot.rightBumper().onTrue(manualFeedBackCommand.withTimeout(0.7));
         copilot.x().onTrue(cpxOn);
         copilot.b().onTrue(cpxOff);
+
+        copilot.a().whileTrue(ampPosition);
     }
     public Command getAutonomousCommand(AutonomousOptions plan) {
         // switch (plan) {

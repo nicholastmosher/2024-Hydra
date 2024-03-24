@@ -1,6 +1,5 @@
 package frc.robot.commands.Arm;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Arm;
 
@@ -20,12 +19,12 @@ public class AmpPosition extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        arm.stopSet();
+        arm.stopMotor();
     }
 
     @Override
     public boolean isFinished() {
-        return arm.endCondition(arm.config.ampAngle);
+        return false;//arm.endCondition(arm.config.ampAngle);
     }
 
 }

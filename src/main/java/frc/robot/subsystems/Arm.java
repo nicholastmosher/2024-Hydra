@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.*;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,9 +9,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.ArmConfig;
 import frc.lib.config.DashboardConfig;
 
+import java.util.function.BooleanSupplier;
+
 public class Arm extends SubsystemBase {
-    private final CANSparkMax armRightMotor;
     private final CANSparkMax armLeftMotor;
+    private final CANSparkMax armRightMotor;
 
     private final SparkPIDController armPID;
 
@@ -20,63 +23,116 @@ public class Arm extends SubsystemBase {
 
     public final ArmConfig config;
 
-    public final DashboardConfig dashboardConfig;
 
-    public Arm(ArmConfig config, DashboardConfig dashboardConfig) {
+    private PIDController armPIDController;
+
+    public Arm(ArmConfig config) {
         this.config = config;
 
-        this.dashboardConfig = dashboardConfig;
 
-        armRightMotor = new CANSparkMax(this.config.rightMotorId, CANSparkLowLevel.MotorType.kBrushless);
-        armPID = armRightMotor.getPIDController();
-        armEncoder = armRightMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
-        armEncoder.setPositionConversionFactor(config.positionScalingFactor);
-        armEncoder.setZeroOffset(config.zeroOffset.getDegrees());
-        armPID.setFeedbackDevice(armEncoder);
-        armPID.setPositionPIDWrappingEnabled(false);
-        armPID.setPositionPIDWrappingMaxInput(config.ampAngle.getDegrees() +5);
-        armPID.setPositionPIDWrappingMinInput(0);
-        armPID.setP(0.1);
-        armPID.setI(1e-4);
-        armPID.setD(0);
-        armPID.setFF(0);
 
         armLeftMotor = new CANSparkMax(this.config.leftMotorId, CANSparkLowLevel.MotorType.kBrushless);
-        armLeftMotor.follow(armRightMotor, true);
-        armLeftMotor.getPIDController().setP(0.1);
+        armPID = armLeftMotor.getPIDController();
+        armEncoder = armLeftMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+        armEncoder.setPositionConversionFactor(config.positionScalingFactor);
+        armEncoder.setZeroOffset(163.32+180);
+        armPID.setFeedbackDevice(armEncoder);
+
+        armRightMotor = new CANSparkMax(this.config.rightMotorId, CANSparkLowLevel.MotorType.kBrushless);
+        armRightMotor.follow(armLeftMotor, true);
 
         armLimitSwitch = config.armLimitSwitch;
+
+        armPIDController = new PIDController(1, 0, 0);
     }
 
     public void init() {
 
     }
 
-    public void setAngle(Rotation2d angle) {
-        if (!isFullLower() ||  armEncoder.getVelocity() >0) {
-            Rotation2d motorAngle =Rotation2d.fromRotations(armRightMotor.getEncoder().getPosition());
-            System.out.println(getPosition().getDegrees());
-            System.out.println(motorAngle.getDegrees());
-            armRightMotor.getEncoder().setPosition(getPosition().getRotations());
-            armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
-        } else {
-            armRightMotor.stopMotor();
-        }
+    public void setAngle(double angle) {
+//        if (!isFullLower() ||  armEncoder.getVelocity() >0) {
+//            Rotation2d motorAngle =Rotation2d.fromRotations(armLeftMotor.getEncoder().getPosition());
+//            System.out.println(getPosition().getDegrees());
+//            System.out.println(motorAngle.getDegrees());
+//            armLeftMotor.getEncoder().setPosition(getPosition().getRotations());
+//            armPID.setReference(angle.getDegrees(), CANSparkMax.ControlType.kPosition);
+//        } else {
+//            armLeftMotor.stopMotor();
+//        }
+
+//        if (in < 0) {
+//            if (isFullLower()) {
+//                armLeftMotor.stopMotor();
+//                return;
+//            }
+//
+//            armPID.setReference(angle);
+//            return;
+//        }
+//        if (in > 0) {
+//            armLeftMotor.set(in);
+//            return;
+//        }
+//        armLeftMotor.set(0);
+//        double input = armPIDController.calculate(armEncoder.getPosition(), config.ampAngle);
+//        SmartDashboard.putNumber("PID Loop", -input);
+//
+//        armLeftMotor.set(-input);
+
+        armPID.setReference(angle, CANSparkMax.ControlType.kPosition);
+
+//        if (input < 0) {
+//            if (isFullLower()) {
+//                armLeftMotor.stopMotor();
+//                return;
+//            }
+//
+//            armLeftMotor.set(input);
+//            return;
+//        }
+//        if (input > 0) {
+//            armLeftMotor.set(input);
+//            return;
+//        }
+//        armLeftMotor.set(0);
+
 
     }
 
     public void moveArm(double input) {
-        armRightMotor.set(input);
+
+        double in = input *0.5;
+
+        if (in < 0) {
+            if (isFullLower()) {
+                armLeftMotor.stopMotor();
+                return;
+            }
+
+            armLeftMotor.set(in);
+            return;
+        }
+        if (in > 0) {
+            if (armEncoder.getPosition() > (config.ampAngle - 0.05) && armEncoder.getPosition() < (config.ampAngle + 0.05)) {
+                armLeftMotor.stopMotor();
+                return;
+            }
+
+            armLeftMotor.set(in);
+            return;
+        }
+        armLeftMotor.set(0);
 
     }
 
-    public boolean endCondition(Rotation2d angle) {
-        return armEncoder.getPosition() > (angle.getDegrees() - 1) && armEncoder.getPosition() < (angle.getDegrees() + 1);
+    public boolean endCondition(double angle) {
+        return armEncoder.getPosition() > (config.ampAngle - 0.05) && armEncoder.getPosition() < (config.ampAngle + 0.05);
     }
 
-    public void stopSet() {
-        armRightMotor.stopMotor();
+    public void stopMotor() {
         armLeftMotor.stopMotor();
+        armRightMotor.stopMotor();
         System.out.println("Stop All Arm Movement");
     }
 
@@ -85,6 +141,19 @@ public class Arm extends SubsystemBase {
     }
 
     private boolean isFullLower() {
-        return !armLimitSwitch.get();
+        if (!armLimitSwitch.get()) {
+            //armEncoder.setZeroOffset(armEncoder.getPosition());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("fulllower", isFullLower());
+        SmartDashboard.putNumber("armAngle", armEncoder.getPosition());
+        SmartDashboard.putBoolean("ampPosition", endCondition(1));
+
     }
 }

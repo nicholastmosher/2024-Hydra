@@ -1,8 +1,6 @@
 package frc.robot.commands.Arm;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.Constants;
 import frc.robot.subsystems.Arm;
 
 public class IntakePosition extends Command {
@@ -21,7 +19,7 @@ public class IntakePosition extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        arm.stopSet();
+        arm.stopMotor();
     }
 
     @Override

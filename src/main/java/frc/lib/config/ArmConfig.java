@@ -9,10 +9,10 @@ public class ArmConfig {
 
     public final PidConfig pid;
 
-    public final Rotation2d shootAngle;
-    public final Rotation2d intakeAngle;
-    public final Rotation2d ampAngle;
-    public final Rotation2d zeroOffset;
+    public final double shootAngle;
+    public final double intakeAngle;
+    public final double ampAngle;
+    public final double zeroOffset;
 
     public final double positionScalingFactor;
 
@@ -23,16 +23,16 @@ public class ArmConfig {
                 rightMotor,
                 leftMotor,
                 pid,
-                Rotation2d.fromDegrees(0.0), // Default shoot angle
-                Rotation2d.fromDegrees(90.0), // Default intake angle
-                Rotation2d.fromDegrees(60.0), // Default amp angle
+                0.0, // Default shoot angle
+                90.0, // Default intake angle
+                60.0, // Default amp angle
                 scalingFactor,
-                Rotation2d.fromDegrees(0.0),
+                0.0,
                 new DigitalInput(2)
         );
     }
 
-    public ArmConfig(int rightMotor, int leftMotor, PidConfig pid, Rotation2d shootAngle, Rotation2d intakeAngle, Rotation2d ampAngle, double scalingFactor, Rotation2d offset, DigitalInput limitSwitch) {
+    public ArmConfig(int rightMotor, int leftMotor, PidConfig pid, double shootAngle, double intakeAngle, double ampAngle, double scalingFactor, double offset, DigitalInput limitSwitch) {
         this.rightMotorId = rightMotor;
         this.leftMotorId = leftMotor;
         this.pid = pid;
