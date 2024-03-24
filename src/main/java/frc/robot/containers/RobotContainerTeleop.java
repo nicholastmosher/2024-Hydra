@@ -186,7 +186,7 @@ public class RobotContainerTeleop {
 //                 new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getLeftY(), copilot.getRightY()), ClimberSubsystem)
 //         );
 
-         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(copilot.getLeftY(), 0.1)), ArmSubsystem));
+         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(-copilot.getLeftY(), 0.1)), ArmSubsystem));
 
 //         LightSubsystem.setDefaultCommand(
 //                 new InstantCommand(LightSubsystem::lightControl, LightSubsystem)

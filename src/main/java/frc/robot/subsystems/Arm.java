@@ -102,24 +102,25 @@ public class Arm extends SubsystemBase {
 
     public void moveArm(double input) {
 
-        double in = input *0.5;
+        double inup = input *((config.ampAngle-armEncoder.getPosition()) * 4.5);
+        double indown = input *((armEncoder.getPosition() - 0.45) * 4.5);
 
-        if (in < 0) {
+        if (input < 0) {
             if (isFullLower()) {
                 armLeftMotor.stopMotor();
                 return;
             }
 
-            armLeftMotor.set(in);
+            armLeftMotor.set(indown);
             return;
         }
-        if (in > 0) {
+        if (input > 0) {
             if (armEncoder.getPosition() > (config.ampAngle - 0.05) && armEncoder.getPosition() < (config.ampAngle + 0.05)) {
                 armLeftMotor.stopMotor();
                 return;
             }
 
-            armLeftMotor.set(in);
+            armLeftMotor.set(inup);
             return;
         }
         armLeftMotor.set(0);
