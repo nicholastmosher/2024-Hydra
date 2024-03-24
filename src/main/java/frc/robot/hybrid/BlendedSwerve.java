@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class BlendedSwerve {
     private ArrayList<SwerveVectorProvider> pValues = new ArrayList<>();
-    private ArrayList<SwerveVector> tValues = new ArrayList<>();
+    private ArrayList<SwerveVectorProvider> tValues = new ArrayList<>();
 
-    public void addComponent(SwerveVectorProvider pValue, SwerveVector tValue) {
+    public void addComponent(SwerveVectorProvider pValue, SwerveVectorProvider tValue) {
         pValues.add(pValue);
         tValues.add(tValue);
     }
@@ -22,15 +22,15 @@ public class BlendedSwerve {
 
         for (int i = 0; i < pValues.size(); i++) {
             double pX = pValues.get(i).get().x();
-            double tX = tValues.get(i).x();
+            double tX = tValues.get(i).get().x();
             x += pX * tX;
 
             double pY = pValues.get(i).get().y();
-            double tY = tValues.get(i).y();
+            double tY = tValues.get(i).get().y();
             y += pY * tY;
 
             double pRot = pValues.get(i).get().rot();
-            double tRot = tValues.get(i).rot();
+            double tRot = tValues.get(i).get().rot();
             rot += pRot * tRot;
         }
 

@@ -2,14 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ColorMatch;
-import com.revrobotics.ColorSensorV3;
-import com.revrobotics.ColorMatchResult;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.Constants;
 import frc.lib.config.IntakeConfig;
 import frc.robot.classes.ColorSensorController;
 
@@ -25,15 +18,23 @@ public class Intake extends SubsystemBase {
         colorSensor = colorSensorController;
     }
 
-    public void setIntakeMotor(boolean invert) {
-        if (!invert) {
-            intakeMotor.set(this.config.intakeMotorSpeed);
-            return;
-        }
+//    public void setIntakeMotor(boolean invert) {
+//        if (!invert) {
+//            intakeMotor.set(this.config.intakeMotorSpeed);
+//            return;
+//        }
+//        intakeMotor.set(-this.config.intakeMotorSpeed);
+//    }
+
+    public void pickUpNote() {
+        intakeMotor.set(this.config.intakeMotorSpeed);
+    }
+
+    public void rejectNote() {
         intakeMotor.set(-this.config.intakeMotorSpeed);
     }
 
-    public void stopIntakeMotor() {
+    public void stop() {
         intakeMotor.set(0);
     }
 
@@ -44,7 +45,7 @@ public class Intake extends SubsystemBase {
         return false;
     }
 
-    public boolean isIntaked() {
+    public boolean finishedIntaking() {
         return colorSensor.isSeen();
     }
 

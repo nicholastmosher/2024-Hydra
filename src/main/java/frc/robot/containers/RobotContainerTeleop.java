@@ -3,6 +3,7 @@ package frc.robot.containers;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.Constants;
@@ -24,6 +25,7 @@ import frc.robot.commands.Indexer.FeedNote;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.RejectNoteIntake;
 import frc.robot.hybrid.BlendedSwerve;
+import frc.robot.hybrid.HybridModes;
 import frc.robot.hybrid.SwerveVector;
 import frc.robot.subsystems.*;
 
@@ -42,6 +44,9 @@ public class RobotContainerTeleop {
     private final Light LightSubsystem;
     private final Vision VisionSubsystem;
     private final CPX CPXSubsystem;
+
+    /* State Machine */
+    private final RobotStateMachine robotStateMachine;
 
     /* Util Classes */
     private final ColorSensorController colorSensorController;
@@ -76,8 +81,11 @@ public class RobotContainerTeleop {
         VisionSubsystem = new Vision(Constants.visionConfig);
         CPXSubsystem = new CPX(3); // TODO create CpxConfig
 
+        /* State Machine */
+        robotStateMachine = new RobotStateMachine();
+
         /* Teleop Commands */
-        intakeCommand = new IntakeCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
+        intakeCommand = new IntakeCommandGroup(IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
         prepareShootCommand = new PrepareShootCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
         feedNoteCommand = new FeedNote(IndexerSubsystem);
         manualFeedBackCommand = new SendBackCommandGroup(IndexerSubsystem, ShooterSubsystem);
@@ -88,14 +96,41 @@ public class RobotContainerTeleop {
         /* Command Constructor for Autos */
         //autoCommandsConstructor = new AutoCommands(SwerveSubsystem, ArmSubsystem, IndexerSubsystem, ShooterSubsystem, IntakeSubsystem, DriverStation.getAlliance().get());
 
+        HybridModes modes = new HybridModes();
+        modes.addMode("DriverControl", new SwerveVector(1.0, 1.0, 1.0));
+        modes.addMode("DriverControl2", new SwerveVector(1.0, 1.0, 0.0));
+
+        modes.addMode("IntakeCameraControl", new SwerveVector(0.0, 0.0, 0.0));
+        modes.addMode("IntakeCameraControl2", new SwerveVector(0.0, 0.0, 1.0));
+
+        modes.addMode("ShootCameraControl", new SwerveVector(0.0, 0.0, 0.0));
+        modes.addMode("ShootCameraControl2", new SwerveVector(0.0, 0.0, 1.0));
+
+
         BlendedSwerve blendedSwerve = new BlendedSwerve();
         blendedSwerve.addComponent(
                 () -> new SwerveVector(-pilot.getLeftX(), -pilot.getLeftY(), -pilot.getRightX()),
-                new SwerveVector(1.0, 1.0, 0.7)
+                () -> {
+                    double t = pilot.getLeftTriggerAxis();
+                    SwerveVector control = modes.interpolate("DriverControl", "DriverControl2", t);
+                    return control;
+                }
+        );
+        blendedSwerve.addComponent(
+                () -> new SwerveVector(0, 0, VisionSubsystem.getAngleToNote()),
+                () -> {
+                    double t = pilot.getLeftTriggerAxis();
+                    SwerveVector control = modes.interpolate("IntakeCameraControl", "IntakeCameraControl2", t);
+                    return control;
+                }
         );
         blendedSwerve.addComponent(
                 () -> new SwerveVector(0, 0, VisionSubsystem.getAngleToShootAngle()),
-                new SwerveVector(0, 0, 0.3)
+                () -> {
+                    double t = pilot.getRightTriggerAxis();
+                    SwerveVector control = modes.interpolate("ShootCameraControl", "ShootCameraControl2", t);
+                    return control;
+                }
         );
 
         HybridSwerve hybridSwerve = new HybridSwerve(SwerveSubsystem, VisionSubsystem, blendedSwerve, pilot.leftBumper());
@@ -127,8 +162,9 @@ public class RobotContainerTeleop {
 
     private void configureButtonBindings() {
         /* pilot Buttons */
-        //pilot.leftTrigger().onTrue(intakeCommand);
-        //pilot.rightTrigger().whileTrue(prepareShootCommand);
+        pilot.leftTrigger().whileTrue(intakeCommand);
+//        pilot.leftTrigger().onTrue(new InstantCommand(robotStateMachine::toggleIntaking));
+        pilot.rightTrigger().whileTrue(prepareShootCommand);
         pilot.rightBumper().onTrue(feedNoteCommand.withTimeout(1));
         pilot.a().whileTrue(rejectNoteIntakeCommand);
         pilot.y().onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));

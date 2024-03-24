@@ -64,9 +64,9 @@ public class AutoCommands {
         return new RevShooter(shooterSubsystem);
     }
 
-    public Command getIntakeCommand() {
-        return new IntakeCommandGroup(armSubsystem, indexerSubsystem, intakeSubsystem, shooterSubsystem);
-    }
+//    public Command getIntakeCommand() {
+//        return new IntakeCommandGroup(armSubsystem, indexerSubsystem, intakeSubsystem, shooterSubsystem);
+//    }
 
     public Command getTrajectoryFollowerCommand() {
         return new Command() {

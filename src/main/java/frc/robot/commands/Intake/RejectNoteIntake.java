@@ -13,12 +13,12 @@ public class RejectNoteIntake extends Command {
 
     @Override
     public void execute() {
-        intake.setIntakeMotor(true);
+        intake.rejectNote();
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.stopIntakeMotor();
+        intake.stop();
     }
 
     @Override
