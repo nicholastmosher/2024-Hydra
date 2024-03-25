@@ -1,51 +1,29 @@
 package frc.robot.commands.Drive;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.hybrid.BlendedSwerve;
-import frc.robot.hybrid.SwerveVector;
+import frc.robot.hybrid.BlendedControl;
+import frc.robot.hybrid.ControlVector;
 import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Vision;
-
-import java.util.function.BooleanSupplier;
 
 public class HybridSwerve extends Command {
-    private Swerve s_Swerve;
-    private Vision s_Vision;
-
-    private BlendedSwerve swerveInputs;
-    private BooleanSupplier robotCentricSup;
+    private final Swerve s_Swerve;
+    private final BlendedControl swerveInputs;
 
     public HybridSwerve(
             Swerve s_Swerve,
-            Vision s_Vision,
-            BlendedSwerve inputs,
-            BooleanSupplier robotCentricSup
+            BlendedControl inputs
     ) {
         this.s_Swerve = s_Swerve;
-        this.s_Vision = s_Vision;
-        addRequirements(s_Swerve);
-
         this.swerveInputs = inputs;
-        this.robotCentricSup = robotCentricSup;
+
+        addRequirements(s_Swerve);
     }
 
     @Override
     public void execute() {
-        SwerveVector driveOutputs = swerveInputs.solve();
-
-        double x = driveOutputs.x();
-        double y = driveOutputs.y();
-        Translation2d translation = new Translation2d(x, y);
-        double rotation = driveOutputs.rot();
-
-        /* Drive */
-        s_Swerve.drive(
-                translation,
-                rotation,
-                !robotCentricSup.getAsBoolean(),
-                true
-        );
+        ControlVector driveOutputs = swerveInputs.solve();
+        ChassisSpeeds driveSpeeds = driveOutputs.calculateChassisSpeeds(s_Swerve.getHeading());
+        s_Swerve.driveChassisSpeeds(driveSpeeds, true);
     }
 }
