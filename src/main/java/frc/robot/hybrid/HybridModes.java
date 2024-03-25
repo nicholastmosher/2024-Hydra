@@ -3,9 +3,9 @@ package frc.robot.hybrid;
 import java.util.HashMap;
 
 public class HybridModes {
-    private HashMap<String, SwerveVector> modes = new HashMap<>();
+    private HashMap<String, ControlVector> modes = new HashMap<>();
 
-    public void addMode(String name, SwerveVector mode) {
+    public void addMode(String name, ControlVector mode) {
         modes.put(name, mode);
     }
 
@@ -14,7 +14,7 @@ public class HybridModes {
      * @param name
      * @return
      */
-    public SwerveVector getMode(String name) {
+    public ControlVector getMode(String name) {
         return modes.get(name);
     }
 
@@ -25,12 +25,12 @@ public class HybridModes {
      * @param t The interpolation value from 0 to 1
      * @return An interpolation of mode1 and mode2 with the given tValue
      */
-    public SwerveVector interpolate(String mode1, String mode2, double t) {
-        SwerveVector t1 = modes.get(mode1);
-        SwerveVector t2 = modes.get(mode2);
+    public ControlVector interpolate(String mode1, String mode2, double t) {
+        ControlVector t1 = modes.get(mode1);
+        ControlVector t2 = modes.get(mode2);
 
-        SwerveVector t1Scaled = t1.times(1-t);
-        SwerveVector t2Scaled = t2.times(t);
+        ControlVector t1Scaled = t1.times(1-t);
+        ControlVector t2Scaled = t2.times(t);
 
         return t1Scaled.plus(t2Scaled);
 
