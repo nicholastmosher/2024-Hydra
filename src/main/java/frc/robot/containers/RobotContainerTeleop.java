@@ -3,6 +3,7 @@ package frc.robot.containers;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -126,8 +127,12 @@ public class RobotContainerTeleop {
                 },
                 // TValue describes how much influence the Teleop Driver component has
                 () -> {
-                    double t = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
-                    return modes.interpolate(modeDriverActive, modeDriverInactive, t);
+                    double aimT = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
+                    ControlVector aimBlend = modes.interpolate(modeDriverActive, modeDriverInactive, aimT);
+
+                    double armT = ArmSubsystem.percentRaised();
+                    ControlVector armBlend = aimBlend.interpolate(ControlVector.fromFieldRelative(0.25,0.25,0.25), armT);
+                    return armBlend;
                 }
         );
         blendedControl.addComponent(
@@ -165,6 +170,11 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 // PValue
                 () -> {
+                    if (copilot.leftBumper().getAsBoolean()) {
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.ampAngle));
+                    } else {
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
+                    }
                     // Arm power from PID to target angle
                     double armPower = ArmSubsystem.getArmPowerToTarget();
                     return new ControlVector().setArmPower(armPower);
@@ -196,7 +206,11 @@ public class RobotContainerTeleop {
                 new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getRightY()), ClimberSubsystem)
         );
 
-         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(-copilot.getLeftY(), 0.1)), ArmSubsystem));
+        //  ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(-copilot.getLeftY(), 0.1)), ArmSubsystem));
+         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> {
+            ControlVector control = blendedControl.solve();
+            ArmSubsystem.moveArm(control.armPower());
+         }, ArmSubsystem));
 
 //         LightSubsystem.setDefaultCommand(
 //                 new InstantCommand(LightSubsystem::lightControl, LightSubsystem)

@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.config.ArmConfig;
+import frc.robot.hybrid.BlendedControl;
 
 public class Arm extends SubsystemBase {
     private final CANSparkMax armLeftMotor;
@@ -32,7 +33,7 @@ public class Arm extends SubsystemBase {
 
         armLimitSwitch = config.armLimitSwitch;
 
-        armPIDController = new PIDController(1, 0, 0);
+        armPIDController = new PIDController(.02, 0.00, 0);
     }
 
     /**
@@ -55,8 +56,7 @@ public class Arm extends SubsystemBase {
 
     public void moveArm(double input) {
 
-        double inup = input *((config.ampAngle-armEncoder.getPosition()) * 4.5);
-        double indown = input *((armEncoder.getPosition() - 0.45) * 4.5);
+
 
         if (input < 0) {
             if (isFullLower()) {
@@ -64,20 +64,28 @@ public class Arm extends SubsystemBase {
                 return;
             }
 
-            armLeftMotor.set(indown);
+            armLeftMotor.set(input);
             return;
         }
         if (input > 0) {
-            if (armEncoder.getPosition() > (config.ampAngle - 0.05) && armEncoder.getPosition() < (config.ampAngle + 0.05)) {
-                armLeftMotor.stopMotor();
-                return;
-            }
+            // if (armEncoder.getPosition() > (config.ampAngle - 0.05) && armEncoder.getPosition() < (config.ampAngle + 0.05)) {
+            //     armLeftMotor.stopMotor();
+            //     return;
+            // }
 
-            armLeftMotor.set(inup);
+            armLeftMotor.set(input);
             return;
         }
         armLeftMotor.set(0);
 
+    }
+
+    public double percentRaised() {
+        double diff = config.ampAngle-config.intakeAngle;
+
+        double m = 1/diff;
+
+        return (armEncoder.getPosition()-config.intakeAngle)/diff;
     }
 
     public boolean endCondition(double angle) {

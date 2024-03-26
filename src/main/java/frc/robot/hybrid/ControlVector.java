@@ -256,4 +256,16 @@ public class ControlVector extends Vector<N6> {
 //                fieldRelativeSpeeds.omegaRadiansPerSecond + robotRelativeSpeeds.omegaRadiansPerSecond
 //        );
     }
+
+    /**
+     * At t=0, return mode1, at t=1 return mode2, return interpolation between
+     * @param t The interpolation value from 0 to 1
+     * @return An interpolation of this and other with the given tValue
+     */
+    public ControlVector interpolate(ControlVector other, double t) {
+        ControlVector t1Scaled = this.times(1-t);
+        ControlVector t2Scaled = other.times(t);
+
+        return t1Scaled.plus(t2Scaled);
+    }
 }
