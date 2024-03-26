@@ -54,9 +54,10 @@ public class LimelightController {
         return txToSpeaker/20;//-pose.getRotation().getZ();
     }
 
+
     public double distanceToSpeaker() {
-        Pose3d poseToTags = LimelightHelpers.getBotPose3d_TargetSpace(llName);
-        return poseToTags.getZ();//poseToTag.getY();
+        double ta = LimelightHelpers.getTA(llName);
+        return ta;
     }
 
     public double getYawToNote() {

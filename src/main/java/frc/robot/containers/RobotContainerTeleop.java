@@ -105,6 +105,9 @@ public class RobotContainerTeleop {
         String modeIntakeAimActive = "IntakeAimActive";
         String modeShootAimInactive = "ShootAimInactive";
         String modeShootAimActive = "ShootAimActive";
+        String modeShootDistanceInactive = "ShootDistanceInactive";
+        String modeShootDistanceActive = "ShootDistanceActive";
+
 
         // Each mode describes an amount of influence that may be applied to each control
         HybridModes modes = new HybridModes();
@@ -114,6 +117,9 @@ public class RobotContainerTeleop {
         modes.addMode(modeIntakeAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
         modes.addMode(modeShootAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
         modes.addMode(modeShootAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
+        modes.addMode(modeShootDistanceInactive, ControlVector.fromFieldRelative(0, 0, 0));
+        modes.addMode(modeShootDistanceActive, ControlVector.fromFieldRelative(0,1, 0));
+
 
         // Each entry in the BlendedControl contributes some output to the Robot's movements
         BlendedControl blendedControl = new BlendedControl();
@@ -147,6 +153,15 @@ public class RobotContainerTeleop {
                 () -> {
                     double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.1);
                     return modes.interpolate(modeShootAimInactive, modeShootAimActive, t);
+                }
+        );
+
+        blendedControl.addComponent(
+                () -> ControlVector.fromFieldRelative(0, VisionSubsystem.getAutoApproachPower(), 0),
+                () -> {
+                    double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.1);
+                    ControlVector control = modes.interpolate(modeShootDistanceInactive, modeShootDistanceActive, t);
+                    return control;
                 }
         );
         PIDController gyroController = new PIDController(.1,0,0);
@@ -202,9 +217,9 @@ public class RobotContainerTeleop {
 //                )
 //        );
 
-        ClimberSubsystem.setDefaultCommand(
-                new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getRightY()), ClimberSubsystem)
-        );
+//         ClimberSubsystem.setDefaultCommand(
+//                 new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getLeftY(), copilot.getRightY()), ClimberSubsystem)
+//         );
 
         //  ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(-copilot.getLeftY(), 0.1)), ArmSubsystem));
          ArmSubsystem.setDefaultCommand(new InstantCommand(() -> {
