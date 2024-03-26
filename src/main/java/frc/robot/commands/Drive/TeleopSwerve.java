@@ -1,10 +1,6 @@
 package frc.robot.commands.Drive;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.config.krakenTalonConstants;
-import frc.robot.classes.Limelight.LimelightController;
 import frc.robot.subsystems.Swerve;
 
 import java.util.function.BooleanSupplier;
@@ -62,7 +58,7 @@ public class TeleopSwerve extends Command {
         }
 
         if (autoIntakeAlignSup.getAsBoolean()) {
-            rotationVal = MathUtil.applyDeadband(s_Vision.getAngleToNote(), 0.1);
+            rotationVal = MathUtil.applyDeadband(s_Vision.getNoteAimRotationPower(), 0.1);
         }
 
         Translation2d translation = new Translation2d(x*krakenTalonConstants.Swerve.maxSpeed, y*krakenTalonConstants.Swerve.maxSpeed);

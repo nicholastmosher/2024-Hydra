@@ -11,9 +11,7 @@ import frc.lib.Constants.AutonomousOptions;
 import frc.lib.config.RobotConfig;
 import frc.lib.config.krakenTalonConstants;
 import frc.robot.classes.ColorSensorController;
-import frc.robot.classes.Limelight.LimelightController;
 import frc.robot.commands.Arm.AmpPosition;
-import frc.robot.commands.Auto.AutoCommands;
 import frc.robot.commands.CPX.CpxSet;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.SendBackCommandGroup;
@@ -26,8 +24,6 @@ import frc.robot.hybrid.BlendedControl;
 import frc.robot.hybrid.HybridModes;
 import frc.robot.hybrid.ControlVector;
 import frc.robot.subsystems.*;
-
-import java.util.function.Function;
 
 public class RobotContainerTeleop {
     /* Controllers */
@@ -135,7 +131,7 @@ public class RobotContainerTeleop {
                 }
         );
         blendedControl.addComponent(
-                () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getAngleToNote()),
+                () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getNoteAimRotationPower()),
                 () -> {
                     double t = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
                     return modes.interpolate(modeIntakeAimInactive, modeIntakeAimActive, t);
@@ -163,6 +159,20 @@ public class RobotContainerTeleop {
                         // No rotation control from gyro when no D-Down
                         return new ControlVector().setSwerveRotation(0);
                     }
+                }
+        );
+
+        blendedControl.addComponent(
+                // PValue
+                () -> {
+                    // Arm power from PID to target angle
+                    double armPower = ArmSubsystem.getArmPowerToTarget();
+                    return new ControlVector().setArmPower(armPower);
+                },
+                // TValue
+                () -> {
+                    // Give this component full control over the arm's power
+                    return new ControlVector().setArmPower(1);
                 }
         );
 
