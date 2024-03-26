@@ -16,7 +16,7 @@ public class Arm extends SubsystemBase {
     private final DigitalInput armLimitSwitch;
     public final ArmConfig config;
 
-    private Rotation2d targetAngle;
+    private Rotation2d targetAngle = Rotation2d.fromDegrees(0);
     private PIDController armPIDController;
 
     public Arm(ArmConfig config) {
