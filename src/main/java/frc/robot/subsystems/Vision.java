@@ -18,7 +18,7 @@ public class Vision {
     private final RollingAverage shootAverage = new RollingAverage(5);
     private final RollingAverage shootDistAverage = new RollingAverage(5);
 
-    private double angleToNote;
+    private double aimRotationPower;
     private double angleToShootAngle;
 
     private final VisionConfig config;
@@ -31,12 +31,16 @@ public class Vision {
 //        this.intakePID = new PIDController(0.01, 0, 0);
 //        this.intakePID = new CustomPid(0.25, 0.2, 0);
         this.intakePID = new PIDController(2.0, 0.01, .20);
-        this.angleToNote = 0.0;
+        this.aimRotationPower = 0.0;
         this.angleToShootAngle = 0.0;
     }
 
-    public double getAngleToNote() {
-        return angleToNote;
+    /**
+     * The output of a PID loop, from -1.0 to 1.0, describing
+     * how hard the swerve should rotate to aim at the target
+     */
+    public double getNoteAimRotationPower() {
+        return aimRotationPower;
     }
 
     public double getAngleToShootAngle() {
@@ -46,9 +50,9 @@ public class Vision {
     public void periodic() {
         intakeAverage.addInput(intakeLimelight.getYawToNote());
         shootAverage.addInput(shootLimelight.getYawToSpeaker());
-        angleToNote = intakePID.calculate(intakeAverage.getOutput(), 0);
+        aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
         angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);
-        SmartDashboard.putNumber("intakePID", angleToNote);
-        SmartDashboard.putNumber("shootPID", angleToNote);
+        SmartDashboard.putNumber("intakePID", aimRotationPower);
+        SmartDashboard.putNumber("shootPID", aimRotationPower);
     }
 }

@@ -3,34 +3,27 @@ package frc.robot.containers;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.Constants;
 import frc.lib.Constants.AutonomousOptions;
 import frc.lib.config.RobotConfig;
 import frc.lib.config.krakenTalonConstants;
-import frc.robot.classes.Limelight.LimelightHelpers;
 import frc.robot.classes.ColorSensorController;
-import frc.robot.classes.Limelight.LimelightController;
 import frc.robot.commands.Arm.AmpPosition;
-import frc.robot.commands.Auto.AutoCommands;
 import frc.robot.commands.CPX.CpxSet;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
-import frc.robot.commands.CommandGroups.IntakeCommands.IntakeNoteCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.SendBackCommandGroup;
 import frc.robot.commands.CommandGroups.ShootCommands.PrepareShootCommandGroup;
 import frc.robot.commands.Drive.HybridSwerve;
-import frc.robot.commands.Drive.TeleopSwerve;
 
 import frc.robot.commands.Indexer.FeedNote;
-import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.RejectNoteIntake;
-import frc.robot.hybrid.BlendedSwerve;
+import frc.robot.hybrid.BlendedControl;
 import frc.robot.hybrid.HybridModes;
-import frc.robot.hybrid.SwerveVector;
+import frc.robot.hybrid.ControlVector;
 import frc.robot.subsystems.*;
 
 public class RobotContainerTeleop {
@@ -66,7 +59,6 @@ public class RobotContainerTeleop {
     private final CpxSet cpxOff;
 
     private final AmpPosition ampPosition;
-
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -106,67 +98,95 @@ public class RobotContainerTeleop {
         /* Command Constructor for Autos */
         //autoCommandsConstructor = new AutoCommands(SwerveSubsystem, ArmSubsystem, IndexerSubsystem, ShooterSubsystem, IntakeSubsystem, DriverStation.getAlliance().get());
 
+        // Mode names in variables to prevent typos
+        String modeDriverActive = "DriverControlActive";
+        String modeDriverInactive = "DriverControlInactive";
+        String modeIntakeAimInactive = "IntakeAimInactive";
+        String modeIntakeAimActive = "IntakeAimActive";
+        String modeShootAimInactive = "ShootAimInactive";
+        String modeShootAimActive = "ShootAimActive";
+
+        // Each mode describes an amount of influence that may be applied to each control
         HybridModes modes = new HybridModes();
-        modes.addMode("DriverControl", new SwerveVector(1.0, 1.0, 1.0));
-        modes.addMode("DriverControl2", new SwerveVector(1.0, 1.0, 0.5));
+        modes.addMode(modeDriverActive, ControlVector.fromFieldRelative(1.0, 1.0, 1.0));
+        modes.addMode(modeDriverInactive, ControlVector.fromFieldRelative(1.0, 1.0, 0.5));
+        modes.addMode(modeIntakeAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
+        modes.addMode(modeIntakeAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
+        modes.addMode(modeShootAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
+        modes.addMode(modeShootAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
 
-        modes.addMode("IntakeCameraControl", new SwerveVector(0.0, 0.0, 0.0));
-        modes.addMode("IntakeCameraControl2", new SwerveVector(0.0, 0.0, 1.0));
-
-        modes.addMode("ShootCameraControl", new SwerveVector(0.0, 0.0, 0.0));
-        modes.addMode("ShootCameraControl2", new SwerveVector(0.0, 0.0, 1.0));
-
-        modes.addMode("OrientationControl", new SwerveVector(0,0,1));
-
-        BlendedSwerve blendedSwerve = new BlendedSwerve();
-        blendedSwerve.addComponent(
+        // Each entry in the BlendedControl contributes some output to the Robot's movements
+        BlendedControl blendedControl = new BlendedControl();
+        blendedControl.addComponent(
+                // Teleop Driver component
                 () -> {
                     double x = MathUtil.applyDeadband(-pilot.getLeftX(), 0.1) * 4.5;
                     double y = MathUtil.applyDeadband(-pilot.getLeftY(), 0.1) * 4.5;
                     double rot = MathUtil.applyDeadband(-pilot.getRightX(), 0.1) * 5;
-                    return new SwerveVector(x, y, rot);
+                    return ControlVector.fromFieldRelative(x, y, rot);
                 },
+                // TValue describes how much influence the Teleop Driver component has
                 () -> {
-                    double t = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
-                    SwerveVector control = modes.interpolate("DriverControl", "DriverControl2", t);
-                    return control;
+                    double aimT = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
+                    ControlVector aimBlend = modes.interpolate(modeDriverActive, modeDriverInactive, aimT);
+
+                    double armT = ArmSubsystem.percentRaised();
+                    ControlVector armBlend = aimBlend.interpolate(ControlVector.fromFieldRelative(0.25,0.25,0.25), armT);
+                    return armBlend;
                 }
         );
-        blendedSwerve.addComponent(
-                () -> new SwerveVector(0, 0, VisionSubsystem.getAngleToNote()),
+        blendedControl.addComponent(
+                () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getNoteAimRotationPower()),
                 () -> {
                     double t = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
-                    SwerveVector control = modes.interpolate("IntakeCameraControl", "IntakeCameraControl2", t);
-                    return control;
+                    return modes.interpolate(modeIntakeAimInactive, modeIntakeAimActive, t);
                 }
         );
-        blendedSwerve.addComponent(
-                () -> new SwerveVector(0, 0, VisionSubsystem.getAngleToShootAngle()),
+        blendedControl.addComponent(
+                () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getAngleToShootAngle()),
                 () -> {
                     double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.1);
-                    SwerveVector control = modes.interpolate("ShootCameraControl", "ShootCameraControl2", t);
-                    return control;
+                    return modes.interpolate(modeShootAimInactive, modeShootAimActive, t);
                 }
         );
         PIDController gyroController = new PIDController(.1,0,0);
-        blendedSwerve.addComponent(
+        blendedControl.addComponent(
                 () -> {
                     double rotation = gyroController.calculate(gyro.getRotation2d().getDegrees(),0);;
-                    return new SwerveVector(0,0,rotation);
+                    return ControlVector.fromFieldRelative(0,0,rotation);
                 },
                 () -> {
                     boolean active = pilot.povDown().getAsBoolean();
                     if (active){
                         // Full rotation control from gyro when D-Down
-                        return new SwerveVector(0, 0, 1);
+                        return new ControlVector().setSwerveRotation(1);
                     } else {
                         // No rotation control from gyro when no D-Down
-                        return new SwerveVector(0, 0, 0);
+                        return new ControlVector().setSwerveRotation(0);
                     }
                 }
         );
 
-        HybridSwerve hybridSwerve = new HybridSwerve(SwerveSubsystem, VisionSubsystem, blendedSwerve, pilot.leftBumper());
+        blendedControl.addComponent(
+                // PValue
+                () -> {
+                    if (copilot.leftBumper().getAsBoolean()) {
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.ampAngle));
+                    } else {
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
+                    }
+                    // Arm power from PID to target angle
+                    double armPower = ArmSubsystem.getArmPowerToTarget();
+                    return new ControlVector().setArmPower(armPower);
+                },
+                // TValue
+                () -> {
+                    // Give this component full control over the arm's power
+                    return new ControlVector().setArmPower(1);
+                }
+        );
+
+        HybridSwerve hybridSwerve = new HybridSwerve(SwerveSubsystem, blendedControl);
         SwerveSubsystem.setDefaultCommand(hybridSwerve);
 
 //        SwerveSubsystem.setDefaultCommand(
@@ -186,7 +206,11 @@ public class RobotContainerTeleop {
                 new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getRightY()), ClimberSubsystem)
         );
 
-         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(-copilot.getLeftY(), 0.1)), ArmSubsystem));
+        //  ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(-copilot.getLeftY(), 0.1)), ArmSubsystem));
+         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> {
+            ControlVector control = blendedControl.solve();
+            ArmSubsystem.moveArm(control.armPower());
+         }, ArmSubsystem));
 
 //         LightSubsystem.setDefaultCommand(
 //                 new InstantCommand(LightSubsystem::lightControl, LightSubsystem)
