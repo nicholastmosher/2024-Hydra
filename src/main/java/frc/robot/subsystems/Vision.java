@@ -23,6 +23,10 @@ public class Vision {
     private double angleToShootAngle;
     private double autoApproachPower;
 
+    private double limelightMountAngleDegrees;
+    private double limelightMountHeightInches;
+    private double goalHeightInches;
+
     private final VisionConfig config;
 
     public Vision(VisionConfig visionConfig) {
@@ -34,8 +38,12 @@ public class Vision {
 //        this.intakePID = new CustomPid(0.25, 0.2, 0);
         this.intakePID = new PIDController(1.5, 0.01, .30); //use to be kp =2
         this.aimRotationPower = 0.0;
-        this.shootDistancePID = new PIDController(2.4, 0, 0);       this.angleToShootAngle = 0.0;
+        this.shootDistancePID = new PIDController(2.4, 0, 0);       
+        this.angleToShootAngle = 0.0;
         this.autoApproachPower = 0.50;
+        this.limelightMountAngleDegrees = 37.0;
+        this.limelightMountHeightInches = 10.0;
+        this.goalHeightInches = 64.0;
     }
 
     /**
@@ -59,6 +67,8 @@ public class Vision {
         shootAverage.addInput(shootLimelight.getYawToSpeaker());
         shootDistAverage.addInput(shootLimelight.distanceToSpeaker());
 
+        angleToGoalRadians = (limelightMountAngleDegrees + shootDistAverage.getOutput()) * (3.14159 / 180.0);
+        distanceFromLimelightToSpeakerInches = (goalHeightInches - limelightMountHeightInches) / Math.tan(angleToGoalRadians);
 
         aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
         angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);

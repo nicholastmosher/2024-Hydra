@@ -56,8 +56,8 @@ public class LimelightController {
 
 
     public double distanceToSpeaker() {
-        double ta = LimelightHelpers.getTA(llName);
-        return ta;
+        double ty = LimelightHelpers.getTY(llName);
+        return ty;
     }
 
     public double getYawToNote() {
