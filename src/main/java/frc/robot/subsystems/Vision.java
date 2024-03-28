@@ -38,12 +38,12 @@ public class Vision {
 //        this.intakePID = new CustomPid(0.25, 0.2, 0);
         this.intakePID = new PIDController(1.5, 0.01, .30); //use to be kp =2
         this.aimRotationPower = 0.0;
-        this.shootDistancePID = new PIDController(2.4, 0, 0);       
+        this.shootDistancePID = new PIDController(.1, 0, 0);       
         this.angleToShootAngle = 0.0;
         this.autoApproachPower = 0.50;
         this.limelightMountAngleDegrees = 37.0;
         this.limelightMountHeightInches = 10.0;
-        this.goalHeightInches = 64.0;
+        this.goalHeightInches = 66.0;
     }
 
     /**
@@ -63,7 +63,7 @@ public class Vision {
     }
 
     public void periodic() {
-        double angleToGoalRadians = (limelightMountAngleDegrees + shootDistAverage.getOutput()) * (3.14159 / 180.0);
+        double angleToGoalRadians = (limelightMountAngleDegrees + shootLimelight.distanceToSpeaker()) * (3.14159 / 180.0);
         double distanceFromLimelightToSpeakerInches = (goalHeightInches - limelightMountHeightInches) / Math.tan(angleToGoalRadians);
 
         intakeAverage.addInput(intakeLimelight.getYawToNote());
@@ -72,7 +72,7 @@ public class Vision {
 
         aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
         angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);
-        autoApproachPower = shootDistancePID.calculate(shootDistAverage.getOutput(), distanceFromLimelightToSpeakerInches);
+        autoApproachPower = -shootDistancePID.calculate(shootDistAverage.getOutput(), 65);
         SmartDashboard.putNumber("intakePID", aimRotationPower);
         SmartDashboard.putNumber("shootPID", aimRotationPower);
         SmartDashboard.putNumber("shootDistance", shootDistAverage.getOutput()); //subwofer flush 1.35 community 0.75
