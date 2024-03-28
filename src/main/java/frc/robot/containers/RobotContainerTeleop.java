@@ -244,7 +244,7 @@ public class RobotContainerTeleop {
         copilot.x().onTrue(cpxOn);
         copilot.b().onTrue(cpxOff);
         copilot.povUp().onTrue(new InstantCommand(shootAimOverideToggle::toggle));
-        copilot.povDown().onTrue(new InstantCommand(shootAimOverideToggle::toggle));
+        copilot.povDown().onTrue(new InstantCommand(intakeAimOverideToggle::toggle));
         copilot.a().whileTrue(ampPosition);
     }
     public Command getAutonomousCommand(AutonomousOptions plan) {
