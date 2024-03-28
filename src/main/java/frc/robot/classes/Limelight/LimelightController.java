@@ -60,6 +60,12 @@ public class LimelightController {
         return ty;
     }
 
+    public double tagsSeen() {
+        LimelightHelpers.PoseEstimate measurement = LimelightHelpers.getBotPoseEstimate_wpiBlue(llName);
+        return measurement.tagCount;
+    }
+
+
     public double getYawToNote() {
 
 //        if (NetworkTableInstance.getDefault().getTable("limelight-intake").getValue("tx").isDouble()) {

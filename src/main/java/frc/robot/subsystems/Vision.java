@@ -27,13 +27,15 @@ public class Vision {
     private double limelightMountHeightInches;
     private double goalHeightInches;
 
+    private double shootsetpoint = 0.0;
+
     private final VisionConfig config;
 
     public Vision(VisionConfig visionConfig) {
         this.config = visionConfig;
         this.shootLimelight = new LimelightController(config.shootLimelightName);
         this.intakeLimelight = new LimelightController(config.intakeLimelightName);
-        this.shootPID = new PIDController(1.25, 0.01, 0.2);
+        this.shootPID = new PIDController(1.125, 0.01, 0.3);
 //        this.intakePID = new PIDController(0.01, 0, 0);
 //        this.intakePID = new CustomPid(0.25, 0.2, 0);
         this.intakePID = new PIDController(1.5, 0.01, .30); //use to be kp =2
@@ -65,18 +67,19 @@ public class Vision {
     public void periodic() {
         double angleToGoalRadians = (limelightMountAngleDegrees + shootLimelight.distanceToSpeaker()) * (3.14159 / 180.0);
         double distanceFromLimelightToSpeakerInches = (goalHeightInches - limelightMountHeightInches) / Math.tan(angleToGoalRadians);
-
+        
+      shootsetpoint=0.0;
+        if (shootLimelight.tagsSeen() >= 2) {
+            shootsetpoint = 0.5;
+        }
+        
         intakeAverage.addInput(intakeLimelight.getYawToNote());
         shootAverage.addInput(shootLimelight.getYawToSpeaker());
         shootDistAverage.addInput(distanceFromLimelightToSpeakerInches);
 
         aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
-        angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);
         autoApproachPower = -shootDistancePID.calculate(shootDistAverage.getOutput(), 65);
-        SmartDashboard.putNumber("intakePID", aimRotationPower);
-        SmartDashboard.putNumber("shootPID", aimRotationPower);
-        SmartDashboard.putNumber("shootDistance", shootDistAverage.getOutput()); //subwofer flush 1.35 community 0.75
-
+        angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), shootsetpoint);
 
     }
 }
