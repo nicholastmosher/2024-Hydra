@@ -63,16 +63,16 @@ public class Vision {
     }
 
     public void periodic() {
+        double angleToGoalRadians = (limelightMountAngleDegrees + shootDistAverage.getOutput()) * (3.14159 / 180.0);
+        double distanceFromLimelightToSpeakerInches = (goalHeightInches - limelightMountHeightInches) / Math.tan(angleToGoalRadians);
+
         intakeAverage.addInput(intakeLimelight.getYawToNote());
         shootAverage.addInput(shootLimelight.getYawToSpeaker());
-        shootDistAverage.addInput(shootLimelight.distanceToSpeaker());
-
-        angleToGoalRadians = (limelightMountAngleDegrees + shootDistAverage.getOutput()) * (3.14159 / 180.0);
-        distanceFromLimelightToSpeakerInches = (goalHeightInches - limelightMountHeightInches) / Math.tan(angleToGoalRadians);
+        shootDistAverage.addInput(distanceFromLimelightToSpeakerInches);
 
         aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
         angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);
-        autoApproachPower = shootDistancePID.calculate(shootDistAverage.getOutput(),1.3);
+        autoApproachPower = shootDistancePID.calculate(shootDistAverage.getOutput(), distanceFromLimelightToSpeakerInches);
         SmartDashboard.putNumber("intakePID", aimRotationPower);
         SmartDashboard.putNumber("shootPID", aimRotationPower);
         SmartDashboard.putNumber("shootDistance", shootDistAverage.getOutput()); //subwofer flush 1.35 community 0.75
