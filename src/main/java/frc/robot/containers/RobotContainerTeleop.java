@@ -12,6 +12,7 @@ import frc.lib.Constants.AutonomousOptions;
 import frc.lib.config.RobotConfig;
 import frc.lib.config.krakenTalonConstants;
 import frc.robot.classes.ColorSensorController;
+import frc.robot.classes.ToggleHandler;
 import frc.robot.commands.Arm.AmpPosition;
 import frc.robot.commands.CPX.CpxSet;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
@@ -47,6 +48,9 @@ public class RobotContainerTeleop {
 
     /* Util Classes */
     private final ColorSensorController colorSensorController;
+    private final ToggleHandler shootAimOverideToggle;
+    private final ToggleHandler intakeAimOverideToggle;
+
     //private final AutoCommands autoCommandsConstructor;
 
     /* Teleop Commands */
@@ -67,7 +71,8 @@ public class RobotContainerTeleop {
 
         /* Util Classes */
         colorSensorController = new ColorSensorController(Constants.colorSensorConfig);
-
+        shootAimOverideToggle = new ToggleHandler();
+        intakeAimOverideToggle = new ToggleHandler();
         Pigeon2 gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
 
         /* Subsystems */
@@ -139,13 +144,19 @@ public class RobotContainerTeleop {
                 () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getNoteAimRotationPower()),
                 () -> {
                     double t = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
+                    if (intakeAimOverideToggle.get()) {
+                        t=0;
+                    }
                     return modes.interpolate(modeIntakeAimInactive, modeIntakeAimActive, t);
                 }
         );
         blendedControl.addComponent(
                 () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getAngleToShootAngle()),
                 () -> {
-                    double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.1);
+                    double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.1);;
+                    if (shootAimOverideToggle.get()) {
+                        t = 0;
+                    }
                     return modes.interpolate(modeShootAimInactive, modeShootAimActive, t);
                 }
         );
@@ -232,7 +243,8 @@ public class RobotContainerTeleop {
         copilot.rightBumper().onTrue(manualFeedBackCommand.withTimeout(0.7));
         copilot.x().onTrue(cpxOn);
         copilot.b().onTrue(cpxOff);
-
+        copilot.povUp().onTrue(new InstantCommand(shootAimOverideToggle::toggle));
+        copilot.povDown().onTrue(new InstantCommand(shootAimOverideToggle::toggle));
         copilot.a().whileTrue(ampPosition);
     }
     public Command getAutonomousCommand(AutonomousOptions plan) {
