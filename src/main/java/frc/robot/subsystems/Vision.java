@@ -32,10 +32,9 @@ public class Vision {
         this.shootPID = new PIDController(1.25, 0.01, 0.2);
 //        this.intakePID = new PIDController(0.01, 0, 0);
 //        this.intakePID = new CustomPid(0.25, 0.2, 0);
-        this.intakePID = new PIDController(2.0, 0.01, .20);
+        this.intakePID = new PIDController(1.5, 0.01, .30); //use to be kp =2
         this.aimRotationPower = 0.0;
-        this.shootDistancePID = new PIDController(1, 0, 0);
-        this.angleToShootAngle = 0.0;
+        this.shootDistancePID = new PIDController(2.4, 0, 0);       this.angleToShootAngle = 0.0;
         this.autoApproachPower = 0.50;
     }
 
@@ -63,10 +62,10 @@ public class Vision {
 
         aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
         angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);
-        autoApproachPower = shootDistancePID.calculate(shootDistAverage.getOutput(),0);
+        autoApproachPower = shootDistancePID.calculate(shootDistAverage.getOutput(),1.3);
         SmartDashboard.putNumber("intakePID", aimRotationPower);
         SmartDashboard.putNumber("shootPID", aimRotationPower);
-        SmartDashboard.putNumber("shootDistance", autoApproachPower);
+        SmartDashboard.putNumber("shootDistance", shootDistAverage.getOutput()); //subwofer flush 1.35 community 0.75
 
 
     }
