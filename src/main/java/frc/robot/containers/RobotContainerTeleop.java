@@ -165,8 +165,8 @@ public class RobotContainerTeleop {
         modes.addMode(modeIntakeAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
         modes.addMode(modeShootAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
         modes.addMode(modeShootAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
-        modes.addMode(modeShootDistanceInactive, ControlVector.fromFieldRelative(0, 0, 0));
-        modes.addMode(modeShootDistanceActive, ControlVector.fromFieldRelative(0,1, 0));
+        modes.addMode(modeShootDistanceInactive, ControlVector.fromRobotRelative(0, 0, 0));
+        modes.addMode(modeShootDistanceActive, ControlVector.fromRobotRelative(0,1, 0));
 
 
         // Each entry in the BlendedControl contributes some output to the Robot's movements
@@ -211,7 +211,7 @@ public class RobotContainerTeleop {
         );
 
         blendedControl.addComponent(
-                () -> ControlVector.fromFieldRelative(0, VisionSubsystem.getAutoApproachPower(), 0),
+                () -> ControlVector.fromRobotRelative(0, VisionSubsystem.getAutoApproachPower(), 0),
                 () -> {
                     double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.2);
                     ControlVector control = modes.interpolate(modeShootDistanceInactive, modeShootDistanceActive, t);
