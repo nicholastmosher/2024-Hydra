@@ -94,7 +94,7 @@ public class Vision {
 
     public double getArmAngleForShoot() {
         if (getAutoApproachPower() >0) {
-            return 0;
+            return 0.44;
         }
         double x1 = MinDist;
         double x2 = MaxDist;
