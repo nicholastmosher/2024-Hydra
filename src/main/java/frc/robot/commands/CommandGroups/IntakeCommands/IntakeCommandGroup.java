@@ -19,20 +19,20 @@ public class IntakeCommandGroup extends SequentialCommandGroup {
     }
 }
 
-class Container {
-    public Command intakeCommand(Intake intake, Indexer indexer, Shooter shooter) {
-        Command intakeCommand = new ParallelDeadlineGroup(
-                new IntakeNote(intake),
-                new IndexNote(indexer)
-        );
-
-        Command sendBackCommand = new ParallelDeadlineGroup(
-                new SendBackShooter(shooter),
-                new SendBackIndexer(indexer)
-        );
-
-        return new SequentialCommandGroup(
-            intakeCommand, sendBackCommand
-        );
-    }
-}
+//class Container {
+//    public Command intakeCommand(Intake intake, Indexer indexer, Shooter shooter) {
+//        Command intakeCommand = new ParallelDeadlineGroup(
+//                new IntakeNote(intake),
+//                new IndexNote(indexer)
+//        );
+//
+//        Command sendBackCommand = new ParallelDeadlineGroup(
+//                new SendBackShooter(shooter),
+//                new SendBackIndexer(indexer)
+//        );
+//
+//        return new SequentialCommandGroup(
+//            intakeCommand, sendBackCommand
+//        );
+//    }
+//}

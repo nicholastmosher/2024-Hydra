@@ -13,7 +13,6 @@ public class Shooter extends SubsystemBase {
     public final ShooterConfig config;
     public Shooter(ShooterConfig config) {
         this.config = config;
-        //this.dashboardConfig = dashboardConfig;
 
         shooterTopMotor = new CANSparkFlex(this.config.shooterTopMotor, CANSparkLowLevel.MotorType.kBrushless);
 
