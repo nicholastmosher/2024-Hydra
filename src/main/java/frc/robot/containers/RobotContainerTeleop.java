@@ -4,9 +4,11 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Constants;
 import frc.lib.Constants.AutonomousOptions;
 import frc.lib.config.RobotConfig;
@@ -27,10 +29,43 @@ import frc.robot.hybrid.HybridModes;
 import frc.robot.hybrid.ControlVector;
 import frc.robot.subsystems.*;
 
+import java.util.function.DoubleSupplier;
+
 public class RobotContainerTeleop {
     /* Controllers */
     private final CommandXboxController pilot = new CommandXboxController(0);
     private final CommandXboxController copilot = new CommandXboxController(1);
+
+    /* Instatiantion of pilot Triggers */
+
+    private final int LeftYAxis = XboxController.Axis.kLeftY.value;
+    private final int LeftXAxis = XboxController.Axis.kLeftX.value;
+    private final int RightYAxis = XboxController.Axis.kRightY.value;
+    private final int RightXAxis = XboxController.Axis.kRightX.value;
+
+    private final int RightTriggerAxis = XboxController.Axis.kRightTrigger.value;
+    private final int LeftTriggerAxis = XboxController.Axis.kLeftTrigger.value;
+
+
+
+    private final Trigger pilotRightTrigger = pilot.rightTrigger();
+    private final Trigger pilotLeftTrigger = pilot.leftTrigger();
+    private final Trigger copilotRightTrigger = copilot.rightTrigger();
+    private final Trigger copilotLeftTrigger = copilot.leftTrigger();
+
+    private final Trigger pilotRightBumper = pilot.rightBumper();
+    private final Trigger copilotRightBumper = copilot.rightBumper();
+    private final Trigger copilotLeftBumper = copilot.leftBumper();
+
+    private final Trigger pilotyButton = pilot.y();
+    private final Trigger pilotaButton = pilot.a();
+    private final Trigger copilotaButton = copilot.a();
+
+
+    private final Trigger copilotPOVup = copilot.povUp();
+    private final Trigger copilotPOVleft = copilot.povLeft();
+    private final Trigger copilotPOVright = copilot.povRight();
+    private final Trigger copilotPOVdown = copilot.povDown();
 
     /* Subsystems */
     private final Swerve SwerveSubsystem;
@@ -125,14 +160,14 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 // Teleop Driver component
                 () -> {
-                    double x = MathUtil.applyDeadband(-pilot.getLeftX(), 0.1) * 4.5;
-                    double y = MathUtil.applyDeadband(-pilot.getLeftY(), 0.1) * 4.5;
-                    double rot = MathUtil.applyDeadband(-pilot.getRightX(), 0.1) * 5;
+                    double x = MathUtil.applyDeadband(-pilot.getRawAxis(LeftXAxis), 0.1) * 4.5;
+                    double y = MathUtil.applyDeadband(-pilot.getRawAxis(LeftYAxis), 0.1) * 4.5;
+                    double rot = MathUtil.applyDeadband(-pilot.getRawAxis(RightXAxis), 0.1) * 5;
                     return ControlVector.fromFieldRelative(x, y, rot);
                 },
                 // TValue describes how much influence the Teleop Driver component has
                 () -> {
-                    double aimT = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
+                    double aimT = MathUtil.applyDeadband(pilot.getRawAxis(LeftTriggerAxis), 0.1);
                     ControlVector aimBlend = modes.interpolate(modeDriverActive, modeDriverInactive, aimT);
 
                     double armT = ArmSubsystem.percentRaised();
@@ -143,7 +178,7 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getNoteAimRotationPower()),
                 () -> {
-                    double t = MathUtil.applyDeadband(pilot.getLeftTriggerAxis(), 0.1);
+                    double t = MathUtil.applyDeadband(pilot.getRawAxis(LeftTriggerAxis), 0.1);
                     if (intakeAimOverideToggle.get()) {
                         t=0;
                     }
@@ -153,7 +188,7 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getAngleToShootAngle()),
                 () -> {
-                    double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.1);;
+                    double t = MathUtil.applyDeadband(pilot.getRawAxis(RightTriggerAxis), 0.1);;
                     if (shootAimOverideToggle.get()) {
                         t = 0;
                     }
@@ -167,7 +202,7 @@ public class RobotContainerTeleop {
                     return ControlVector.fromFieldRelative(0,0,rotation);
                 },
                 () -> {
-                    boolean active = pilot.povDown().getAsBoolean();
+                    boolean active = false;
                     if (active){
                         // Full rotation control from gyro when D-Down
                         return new ControlVector().setSwerveRotation(1);
@@ -181,7 +216,7 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 // PValue
                 () -> {
-                    if (copilot.leftBumper().getAsBoolean()) {
+                    if (copilotLeftBumper.getAsBoolean()) {
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.ampAngle));
                     } else {
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
@@ -200,52 +235,34 @@ public class RobotContainerTeleop {
         HybridSwerve hybridSwerve = new HybridSwerve(SwerveSubsystem, blendedControl);
         SwerveSubsystem.setDefaultCommand(hybridSwerve);
 
-//        SwerveSubsystem.setDefaultCommand(
-//                new TeleopSwerve(
-//                        SwerveSubsystem,
-//                        VisionSubsystem,
-//                        () -> -pilot.getLeftX(),
-//                        () -> -pilot.getLeftY(),
-//                        () -> -pilot.getRightX(),
-//                        pilot.leftBumper(),
-//                        pilot.rightTrigger(),
-//                        pilot.leftTrigger()
-//                )
-//        );
 
         ClimberSubsystem.setDefaultCommand(
-                new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getRightY()), ClimberSubsystem)
+                new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getRawAxis(RightYAxis)), ClimberSubsystem)
         );
 
-        //  ArmSubsystem.setDefaultCommand(new InstantCommand(() -> ArmSubsystem.moveArm(MathUtil.applyDeadband(-copilot.getLeftY(), 0.1)), ArmSubsystem));
          ArmSubsystem.setDefaultCommand(new InstantCommand(() -> {
             ControlVector control = blendedControl.solve();
             ArmSubsystem.moveArm(control.armPower());
          }, ArmSubsystem));
-
-//         LightSubsystem.setDefaultCommand(
-//                 new InstantCommand(LightSubsystem::lightControl, LightSubsystem)
-//         );
 
         configureButtonBindings();
     }
 
     private void configureButtonBindings() {
         /* pilot Buttons */
-        pilot.leftTrigger().onTrue(intakeCommand);
-//        pilot.leftTrigger().onTrue(new InstantCommand(robotStateMachine::toggleIntaking));
-        pilot.rightTrigger().whileTrue(prepareShootCommand);
-        pilot.rightBumper().onTrue(feedNoteCommand.withTimeout(1));
-        pilot.a().whileTrue(rejectNoteIntakeCommand);
-        pilot.y().onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
+        pilotLeftTrigger.onTrue(intakeCommand);
+        pilotRightTrigger.whileTrue(prepareShootCommand);
+        pilotRightBumper.onTrue(feedNoteCommand.withTimeout(1));
+        pilotaButton.whileTrue(rejectNoteIntakeCommand);
+        pilotyButton.onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
 
         /* Copilot Buttons */
-        copilot.rightBumper().onTrue(manualFeedBackCommand.withTimeout(0.7));
-        copilot.x().onTrue(cpxOn);
-        copilot.b().onTrue(cpxOff);
-        copilot.povUp().onTrue(new InstantCommand(shootAimOverideToggle::toggle));
-        copilot.povDown().onTrue(new InstantCommand(intakeAimOverideToggle::toggle));
-        copilot.a().whileTrue(ampPosition);
+        copilotRightBumper.onTrue(manualFeedBackCommand.withTimeout(0.7));
+        copilotPOVleft.onTrue(cpxOn);
+        copilotPOVright.onTrue(cpxOff);
+        copilotPOVup.onTrue(new InstantCommand(shootAimOverideToggle::toggle));
+        copilotPOVdown.onTrue(new InstantCommand(intakeAimOverideToggle::toggle));
+        copilotaButton.whileTrue(ampPosition);
     }
     public Command getAutonomousCommand(AutonomousOptions plan) {
         // switch (plan) {

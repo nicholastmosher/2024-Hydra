@@ -108,9 +108,7 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("fulllower", isFullLower());
-        SmartDashboard.putNumber("armAngle", armEncoder.getPosition());
-        SmartDashboard.putBoolean("ampPosition", endCondition(1));
+
 
     }
 }

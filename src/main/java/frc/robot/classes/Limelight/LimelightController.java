@@ -35,14 +35,6 @@ public class LimelightController {
         return LimelightHelpers.getTX(llName);
     }
 
-    public void switchMegaTagPipline() {
-        LimelightHelpers.setPipelineIndex(llName, 0);
-    }
-
-    public void switchSingleTagPipline() {
-        LimelightHelpers.setPipelineIndex(llName, 1);
-    }
-
     public LimelightResults getResults() {
         this.llresults = LimelightHelpers.getLatestResults(llName);
         return this.llresults;
@@ -51,7 +43,7 @@ public class LimelightController {
     public double getYawToSpeaker() {
         Pose3d pose = LimelightHelpers.getBotPose3d_TargetSpace(llName);
         double txToSpeaker = LimelightHelpers.getTX(llName);
-        return txToSpeaker/20;//-pose.getRotation().getZ();
+        return txToSpeaker/20;
     }
 
     public double distanceToSpeaker() {
@@ -66,12 +58,6 @@ public class LimelightController {
 
 
     public double getYawToNote() {
-
-//        if (NetworkTableInstance.getDefault().getTable("limelight-intake").getValue("tx").isDouble()) {
-//            SmartDashboard.putNumber("smth", NetworkTableInstance.getDefault().getTable("limelight-intake").getValue("tx").getDouble());
-//        } else {
-//
-//        }
         double limelightDegrees = LimelightHelpers.getTX(llName);
         return limelightDegrees / 27.0;
     }

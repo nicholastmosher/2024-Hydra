@@ -18,13 +18,7 @@ public class Intake extends SubsystemBase {
         colorSensor = colorSensorController;
     }
 
-//    public void setIntakeMotor(boolean invert) {
-//        if (!invert) {
-//            intakeMotor.set(this.config.intakeMotorSpeed);
-//            return;
-//        }
-//        intakeMotor.set(-this.config.intakeMotorSpeed);
-//    }
+
 
     public void pickUpNote() {
         intakeMotor.set(this.config.intakeMotorSpeed);

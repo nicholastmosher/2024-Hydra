@@ -73,9 +73,6 @@ public class Swerve extends SubsystemBase {
 
     public void driveChassisSpeeds(ChassisSpeeds speeds, boolean isOpenLoop) {
         this.latestSpeeds = speeds;
-        SmartDashboard.putNumber("ChassisSpeedX", speeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("ChassisSpeedY", speeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("ChassisSpeedTheta", speeds.omegaRadiansPerSecond);
         SwerveModuleState[] swerveModuleStates = krakenTalonConstants.Swerve.driveTrainConfig.kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, krakenTalonConstants.Swerve.maxSpeed);
 
@@ -123,9 +120,6 @@ public class Swerve extends SubsystemBase {
 
     public Pose2d getPose() {
         Pose2d pose = swerveOdometry.getPoseMeters();
-        SmartDashboard.putNumber("SwervePoseX", pose.getX());
-        SmartDashboard.putNumber("SwervePoseY", pose.getY());
-        SmartDashboard.putNumber("SwervePoseTheta", pose.getRotation().getDegrees());
         return pose;
     }
 
@@ -166,9 +160,6 @@ public class Swerve extends SubsystemBase {
     public void periodic() {
         swerveOdometry.update(getGyroYaw(), getModulePositions());
 
-//         for (int i = 0; i < mSwerveMods.length; i++) {
-//             SwerveModule mod = mSwerveMods[i];
-//             mod.dashboardPeriodic();
-//         }
+
     }
 }

@@ -132,14 +132,6 @@ public class Climber extends SubsystemBase {
         leftClimberMotor.set(0);
     }
 
-    @Override
-    public void periodic() {
-//        SmartDashboard.putBoolean("isLeftFullLower", isLeftFullLower());
-        // SmartDashboard.putBoolean("isRightFullLower", isRightFullLower());
-        // SmartDashboard.putBoolean("isLeftFullLower", isLeftFullLower());
-        // SmartDashboard.putNumber("rightclimberencoder", rightClimberMotor.getPosition().getValue());
-        // SmartDashboard.putNumber("rightclimberencoder", leftClimberMotor.getPosition().getValue());
-    }
 
 
 }
