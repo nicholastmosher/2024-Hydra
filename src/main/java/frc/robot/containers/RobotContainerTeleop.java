@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.Constants;
@@ -20,6 +21,7 @@ import frc.robot.commands.Arm.AmpPosition;
 import frc.robot.commands.CPX.CpxSet;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.SendBackCommandGroup;
+import frc.robot.commands.CommandGroups.IntakeCommands.ShuffleNote;
 import frc.robot.commands.CommandGroups.ShootCommands.PrepareShootCommandGroup;
 import frc.robot.commands.Drive.HybridSwerve;
 
@@ -99,7 +101,7 @@ public class RobotContainerTeleop {
     private final CpxSet cpxOn;
     private final CpxSet cpxOff;
 
-    private final AmpPosition ampPosition;
+    private final ShuffleNote shuffleNote;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -132,15 +134,14 @@ public class RobotContainerTeleop {
         robotStateMachine = new RobotStateMachine();
 
         /* Teleop Commands */
-        intakeCommand = new IntakeCommandGroup(IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
+        intakeCommand = new IntakeCommandGroup(IndexerSubsystem, IntakeSubsystem, ShooterSubsystem, LightSubsystem);
         prepareShootCommand = new PrepareShootCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
         feedNoteCommand = new FeedNote(IndexerSubsystem);
         manualFeedBackCommand = new SendBackCommandGroup(IndexerSubsystem, ShooterSubsystem);
         rejectNoteIntakeCommand = new RejectNoteIntake(IntakeSubsystem);
         cpxOn = new CpxSet(CPXSubsystem, true);
         cpxOff = new CpxSet(CPXSubsystem, false);
-
-        ampPosition = new AmpPosition(ArmSubsystem);
+        shuffleNote = new ShuffleNote(IndexerSubsystem, ShooterSubsystem);
 
         /* Command Constructor for Autos */
         //autoCommandsConstructor = new AutoCommands(SwerveSubsystem, ArmSubsystem, IndexerSubsystem, ShooterSubsystem, IntakeSubsystem, DriverStation.getAlliance().get());
@@ -234,16 +235,17 @@ public class RobotContainerTeleop {
                     }
                 }
         );
-
+//        double setpoint = 0;
         blendedControl.addComponent(
                 // PValue
                 () -> {
+//                    setpoint += copilot.getRawAxis(LeftYAxis);
                     ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
                     if (copilotLeftTrigger.getAsBoolean()) {
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.ampAngle));
                     }
-                    if (pilotRightTrigger.getAsBoolean()){
-                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.shootAngle));
+                    if (pilotRightTrigger.getAsBoolean() && !copilotLeftTrigger.getAsBoolean()){
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(VisionSubsystem.getArmAngleForShoot()));
                     }
                     // Arm power from PID to target angle
                     double armPower = ArmSubsystem.getArmPowerToTarget();
@@ -269,6 +271,7 @@ public class RobotContainerTeleop {
          ArmSubsystem.setDefaultCommand(new InstantCommand(() -> {
             ControlVector control = blendedControl.solve();
             ArmSubsystem.moveArm(control.armPower());
+//             ArmSubsystem.moveArm(MathUtil.applyDeadband(copilot.getRawAxis(LeftYAxis), 0.1));
          }, ArmSubsystem));
 
         configureButtonBindings();
@@ -278,7 +281,7 @@ public class RobotContainerTeleop {
         /* pilot Buttons */
         pilotLeftTrigger.onTrue(intakeCommand);
         pilotRightTrigger.whileTrue(prepareShootCommand);
-        pilotRightBumper.onTrue(feedNoteCommand.withTimeout(1));
+        pilotRightBumper.onTrue(new SequentialCommandGroup(feedNoteCommand.withTimeout(1), new InstantCommand(LightSubsystem::setWhite)));
         pilotaButton.whileTrue(rejectNoteIntakeCommand);
         pilotyButton.onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
 
@@ -288,7 +291,7 @@ public class RobotContainerTeleop {
         copilotPOVright.onTrue(cpxOff);
         copilotPOVup.onTrue(new InstantCommand(shootAimOverideToggle::toggle));
         copilotPOVdown.onTrue(new InstantCommand(intakeAimOverideToggle::toggle));
-        copilotaButton.whileTrue(ampPosition);
+        copilotaButton.onTrue(shuffleNote);
     }
     public Command getAutonomousCommand(AutonomousOptions plan) {
         // switch (plan) {

@@ -20,6 +20,11 @@ public class Arm extends SubsystemBase {
     private Rotation2d targetAngle = Rotation2d.fromDegrees(0);
     private PIDController armPIDController;
 
+    private final double minAngleToShoot =0;
+    private final double maxAngleToShoot =0;
+
+
+
     public Arm(ArmConfig config) {
         this.config = config;
 
@@ -33,7 +38,7 @@ public class Arm extends SubsystemBase {
 
         armLimitSwitch = config.armLimitSwitch;
 
-        armPIDController = new PIDController(.02, 0.00, 0);
+        armPIDController = new PIDController(.03, 0.00, 0);
     }
 
     /**
@@ -108,7 +113,7 @@ public class Arm extends SubsystemBase {
 
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("armAngle", armEncoder.getPosition());
 
     }
 }

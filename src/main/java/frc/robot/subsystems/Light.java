@@ -16,6 +16,7 @@ public class Light extends SubsystemBase {
         config = lightConfig;
         blinkin1 = new BlinkinLEDController(config.blinkin1);
         colorSensor = colorSensorController;
+        blinkin1.setPattern(BlinkinPattern.SHOT_WHITE);
         
     }
 
@@ -24,6 +25,15 @@ public class Light extends SubsystemBase {
             blinkin1.setPattern(BlinkinPattern.SHOT_RED);
             return;
         }
+        blinkin1.setPattern(BlinkinPattern.SHOT_WHITE);
+    }
+
+
+    public void setRed() {
+        blinkin1.setPattern(BlinkinPattern.SHOT_RED);
+    }
+
+    public void setWhite() {
         blinkin1.setPattern(BlinkinPattern.SHOT_WHITE);
     }
 

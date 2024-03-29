@@ -1,21 +1,16 @@
 package frc.robot.commands.CommandGroups.IntakeCommands;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Indexer.IndexNote;
 import frc.robot.commands.Indexer.SendBackIndexer;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Shooter.SendBackShooter;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.*;
 
 public class IntakeCommandGroup extends SequentialCommandGroup {
-    public IntakeCommandGroup(Indexer indexer, Intake intake, Shooter shooter) {
-        super(new IntakeNoteCommandGroup(intake, indexer), new SendBackCommandGroup(indexer, shooter).withTimeout(0));
+    public IntakeCommandGroup(Indexer indexer, Intake intake, Shooter shooter, Light light) {
+        super(new IntakeNoteCommandGroup(intake, indexer), new InstantCommand(light::setRed), new SendBackCommandGroup(indexer, shooter).withTimeout(0.3));
     }
 }
 

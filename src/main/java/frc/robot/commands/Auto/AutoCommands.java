@@ -68,13 +68,13 @@ public class AutoCommands {
         return new ParallelDeadlineGroup(getToShootPosCommand().withTimeout(1.3), getPrepareShootingCommand());
     }
 
-    public Command getIntakingCommand() {
-        return new IntakeCommandGroup(indexerSubsystem, intakeSubsystem, shooterSubsystem);
-    }
+//    public Command getIntakingCommand() {
+//        return new IntakeCommandGroup(indexerSubsystem, intakeSubsystem, shooterSubsystem);
+//    }
 
-    public Command getIntakeCommand() {
-        return new ParallelDeadlineGroup(getIntakingCommand(), getToNoteCommand());
-    }
+//    public Command getIntakeCommand() {
+//        return new ParallelDeadlineGroup(getIntakingCommand(), getToNoteCommand());
+//    }
 
     public Command getTrajectoryFollowerCommand(String chosenPath) {
         return followPath(chosenPath);
