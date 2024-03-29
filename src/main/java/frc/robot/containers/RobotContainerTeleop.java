@@ -242,9 +242,11 @@ public class RobotContainerTeleop {
 //                    setpoint += copilot.getRawAxis(LeftYAxis);
                     ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
                     if (copilotLeftTrigger.getAsBoolean()) {
+                        ArmSubsystem.setControlType(true);
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.ampAngle));
                     }
                     if (pilotRightTrigger.getAsBoolean() && !copilotLeftTrigger.getAsBoolean()){
+                        ArmSubsystem.setControlType(false);
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(VisionSubsystem.getArmAngleForShoot()));
                     }
                     // Arm power from PID to target angle
@@ -257,6 +259,9 @@ public class RobotContainerTeleop {
                     return new ControlVector().setArmPower(1);
                 }
         );
+
+
+
 
         HybridSwerve hybridSwerve = new HybridSwerve(SwerveSubsystem, blendedControl);
         SwerveSubsystem.setDefaultCommand(hybridSwerve);
