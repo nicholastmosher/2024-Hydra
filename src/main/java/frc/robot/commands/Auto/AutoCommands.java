@@ -1,6 +1,8 @@
 package frc.robot.commands.Auto;
 
-import frc.robot.subsystems.Swerve;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import frc.robot.commands.CommandGroups.ShootCommands.PrepareShootCommandGroup;
+import frc.robot.subsystems.*;
 
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -17,10 +19,6 @@ import frc.lib.config.krakenTalonConstants;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
 import frc.robot.commands.Drive.AutoSwerve;
 import frc.robot.commands.Shooter.RevShooter;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Indexer;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Intake;
 
 
 public class AutoCommands {
@@ -29,18 +27,20 @@ public class AutoCommands {
     private final Indexer indexerSubsystem;
     private final Shooter shooterSubsystem;
     private final Intake intakeSubsystem;
+    private final Vision visionSubsystem;
 
     private HolonomicDriveController controller;
     private final HolonomicPathFollowerConfig config;
     private final boolean isBlue;
 
 
-    public AutoCommands(Swerve s_Swerve, Arm s_Arm, Indexer s_Indexer, Shooter s_Shooter, Intake s_Intake, Alliance alliance) {
+    public AutoCommands(Swerve s_Swerve, Arm s_Arm, Indexer s_Indexer, Shooter s_Shooter, Intake s_Intake, Vision vision, Alliance alliance) {
         swerveSubsystem = s_Swerve;
         armSubsystem = s_Arm;
         indexerSubsystem = s_Indexer;
         shooterSubsystem = s_Shooter;
         intakeSubsystem = s_Intake;
+        visionSubsystem = vision;
 
         if (alliance == Alliance.Blue) {
             this.isBlue = true;
@@ -60,18 +60,24 @@ public class AutoCommands {
         return new AutoSwerve(swerveSubsystem, x, y, rot, true);
     }
 
-    public Command getRevShooterCommand() {
-        return new RevShooter(shooterSubsystem);
+    public Command getPrepareShootingCommand() {
+        return new PrepareShootCommandGroup(armSubsystem, indexerSubsystem, intakeSubsystem, shooterSubsystem);
     }
 
-//    public Command getIntakeCommand() {
-//        return new IntakeCommandGroup(armSubsystem, indexerSubsystem, intakeSubsystem, shooterSubsystem);
-//    }
+    public Command getShootCommand() {
+        return new ParallelDeadlineGroup(getToShootPosCommand().withTimeout(1.3), getPrepareShootingCommand());
+    }
 
-    public Command getTrajectoryFollowerCommand() {
-        return new Command() {
-            
-        };
+    public Command getIntakingCommand() {
+        return new IntakeCommandGroup(indexerSubsystem, intakeSubsystem, shooterSubsystem);
+    }
+
+    public Command getIntakeCommand() {
+        return new ParallelDeadlineGroup(getIntakingCommand(), getToNoteCommand());
+    }
+
+    public Command getTrajectoryFollowerCommand(String chosenPath) {
+        return followPath(chosenPath);
     }
 
     public FollowPathHolonomic followPath(String chosenPath) {
@@ -87,11 +93,11 @@ public class AutoCommands {
         );
     }
 
-    // public Command getAlignToSpeakerCommand() {
-    //     return new 
-    // }
+    public Command getToShootPosCommand() {
+        return new AutoSwerve(swerveSubsystem, 0, visionSubsystem.getAutoApproachPower(), visionSubsystem.getAngleToShootAngle(), false);
+    }
 
-    // public Command getAlignToNoteCommand() {
-    //     return new 
-    // }
+     public Command getToNoteCommand() {
+         return new AutoSwerve(swerveSubsystem, 0, 1, visionSubsystem.getNoteAimRotationPower(), false);
+     }
 }

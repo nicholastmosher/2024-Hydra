@@ -4,6 +4,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -29,6 +30,7 @@ import frc.robot.hybrid.HybridModes;
 import frc.robot.hybrid.ControlVector;
 import frc.robot.subsystems.*;
 
+import java.sql.Driver;
 import java.util.function.DoubleSupplier;
 
 public class RobotContainerTeleop {
@@ -110,6 +112,11 @@ public class RobotContainerTeleop {
         intakeAimOverideToggle = new ToggleHandler();
         Pigeon2 gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
 
+        DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
+        if (DriverStation.getAlliance().isPresent()) {
+            alliance = DriverStation.getAlliance().get();
+        }
+
         /* Subsystems */
         SwerveSubsystem = new Swerve(robotConfig.ctreConfigs, gyro);
         ArmSubsystem = new Arm(Constants.armConfig);
@@ -118,7 +125,7 @@ public class RobotContainerTeleop {
         IndexerSubsystem = new Indexer(Constants.indexerConfig);
         ClimberSubsystem = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
         LightSubsystem = new Light(Constants.lightConfig, colorSensorController);
-        VisionSubsystem = new Vision(Constants.visionConfig);
+        VisionSubsystem = new Vision(Constants.visionConfig, alliance);
         CPXSubsystem = new CPX(3); // TODO create CpxConfig
 
         /* State Machine */
@@ -152,7 +159,7 @@ public class RobotContainerTeleop {
         // Each mode describes an amount of influence that may be applied to each control
         HybridModes modes = new HybridModes();
         modes.addMode(modeDriverActive, ControlVector.fromFieldRelative(1.0, 1.0, 1.0));
-        modes.addMode(modeDriverInactive, ControlVector.fromFieldRelative(1.0, 1.0, 0.5));
+        modes.addMode(modeDriverInactive, ControlVector.fromFieldRelative(1.0, 0.5, 0.5));
         modes.addMode(modeIntakeAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
         modes.addMode(modeIntakeAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
         modes.addMode(modeShootAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
@@ -205,7 +212,7 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 () -> ControlVector.fromFieldRelative(0, VisionSubsystem.getAutoApproachPower(), 0),
                 () -> {
-                    double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.1);
+                    double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.2);
                     ControlVector control = modes.interpolate(modeShootDistanceInactive, modeShootDistanceActive, t);
                     return control;
                 }
@@ -231,11 +238,13 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 // PValue
                 () -> {
-                    if (copilotLeftBumper.getAsBoolean()) {
+                    ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
+                    if (copilotLeftTrigger.getAsBoolean()) {
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.ampAngle));
-                    } else {
-                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
                     }
+//                    if (pilotRightTrigger.getAsBoolean()){
+//                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.shootAngle));
+//                    }
                     // Arm power from PID to target angle
                     double armPower = ArmSubsystem.getArmPowerToTarget();
                     return new ControlVector().setArmPower(armPower);
@@ -253,7 +262,7 @@ public class RobotContainerTeleop {
 
 
         ClimberSubsystem.setDefaultCommand(
-                new InstantCommand(() -> ClimberSubsystem.joystickControl(copilot.getRawAxis(RightYAxis)), ClimberSubsystem)
+                new InstantCommand(() -> ClimberSubsystem.joystickControl(MathUtil.applyDeadband(copilot.getRawAxis(RightYAxis), 0.1)), ClimberSubsystem)
         );
 
       
