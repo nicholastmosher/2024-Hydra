@@ -85,7 +85,7 @@ public class Vision {
         shootDistAverage.addInput(distanceFromLimelightToSpeakerInches);
 
         aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
-        autoApproachPower = -shootDistancePID.calculate(shootDistAverage.getOutput(), 55);
+        autoApproachPower = -shootDistancePID.calculate(shootDistAverage.getOutput(), 100);
         angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), shootsetpoint);
     }
 }

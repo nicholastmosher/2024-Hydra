@@ -23,7 +23,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public void startShooter() {
-        shooterTopMotor.set(0.5);
+        shooterTopMotor.set(0.50);
     }
 
     public void stopShooter() {
