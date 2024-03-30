@@ -326,7 +326,7 @@ public class RobotContainerTeleop {
             case THREE_NOTES_LEFT:
                 return threeNoteLeftAuto();
             default:
-                return new InstantCommand();
+                return shootNote();
         }
     }
 
@@ -360,42 +360,54 @@ public class RobotContainerTeleop {
 
     public Command scoreCenterNote() {
         Command backupAndIntake = new ParallelDeadlineGroup(
-            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2),
+            backupToCenterNote(),
+            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2)
+        );
+
+        Command returnToSpeakerAndShuffle = new ParallelDeadlineGroup(
             new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
-            new ParallelDeadlineGroup(backupToCenterNote(), new ShuffleNote(IndexerSubsystem, ShooterSubsystem))
+            centerNoteReturnToSpeaker()
         );
 
         return new SequentialCommandGroup(
             backupAndIntake.withTimeout(3),
-            centerNoteReturnToSpeaker().withTimeout(3),
+            returnToSpeakerAndShuffle.withTimeout(3),
             shootNote()
         );
     }
 
     public Command scoreLeftNote() {
         Command backupAndIntake = new ParallelDeadlineGroup(
-            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2),
+            backupToLeftNote(),
+            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2)
+        );
+
+        Command returnToSpeakerAndShuffle = new ParallelDeadlineGroup(
             new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
-            new ParallelDeadlineGroup(backupToLeftNote(), new ShuffleNote(IndexerSubsystem, ShooterSubsystem))
+            leftNoteReturnToSpeaker()
         );
 
         return new SequentialCommandGroup(
             backupAndIntake.withTimeout(3),
-            leftNoteReturnToSpeaker().withTimeout(3),
+            returnToSpeakerAndShuffle.withTimeout(3),
             shootNote()
         );
     }
 
     public Command scoreRightNote() {
         Command backupAndIntake = new ParallelDeadlineGroup(
-            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2),
+            backupToRightNote(),
+            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2)
+        );
+
+        Command returnToSpeakerAndShuffle = new ParallelDeadlineGroup(
             new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
-            new ParallelDeadlineGroup(backupToRightNote(), new ShuffleNote(IndexerSubsystem, ShooterSubsystem))
+            rightNoteReturnToSpeaker()
         );
 
         return new SequentialCommandGroup(
             backupAndIntake.withTimeout(3),
-            rightNoteReturnToSpeaker().withTimeout(3),
+            returnToSpeakerAndShuffle.withTimeout(3),
             shootNote()
         );
     }
