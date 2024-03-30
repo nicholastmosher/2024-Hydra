@@ -409,18 +409,18 @@ public class RobotContainerTeleop {
     }
 
     public Command backupToLeftNote() {
-        return new AutoSwerve(SwerveSubsystem, -0.3, -0.4, 0,false).withTimeout(1);
+        return new AutoSwerve(SwerveSubsystem, -0.4, -0.3, 0,false).withTimeout(1);
     }
 
     public Command leftNoteReturnToSpeaker() {
-        return new AutoSwerve(SwerveSubsystem, 0.3, 0.4, 0,false).withTimeout(1);
+        return new AutoSwerve(SwerveSubsystem, 0.4, 0.3, 0,false).withTimeout(1);
     }
 
     public Command backupToRightNote() {
-        return new AutoSwerve(SwerveSubsystem, 0.3, -0.4, 0,false).withTimeout(1);
+        return new AutoSwerve(SwerveSubsystem, 0.4, -0.3, 0,false).withTimeout(1);
     }
 
     public Command rightNoteReturnToSpeaker() {
-        return new AutoSwerve(SwerveSubsystem, -0.3, 0.4, 0,false).withTimeout(1);
+        return new AutoSwerve(SwerveSubsystem, -0.4, 0.3, 0,false).withTimeout(1);
     }
 }
