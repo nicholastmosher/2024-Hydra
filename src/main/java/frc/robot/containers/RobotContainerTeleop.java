@@ -17,7 +17,6 @@ import frc.lib.config.RobotConfig;
 import frc.lib.config.krakenTalonConstants;
 import frc.robot.classes.ColorSensorController;
 import frc.robot.classes.ToggleHandler;
-import frc.robot.commands.Arm.AmpPosition;
 import frc.robot.commands.CPX.CpxSet;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.SendBackCommandGroup;
@@ -50,8 +49,6 @@ public class RobotContainerTeleop {
     private final int RightTriggerAxis = XboxController.Axis.kRightTrigger.value;
     private final int LeftTriggerAxis = XboxController.Axis.kLeftTrigger.value;
 
-
-
     private final Trigger pilotRightTrigger = pilot.rightTrigger();
     private final Trigger pilotLeftTrigger = pilot.leftTrigger();
     private final Trigger copilotRightTrigger = copilot.rightTrigger();
@@ -64,7 +61,6 @@ public class RobotContainerTeleop {
     private final Trigger pilotyButton = pilot.y();
     private final Trigger pilotaButton = pilot.a();
     private final Trigger copilotaButton = copilot.a();
-
 
     private final Trigger copilotPOVup = copilot.povUp();
     private final Trigger copilotPOVleft = copilot.povLeft();
@@ -89,7 +85,9 @@ public class RobotContainerTeleop {
     private final ColorSensorController colorSensorController;
     private final ToggleHandler shootAimOverideToggle;
     private final ToggleHandler intakeAimOverideToggle;
-
+    private final ToggleHandler shortRangeOverrideToggle;
+    private final ToggleHandler longRangeOverrideToggle;
+    
     //private final AutoCommands autoCommandsConstructor;
 
     /* Teleop Commands */
@@ -112,6 +110,8 @@ public class RobotContainerTeleop {
         colorSensorController = new ColorSensorController(Constants.colorSensorConfig);
         shootAimOverideToggle = new ToggleHandler();
         intakeAimOverideToggle = new ToggleHandler();
+        shortRangeOverrideToggle = new ToggleHandler();
+        longRangeOverrideToggle = new ToggleHandler();
         Pigeon2 gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
 
         DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
@@ -218,6 +218,9 @@ public class RobotContainerTeleop {
                 () -> ControlVector.fromRobotRelative(0, VisionSubsystem.getAutoApproachPower(), 0),
                 () -> {
                     double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.2);
+                    if (shortRangeOverrideToggle.get()) {
+                        t = 0;
+                    }
                     ControlVector control = modes.interpolate(modeShootDistanceInactive, modeShootDistanceActive, t);
                     return control;
                 }
@@ -239,7 +242,8 @@ public class RobotContainerTeleop {
                     }
                 }
         );
-//        double setpoint = 0;
+
+        // Long range auto-aiming: Lifting the arm
         blendedControl.addComponent(
                 // PValue
                 () -> {
@@ -259,29 +263,29 @@ public class RobotContainerTeleop {
                 },
                 // TValue
                 () -> {
-                    // Give this component full control over the arm's power
-                    return new ControlVector().setArmPower(1);
+                    if (longRangeOverrideToggle.get()) {
+                        // Long range disabled, no influence
+                        return new ControlVector();
+                    } else {
+                        // Long range enabled
+                        // Give this component full control over the arm's power
+                        return new ControlVector().setArmPower(1);
+                    }
                 }
         );
 
-
-
-
         HybridSwerve hybridSwerve = new HybridSwerve(SwerveSubsystem, blendedControl);
         SwerveSubsystem.setDefaultCommand(hybridSwerve);
-
-
 
         ClimberSubsystem.setDefaultCommand(
                 new InstantCommand(() -> ClimberSubsystem.joystickControl(MathUtil.applyDeadband(copilot.getRawAxis(RightYAxis), 0.1)), ClimberSubsystem)
         );
 
-      
-         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> {
+        ArmSubsystem.setDefaultCommand(new InstantCommand(() -> {
             ControlVector control = blendedControl.solve();
             ArmSubsystem.moveArm(control.armPower());
 //             ArmSubsystem.moveArm(MathUtil.applyDeadband(copilot.getRawAxis(LeftYAxis), 0.1));
-         }, ArmSubsystem));
+        }, ArmSubsystem));
 
         configureButtonBindings();
     }
