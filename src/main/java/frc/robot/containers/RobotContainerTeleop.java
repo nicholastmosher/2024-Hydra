@@ -365,8 +365,9 @@ public class RobotContainerTeleop {
         );
 
         Command returnToSpeakerAndShuffle = new ParallelDeadlineGroup(
+            centerNoteReturnToSpeaker(),
             new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
-            centerNoteReturnToSpeaker()
+            sendNoteBack()
         );
 
         return new SequentialCommandGroup(
@@ -413,7 +414,7 @@ public class RobotContainerTeleop {
     }
 
     public Command backupToCenterNote() {
-        return new AutoSwerve(SwerveSubsystem, 0, -0.3, 0,false).withTimeout(2);
+        return new AutoSwerve(SwerveSubsystem, 0, -0.3, 0.1,false).withTimeout(2);
     }
 
     public Command centerNoteReturnToSpeaker() {
@@ -434,5 +435,9 @@ public class RobotContainerTeleop {
 
     public Command rightNoteReturnToSpeaker() {
         return new AutoSwerve(SwerveSubsystem, -0.4, 0.3, 0,false).withTimeout(1);
+    }
+
+    public Command sendNoteBack() {
+        return new InstantCommand(() -> IndexerSubsystem.sendBack());
     }
 }
