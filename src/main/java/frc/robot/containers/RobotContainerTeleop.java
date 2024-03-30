@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -17,14 +19,20 @@ import frc.lib.config.RobotConfig;
 import frc.lib.config.krakenTalonConstants;
 import frc.robot.classes.ColorSensorController;
 import frc.robot.classes.ToggleHandler;
+import frc.robot.commands.Arm.AmpPosition;
+import frc.robot.commands.Auto.RevAuto;
+import frc.robot.commands.Auto.ShootAuto;
 import frc.robot.commands.CPX.CpxSet;
 import frc.robot.commands.CommandGroups.IntakeCommands.IntakeCommandGroup;
+import frc.robot.commands.CommandGroups.IntakeCommands.IntakeNoteCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.SendBackCommandGroup;
 import frc.robot.commands.CommandGroups.IntakeCommands.ShuffleNote;
 import frc.robot.commands.CommandGroups.ShootCommands.PrepareShootCommandGroup;
+import frc.robot.commands.Drive.AutoSwerve;
 import frc.robot.commands.Drive.HybridSwerve;
 
 import frc.robot.commands.Indexer.FeedNote;
+import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.RejectNoteIntake;
 import frc.robot.hybrid.BlendedControl;
 import frc.robot.hybrid.HybridModes;
@@ -165,8 +173,8 @@ public class RobotContainerTeleop {
         modes.addMode(modeIntakeAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
         modes.addMode(modeShootAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
         modes.addMode(modeShootAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
-        modes.addMode(modeShootDistanceInactive, ControlVector.fromRobotRelative(0, 0, 0));
-        modes.addMode(modeShootDistanceActive, ControlVector.fromRobotRelative(0,1, 0));
+        // modes.addMode(modeShootDistanceInactive, ControlVector.fromRobotRelative(0, 0, 0));
+        // modes.addMode(modeShootDistanceActive, ControlVector.fromRobotRelative(0,1, 0));
 
 
         // Each entry in the BlendedControl contributes some output to the Robot's movements
@@ -214,17 +222,17 @@ public class RobotContainerTeleop {
                 }
         );
 
-        blendedControl.addComponent(
-                () -> ControlVector.fromRobotRelative(0, VisionSubsystem.getAutoApproachPower(), 0),
-                () -> {
-                    double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.2);
-                    if (shortRangeOverrideToggle.get()) {
-                        t = 0;
-                    }
-                    ControlVector control = modes.interpolate(modeShootDistanceInactive, modeShootDistanceActive, t);
-                    return control;
-                }
-        );
+        // blendedControl.addComponent(
+        //         () -> ControlVector.fromRobotRelative(0, VisionSubsystem.getAutoApproachPower(), 0),
+        //         () -> {
+        //             double t = MathUtil.applyDeadband(pilot.getRightTriggerAxis(), 0.2);
+        //             if (shortRangeOverrideToggle.get()) {
+        //                 t = 0;
+        //             }
+        //             ControlVector control = modes.interpolate(modeShootDistanceInactive, modeShootDistanceActive, t);
+        //             return control;
+        //         }
+        // );
         PIDController gyroController = new PIDController(.1,0,0);
         blendedControl.addComponent(
                 () -> {
@@ -255,7 +263,7 @@ public class RobotContainerTeleop {
                     }
                     if (pilotRightTrigger.getAsBoolean() && !copilotLeftTrigger.getAsBoolean()){
                         ArmSubsystem.setControlType(false);
-                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(VisionSubsystem.getArmAngleForShoot()));
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
                     }
                     // Arm power from PID to target angle
                     double armPower = ArmSubsystem.getArmPowerToTarget();
@@ -263,14 +271,9 @@ public class RobotContainerTeleop {
                 },
                 // TValue
                 () -> {
-                    if (longRangeOverrideToggle.get()) {
-                        // Long range disabled, no influence
-                        return new ControlVector();
-                    } else {
-                        // Long range enabled
-                        // Give this component full control over the arm's power
+                    
                         return new ControlVector().setArmPower(1);
-                    }
+                    
                 }
         );
 
@@ -308,27 +311,116 @@ public class RobotContainerTeleop {
         copilotaButton.onTrue(shuffleNote);
     }
     public Command getAutonomousCommand(AutonomousOptions plan) {
-        // switch (plan) {
-        //     case TWO_NOTE_CENTER:
-        //         return 
-        //     case SHOOT_NOTE:
-        //         return 
-        //     case SHOOT_NOTE_MOVEBACK:
-        //         return 
-        //     case RIGHTSPEAKERSIDESHOOTANDMOVEBACK:
-        //         return 
-        //     case THREE_NOTES_RIGHT:
-        //         return 
-        //     case THREE_NOTES_LEFT:
-        //         return 
-        //     default:
-        //         return 
-        // }
-        return new InstantCommand();
+        switch (plan) {
+            // case SHOOT_NOTE_MOVEBACK:
+            //     return 
+            // case RIGHTSPEAKERSIDESHOOTANDMOVEBACK:
+            //     return 
+
+            case SHOOT_NOTE:
+                return shootNote();
+            case TWO_NOTE_CENTER:
+                return twoNoteCenterAuto();
+            case THREE_NOTES_RIGHT:
+                return threeNoteRightAuto();
+            case THREE_NOTES_LEFT:
+                return threeNoteLeftAuto();
+            default:
+                return new InstantCommand();
+        }
     }
 
 
     public void robotPeriodic() {
         VisionSubsystem.periodic();
+    }
+
+    public Command twoNoteCenterAuto() {
+        return new SequentialCommandGroup(shootNote(),scoreCenterNote());
+    }
+
+    public Command threeNoteLeftAuto() {
+        return new SequentialCommandGroup(shootNote(),scoreCenterNote(), scoreLeftNote());
+    }
+
+    public Command threeNoteRightAuto() {
+        return new SequentialCommandGroup(shootNote(),scoreCenterNote(), scoreRightNote());
+    }
+
+    public Command fourNoteAuto() {
+        return new SequentialCommandGroup(shootNote(),scoreCenterNote(), scoreLeftNote(), scoreRightNote());
+    }
+
+    public Command shootNote (){
+        return new SequentialCommandGroup(
+            new RevAuto(ShooterSubsystem).withTimeout(1),
+            new ShootAuto(ShooterSubsystem, IndexerSubsystem).withTimeout(0.5)
+        );
+    }
+
+    public Command scoreCenterNote() {
+        Command backupAndIntake = new ParallelDeadlineGroup(
+            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2),
+            new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
+            new ParallelDeadlineGroup(backupToCenterNote(), new ShuffleNote(IndexerSubsystem, ShooterSubsystem))
+        );
+
+        return new SequentialCommandGroup(
+            backupAndIntake.withTimeout(3),
+            centerNoteReturnToSpeaker().withTimeout(3),
+            shootNote()
+        );
+    }
+
+    public Command scoreLeftNote() {
+        Command backupAndIntake = new ParallelDeadlineGroup(
+            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2),
+            new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
+            new ParallelDeadlineGroup(backupToLeftNote(), new ShuffleNote(IndexerSubsystem, ShooterSubsystem))
+        );
+
+        return new SequentialCommandGroup(
+            backupAndIntake.withTimeout(3),
+            leftNoteReturnToSpeaker().withTimeout(3),
+            shootNote()
+        );
+    }
+
+    public Command scoreRightNote() {
+        Command backupAndIntake = new ParallelDeadlineGroup(
+            new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2),
+            new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
+            new ParallelDeadlineGroup(backupToRightNote(), new ShuffleNote(IndexerSubsystem, ShooterSubsystem))
+        );
+
+        return new SequentialCommandGroup(
+            backupAndIntake.withTimeout(3),
+            rightNoteReturnToSpeaker().withTimeout(3),
+            shootNote()
+        );
+    }
+
+    public Command backupToCenterNote() {
+        return new AutoSwerve(SwerveSubsystem, 0, -0.3, 0,false).withTimeout(2);
+    }
+
+    public Command centerNoteReturnToSpeaker() {
+        return new AutoSwerve(SwerveSubsystem, 0, 0.3, 0,false).withTimeout(2);
+    }
+
+    public Command backupToLeftNote() {
+        return new AutoSwerve(SwerveSubsystem, -0.3, -0.4, 0,false).withTimeout(1);
+    }
+
+    public Command leftNoteReturnToSpeaker() {
+        return new AutoSwerve(SwerveSubsystem, 0.3, 0.4, 0,false).withTimeout(1);
+    }
+
+    public Command backupToRightNote() {
+        return new AutoSwerve(SwerveSubsystem, 0.3, -0.4, 0,false).withTimeout(1);
+    }
+
+    public Command rightNoteReturnToSpeaker() {
+        return new AutoSwerve(SwerveSubsystem, -0.3, 0.4, 0,false).withTimeout(1);
     }
 }
