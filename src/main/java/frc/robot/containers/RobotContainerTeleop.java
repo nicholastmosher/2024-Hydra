@@ -300,10 +300,11 @@ public class RobotContainerTeleop {
 
         /* Copilot Buttons */
         copilotRightBumper.onTrue(manualFeedBackCommand.withTimeout(0.7));
-        copilotPOVleft.onTrue(cpxOn);
-        copilotPOVright.onTrue(cpxOff);
+        copilotPOVleft.onTrue(new InstantCommand(longRangeOverrideToggle::toggle));
+        copilotPOVright.onTrue(new InstantCommand(shortRangeOverrideToggle::toggle));
         copilotPOVup.onTrue(new InstantCommand(shootAimOverideToggle::toggle));
         copilotPOVdown.onTrue(new InstantCommand(intakeAimOverideToggle::toggle));
+        
         copilotaButton.onTrue(shuffleNote);
     }
     public Command getAutonomousCommand(AutonomousOptions plan) {
