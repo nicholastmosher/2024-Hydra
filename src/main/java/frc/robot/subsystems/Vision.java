@@ -43,21 +43,21 @@ public class Vision {
     private final double MaxDist = 105;
 
 
-    private final double cutOffDist = 60;
+    private final double cutOffDist = 74;
 
     private double angleToGoalRadians;
    private double distanceFromLimelightToSpeakerInches;
 
-    private final double minAngleToShoot =0.478;
-    private final double maxAngleToShoot =0.5;
+    private final double minAngleToShoot =0.4785;
+    private final double maxAngleToShoot =0.5025;
 
 
     public Vision(VisionConfig visionConfig, DriverStation.Alliance alliance) {
         this.config = visionConfig;
         this.shootLimelight = new LimelightController(config.shootLimelightName);
         this.intakeLimelight = new LimelightController(config.intakeLimelightName);
-        this.shootPID = new PIDController(1.125, 0.01, 0.3);
-        this.intakePID = new PIDController(1.5, 0.01, .30); //use to be kp =2
+        this.shootPID = new PIDController(0.75, 0.00, 0.01);
+        this.intakePID = new PIDController(0.75, 0.01, .030); //use to be kp =2
         this.shootDistancePID = new PIDController(.075, 0.00, 0.01);
       
         this.aimRotationPower = 0.0;

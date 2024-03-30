@@ -237,24 +237,24 @@ public class ControlVector extends Vector<N6> {
      * @param heading the current heading of the robot
      */
     public ChassisSpeeds calculateChassisSpeeds(Rotation2d heading) {
-        return ChassisSpeeds.fromFieldRelativeSpeeds(
+        ChassisSpeeds fieldRelativeSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 swerveFieldX(),
                 swerveFieldY(),
                 swerveRotation(),
                 heading
         );
 
-//        ChassisSpeeds robotRelativeSpeeds = new ChassisSpeeds(
-//                swerveFieldX(),
-//                swerveFieldY(),
-//                swerveRotation()
-//        );
-//
-//        return new ChassisSpeeds(
-//                fieldRelativeSpeeds.vxMetersPerSecond + robotRelativeSpeeds.vxMetersPerSecond,
-//                fieldRelativeSpeeds.vyMetersPerSecond + robotRelativeSpeeds.vyMetersPerSecond,
-//                fieldRelativeSpeeds.omegaRadiansPerSecond + robotRelativeSpeeds.omegaRadiansPerSecond
-//        );
+       ChassisSpeeds robotRelativeSpeeds = new ChassisSpeeds(
+               swerveRobotX(),
+               swerveRobotY(),
+               swerveRotation()
+       );
+
+       return new ChassisSpeeds(
+               fieldRelativeSpeeds.vxMetersPerSecond + robotRelativeSpeeds.vxMetersPerSecond,
+               fieldRelativeSpeeds.vyMetersPerSecond + robotRelativeSpeeds.vyMetersPerSecond,
+               fieldRelativeSpeeds.omegaRadiansPerSecond + robotRelativeSpeeds.omegaRadiansPerSecond
+       );
     }
 
     /**
