@@ -159,8 +159,8 @@ public class RobotContainerTeleop {
 
         // Each mode describes an amount of influence that may be applied to each control
         HybridModes modes = new HybridModes();
-        modes.addMode(modeDriverActive, ControlVector.fromFieldRelative(1.0, 1.0, 1.0));
-        modes.addMode(modeDriverInactive, ControlVector.fromFieldRelative(1.0, 0.5, 0.5));
+        modes.addMode(modeDriverActive, ControlVector.fromFieldRelative(1.0, 1.0, 1.0).setSwerveRobotX(0.5).setSwerveRobotY(0.5));
+        modes.addMode(modeDriverInactive, ControlVector.fromFieldRelative(1.0, 0.5, 0.5).setSwerveRobotX(0.5).setSwerveRobotY(0.5));
         modes.addMode(modeIntakeAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
         modes.addMode(modeIntakeAimActive, ControlVector.fromFieldRelative(0.0, 0.0, 1.0));
         modes.addMode(modeShootAimInactive, ControlVector.fromFieldRelative(0.0, 0.0, 0.0));
@@ -174,10 +174,14 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 // Teleop Driver component
                 () -> {
-                    double x = MathUtil.applyDeadband(-pilot.getRawAxis(LeftXAxis), 0.1) * 4.5;
-                    double y = MathUtil.applyDeadband(-pilot.getRawAxis(LeftYAxis), 0.1) * 4.5;
+                    double fieldX = MathUtil.applyDeadband(-pilot.getRawAxis(LeftXAxis), 0.1) * 4.5;
+                    double fieldY = MathUtil.applyDeadband(-pilot.getRawAxis(LeftYAxis), 0.1) * 4.5;
+                    double robotX = MathUtil.applyDeadband(copilot.getRawAxis(LeftXAxis), 0.1) * 4.5;
+                    double robotY = MathUtil.applyDeadband(copilot.getRawAxis(LeftYAxis), 0.1) * 4.5;
+
+
                     double rot = MathUtil.applyDeadband(-pilot.getRawAxis(RightXAxis), 0.1) * 5;
-                    return ControlVector.fromFieldRelative(x, y, rot);
+                    return ControlVector.fromFieldRelative(fieldX, fieldY, rot).setSwerveRobotX(robotX).setSwerveRobotY(robotY);
                 },
                 // TValue describes how much influence the Teleop Driver component has
                 () -> {
