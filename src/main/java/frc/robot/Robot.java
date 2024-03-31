@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
         positionChooser.addOption("twoNoteCenterAutoWithBackup", AutonomousOptions.SHOOT_NOTE_MOVEBACK);
         positionChooser.addOption("ThreeNoteRight", AutonomousOptions.THREE_NOTES_RIGHT);
         positionChooser.addOption("ThreeNoteLeft", AutonomousOptions.THREE_NOTES_LEFT);
+        positionChooser.addOption("FourNoteAuto", AutonomousOptions.FOUR_NOTES);
 
         SmartDashboard.putData("AutonomousSelection", positionChooser);
         SmartDashboard.putString("Version", "2");
