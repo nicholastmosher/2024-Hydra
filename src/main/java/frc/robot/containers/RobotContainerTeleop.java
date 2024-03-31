@@ -303,8 +303,8 @@ public class RobotContainerTeleop {
 
         /* Copilot Buttons */
         copilotRightBumper.onTrue(manualFeedBackCommand.withTimeout(0.7));
-        copilotPOVleft.onTrue(new InstantCommand(longRangeOverrideToggle::toggle));
-        copilotPOVright.onTrue(new InstantCommand(shortRangeOverrideToggle::toggle));
+        copilotPOVleft.onTrue(cpxOff);
+        copilotPOVright.onTrue(cpxOn);
         copilotPOVup.onTrue(new InstantCommand(shootAimOverideToggle::toggle));
         copilotPOVdown.onTrue(new InstantCommand(intakeAimOverideToggle::toggle));
         
@@ -371,8 +371,8 @@ public class RobotContainerTeleop {
         );
 
         return new SequentialCommandGroup(
-            backupAndIntake.withTimeout(3),
-            returnToSpeakerAndShuffle.withTimeout(3),
+            backupAndIntake.withTimeout(2),
+            returnToSpeakerAndShuffle.withTimeout(2.5),
             shootNote()
         );
     }
@@ -384,13 +384,14 @@ public class RobotContainerTeleop {
         );
 
         Command returnToSpeakerAndShuffle = new ParallelDeadlineGroup(
+            leftNoteReturnToSpeaker(),
             new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
-            leftNoteReturnToSpeaker()
+            sendNoteBack()
         );
 
         return new SequentialCommandGroup(
-            backupAndIntake.withTimeout(3),
-            returnToSpeakerAndShuffle.withTimeout(3),
+            backupAndIntake.withTimeout(2),
+            returnToSpeakerAndShuffle.withTimeout(2),
             shootNote()
         );
     }
@@ -402,40 +403,42 @@ public class RobotContainerTeleop {
         );
 
         Command returnToSpeakerAndShuffle = new ParallelDeadlineGroup(
+            rightNoteReturnToSpeaker(),
             new ShuffleNote(IndexerSubsystem, ShooterSubsystem),
-            rightNoteReturnToSpeaker()
+            sendNoteBack()
         );
 
         return new SequentialCommandGroup(
-            backupAndIntake.withTimeout(3),
-            returnToSpeakerAndShuffle.withTimeout(3),
+            backupAndIntake.withTimeout(2),
+            returnToSpeakerAndShuffle.withTimeout(2),
             shootNote()
         );
     }
 
     public Command backupToCenterNote() {
-        return new AutoSwerve(SwerveSubsystem, 0, -0.3, 0.1,false).withTimeout(2);
+        return new AutoSwerve(SwerveSubsystem, 0, -0.3, 0.1,false);
     }
 
     public Command centerNoteReturnToSpeaker() {
-        return new AutoSwerve(SwerveSubsystem, 0, 0.3, 0,false).withTimeout(2);
+        return new AutoSwerve(SwerveSubsystem, 0, 0.3, 0,false);
     }
 
     public Command backupToLeftNote() {
-        return new AutoSwerve(SwerveSubsystem, -0.4, -0.3, 0,false).withTimeout(1);
+        return new AutoSwerve(SwerveSubsystem, -0.25*1.5, -0.175*1.5, 0.1,false);
     }
 
     public Command leftNoteReturnToSpeaker() {
-        return new AutoSwerve(SwerveSubsystem, 0.4, 0.3, 0,false).withTimeout(1);
+        return new AutoSwerve(SwerveSubsystem, 0.245*1.5, 0.19*1.5, 0.1,false);
     }
 
     public Command backupToRightNote() {
-        return new AutoSwerve(SwerveSubsystem, 0.4, -0.3, 0,false).withTimeout(1);
+        return new AutoSwerve(SwerveSubsystem, 0.25*1.5, -0.175*1.5, -0.1,false);
     }
 
     public Command rightNoteReturnToSpeaker() {
-        return new AutoSwerve(SwerveSubsystem, -0.4, 0.3, 0,false).withTimeout(1);
+        return new AutoSwerve(SwerveSubsystem, -0.245*1.5, 0.19*1.5, -0.1,false);
     }
+
 
     public Command sendNoteBack() {
         return new InstantCommand(() -> IndexerSubsystem.sendBack());

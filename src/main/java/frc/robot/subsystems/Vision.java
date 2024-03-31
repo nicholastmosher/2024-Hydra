@@ -57,7 +57,7 @@ public class Vision {
         this.shootLimelight = new LimelightController(config.shootLimelightName);
         this.intakeLimelight = new LimelightController(config.intakeLimelightName);
         this.shootPID = new PIDController(0.75, 0.00, 0.01);
-        this.intakePID = new PIDController(0.75, 0.01, .030); //use to be kp =2
+        this.intakePID = new PIDController(0.9, 0.05, .01); //use to be kp =2
         this.shootDistancePID = new PIDController(.075, 0.00, 0.01);
       
         this.aimRotationPower = 0.0;
@@ -131,7 +131,7 @@ public class Vision {
     public void periodic() {
         angleToGoalRadians = (limelightMountAngleDegrees + shootLimelight.distanceToSpeaker()) * (3.14159 / 180.0);
         distanceFromLimelightToSpeakerInches = (goalHeightInches - limelightMountHeightInches) / Math.tan(angleToGoalRadians);
-        SmartDashboard.putNumber("distance", distanceFromLimelightToSpeakerInches);
+        SmartDashboard.putNumber("noteAngle", intakeLimelight.getYawToNote());
         
       shootsetpoint=0.0;
 //        if (shootLimelight.tagsSeen() >= 2) {
