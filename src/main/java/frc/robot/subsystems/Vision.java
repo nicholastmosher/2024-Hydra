@@ -133,14 +133,6 @@ public class Vision {
         distanceFromLimelightToSpeakerInches = (goalHeightInches - limelightMountHeightInches) / Math.tan(angleToGoalRadians);
         SmartDashboard.putNumber("noteAngle", intakeLimelight.getYawToNote());
         
-      shootsetpoint=0.0;
-//        if (shootLimelight.tagsSeen() >= 2) {
-//            if (isBlue) {
-//                shootsetpoint = -0.5;
-//            } else {
-//                shootsetpoint = -0.3;
-//            }
-//        }
         
         intakeAverage.addInput(intakeLimelight.getYawToNote());
         shootAverage.addInput(shootLimelight.getYawToSpeaker());
@@ -148,6 +140,6 @@ public class Vision {
 
         aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
 
-        angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), shootsetpoint);
+        angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);
     }
 }
