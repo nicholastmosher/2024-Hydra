@@ -9,7 +9,7 @@ import java.awt.*;
 public final class Constants {
 
     public static IntakeConfig intakeConfig = new IntakeConfig(50, -0.8);
-    public static ArmConfig armConfig = new ArmConfig(51, 52, new PidConfig(1.0, 0.0, 0.0), 0.48, 0.45, 0.661, 1, 163.32+180, new DigitalInput(2));
+    public static ArmConfig armConfig = new ArmConfig(51, 52, new PidConfig(1.0, 0.0, 0.0), 0.51, 0.45, 0.661, 1, 163.32+180, new DigitalInput(2));
     public static ShooterConfig shooterConfig = new ShooterConfig(53, 54, -0.2, 10000);
     public static IndexerConfig indexerConfig = new IndexerConfig(55, -0.5, 0.15);
     public static LightConfig lightConfig = new LightConfig(0, 1, 1.5, 0);

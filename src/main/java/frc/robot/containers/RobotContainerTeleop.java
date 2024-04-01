@@ -34,6 +34,7 @@ import frc.robot.commands.Drive.HybridSwerve;
 import frc.robot.commands.Indexer.FeedNote;
 import frc.robot.commands.Intake.IntakeNote;
 import frc.robot.commands.Intake.RejectNoteIntake;
+import frc.robot.commands.Shooter.PassNote;
 import frc.robot.hybrid.BlendedControl;
 import frc.robot.hybrid.HybridModes;
 import frc.robot.hybrid.ControlVector;
@@ -63,6 +64,7 @@ public class RobotContainerTeleop {
     private final Trigger copilotLeftTrigger = copilot.leftTrigger();
 
     private final Trigger pilotRightBumper = pilot.rightBumper();
+    private final Trigger pilotLeftBumper = pilot.leftBumper();
     private final Trigger copilotRightBumper = copilot.rightBumper();
     private final Trigger copilotLeftBumper = copilot.leftBumper();
 
@@ -101,11 +103,13 @@ public class RobotContainerTeleop {
     /* Teleop Commands */
     private final IntakeCommandGroup intakeCommand;
     private final PrepareShootCommandGroup prepareShootCommand;
+    private final PrepareShootCommandGroup secondprepareShootCommand;
     private final FeedNote feedNoteCommand;
     private final SendBackCommandGroup manualFeedBackCommand;
     private final RejectNoteIntake rejectNoteIntakeCommand;
     private final CpxSet cpxOn;
     private final CpxSet cpxOff;
+    private final PassNote passNoteCommand;
 
     private final ShuffleNote shuffleNote;
 
@@ -150,6 +154,9 @@ public class RobotContainerTeleop {
         cpxOn = new CpxSet(CPXSubsystem, true);
         cpxOff = new CpxSet(CPXSubsystem, false);
         shuffleNote = new ShuffleNote(IndexerSubsystem, ShooterSubsystem);
+        secondprepareShootCommand = new PrepareShootCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
+        passNoteCommand = new PassNote(ShooterSubsystem);
+
 
         /* Command Constructor for Autos */
         //autoCommandsConstructor = new AutoCommands(SwerveSubsystem, ArmSubsystem, IndexerSubsystem, ShooterSubsystem, IntakeSubsystem, DriverStation.getAlliance().get());
@@ -261,9 +268,13 @@ public class RobotContainerTeleop {
                         ArmSubsystem.setControlType(true);
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.ampAngle));
                     }
-                    if (pilotRightTrigger.getAsBoolean() && !copilotLeftTrigger.getAsBoolean()){
+                    if (pilotRightTrigger.getAsBoolean() && !copilotLeftTrigger.getAsBoolean() && !copilotLeftBumper.getAsBoolean()){
                         ArmSubsystem.setControlType(false);
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
+                    }
+                    if(copilotLeftBumper.getAsBoolean()) {
+                        ArmSubsystem.setControlType(false);
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.shootAngle));
                     }
                     // Arm power from PID to target angle
                     double armPower = ArmSubsystem.getArmPowerToTarget();
@@ -300,6 +311,7 @@ public class RobotContainerTeleop {
         pilotRightBumper.onTrue(new SequentialCommandGroup(feedNoteCommand.withTimeout(1), new InstantCommand(LightSubsystem::setWhite)));
         pilotaButton.whileTrue(rejectNoteIntakeCommand);
         pilotyButton.onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
+        pilotLeftBumper.whileTrue(passNoteCommand);
 
         /* Copilot Buttons */
         copilotRightBumper.onTrue(manualFeedBackCommand.withTimeout(0.7));
@@ -307,8 +319,9 @@ public class RobotContainerTeleop {
         copilotPOVright.onTrue(cpxOn);
         copilotPOVup.onTrue(new InstantCommand(shootAimOverideToggle::toggle));
         copilotPOVdown.onTrue(new InstantCommand(intakeAimOverideToggle::toggle));
-        
+        copilotRightTrigger.whileTrue(secondprepareShootCommand);
         copilotaButton.onTrue(shuffleNote);
+        
     }
     public Command getAutonomousCommand(AutonomousOptions plan) {
         switch (plan) {
@@ -429,7 +442,7 @@ public class RobotContainerTeleop {
     }
 
     public Command backupToLeftNote() {
-        return new AutoSwerve(SwerveSubsystem, -0.24*1.5, -0.175*1.5, 0.1,false);
+        return new AutoSwerve(SwerveSubsystem, -0.23*1.5, -0.175*1.5, 0.1,false);
     }
 
     public Command leftNoteReturnToSpeaker() {
@@ -437,7 +450,7 @@ public class RobotContainerTeleop {
     }
 
     public Command backupToRightNote() {
-        return new AutoSwerve(SwerveSubsystem, 0.24*1.5, -0.175*1.5, -0.1,false);
+        return new AutoSwerve(SwerveSubsystem, 0.23*1.5, -0.175*1.5, -0.1,false);
     }
 
     public Command rightNoteReturnToSpeaker() {
