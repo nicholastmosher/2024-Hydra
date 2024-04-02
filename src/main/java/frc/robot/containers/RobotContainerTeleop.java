@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -221,7 +222,8 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getAngleToShootAngle()),
                 () -> {
-                    double t = MathUtil.applyDeadband(pilot.getRawAxis(RightTriggerAxis), 0.1);;
+                    double t = MathUtil.applyDeadband(pilot.getRawAxis(RightTriggerAxis), 0.1);
+                    SmartDashboard.putBoolean("modeIntakeAimActive", shootAimOverideToggle.get());
                     if (shootAimOverideToggle.get()) {
                         t = 0;
                     }
@@ -268,11 +270,11 @@ public class RobotContainerTeleop {
                         ArmSubsystem.setControlType(true);
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.ampAngle));
                     }
-                    if (pilotRightTrigger.getAsBoolean() && !copilotLeftTrigger.getAsBoolean() && !copilotLeftBumper.getAsBoolean()){
+                    if (copilotLeftBumper.getAsBoolean()){
                         ArmSubsystem.setControlType(false);
-                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.intakeAngle));
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(VisionSubsystem.getArmAngleForShoot()));
                     }
-                    if(copilotLeftBumper.getAsBoolean()) {
+                    if(pilotLeftBumper.getAsBoolean() && copilotLeftTrigger.getAsBoolean()) {
                         ArmSubsystem.setControlType(false);
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.shootAngle));
                     }
@@ -311,7 +313,6 @@ public class RobotContainerTeleop {
         pilotRightBumper.onTrue(new SequentialCommandGroup(feedNoteCommand.withTimeout(1), new InstantCommand(LightSubsystem::setWhite)));
         pilotaButton.whileTrue(rejectNoteIntakeCommand);
         pilotyButton.onTrue(new InstantCommand(SwerveSubsystem::zeroHeading));
-        pilotLeftBumper.whileTrue(passNoteCommand);
 
         /* Copilot Buttons */
         copilotRightBumper.onTrue(manualFeedBackCommand.withTimeout(0.7));
