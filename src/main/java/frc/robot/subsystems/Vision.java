@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.config.VisionConfig;
 import frc.robot.classes.Limelight.LimelightController;
@@ -80,6 +81,9 @@ public class Vision {
     }
 
     public double getAngleToShootAngle() {
+        if (shootLimelight.tagsSeen() == 0) {
+            return 0;
+        }
         return angleToShootAngle;
     }
 
@@ -105,22 +109,9 @@ public class Vision {
         double b = y1-(m*x1);
 
         double x = distanceFromLimelightToSpeakerInches;
-//        double m = 0.00070968;
         double mx = m*x;
-//        double b = 0.42548368;
         double y = mx +b;
         double angle = y;
-
-//        double distFromMin = distanceFromLimelightToSpeakerInches- MinDist;
-//        double maxDistDiff = MaxDist- MinDist;
-//        double percentBack = distFromMin/maxDistDiff;
-//
-//        double MaxArmDiff = MaxDist - MinDist;
-//
-//
-//        double angle = MaxArmDiff/percentBack;
-
-
         SmartDashboard.putNumber("armPower", angle);
         return angle;
 
@@ -131,6 +122,8 @@ public class Vision {
     public void periodic() {
         angleToGoalRadians = (limelightMountAngleDegrees + shootLimelight.distanceToSpeaker()) * (3.14159 / 180.0);
         distanceFromLimelightToSpeakerInches = (goalHeightInches - limelightMountHeightInches) / Math.tan(angleToGoalRadians);
+        double shootoffset = Math.atan(11/distanceFromLimelightToSpeakerInches);
+
         SmartDashboard.putNumber("dist", distanceFromLimelightToSpeakerInches);
         
         
@@ -138,8 +131,19 @@ public class Vision {
         shootAverage.addInput(shootLimelight.getYawToSpeaker());
         shootDistAverage.addInput(distanceFromLimelightToSpeakerInches);
 
-        aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
 
-        angleToShootAngle = shootPID.calculate(shootAverage.getOutput(), 0);
+        shootsetpoint = 0;
+        if (shootLimelight.tagsSeen() >= 2) {
+            if (DriverStation.getAlliance().get() == Alliance.Red) {
+                shootsetpoint=-(shootoffset*4);
+            } 
+            if (DriverStation.getAlliance().get() == Alliance.Blue) {
+                shootsetpoint=(shootoffset*4);
+            }
+        }
+        
+
+        aimRotationPower = intakePID.calculate(intakeAverage.getOutput(), 0);
+        angleToShootAngle = shootPID.calculate(shootAverage.getOutput()+shootsetpoint, 0);
     }
 }

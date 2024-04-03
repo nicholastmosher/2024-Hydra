@@ -274,9 +274,9 @@ public class RobotContainerTeleop {
                         ArmSubsystem.setControlType(false);
                         ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(VisionSubsystem.getArmAngleForShoot()));
                     }
-                    if(pilotLeftBumper.getAsBoolean() && copilotLeftTrigger.getAsBoolean()) {
+                    if(pilotRightTrigger.getAsBoolean() && !copilotLeftTrigger.getAsBoolean()) {
                         ArmSubsystem.setControlType(false);
-                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(Constants.armConfig.shootAngle));
+                        ArmSubsystem.setTargetAngle(Rotation2d.fromRotations(VisionSubsystem.getArmAngleForShoot()));
                     }
                     // Arm power from PID to target angle
                     double armPower = ArmSubsystem.getArmPowerToTarget();
