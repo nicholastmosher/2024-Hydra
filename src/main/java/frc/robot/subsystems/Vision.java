@@ -50,7 +50,7 @@ public class Vision {
    private double distanceFromLimelightToSpeakerInches;
 
     private final double minAngleToShoot =0.4935;
-    private final double maxAngleToShoot =0.51;
+    private final double maxAngleToShoot =0.5115;
 
 
     public Vision(VisionConfig visionConfig, DriverStation.Alliance alliance) {
