@@ -28,7 +28,7 @@ public class Indexer extends SubsystemBase {
         indexerMotor.stopMotor();
     }
     public void sendBack() {
-        indexerMotor.set(0.15);
+        indexerMotor.set(0.25);
     }
 
     public boolean isIndexerStopped() {
