@@ -59,7 +59,7 @@ public class Vision {
         this.intakeLimelight = new LimelightController(config.intakeLimelightName);
         this.shootPID = new PIDController(0.75, 0.00, 0.01);
         this.intakePID = new PIDController(0.9, 0.05, .01); //use to be kp =2
-        this.shootDistancePID = new PIDController(.075, 0.03, 0.01);
+        this.shootDistancePID = new PIDController(.075, 0, 0);
       
         this.aimRotationPower = 0.0;
         this.angleToShootAngle = 0.0;

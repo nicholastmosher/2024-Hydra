@@ -190,23 +190,22 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 // Teleop Driver component
                 () -> {
-                    double fieldX = MathUtil.applyDeadband(-pilot.getRawAxis(LeftXAxis), 0.1) * 4.5;
-                    double fieldY = MathUtil.applyDeadband(-pilot.getRawAxis(LeftYAxis), 0.1) * 4.5;
-                    double robotY = 0;
-                    double rot = MathUtil.applyDeadband(-pilot.getRawAxis(RightXAxis), 0.1) * 5;
-                    if (pilotLeftBumper.getAsBoolean()) {
-                        robotY += 0.5;
-                    }
-                    return ControlVector.fromFieldRelative(fieldX, fieldY, rot).setSwerveRobotY(-robotY);
-
-
-                    // double X = MathUtil.applyDeadband(-pilot.getRawAxis(LeftXAxis), 0.1) * 4.5;
-                    // double Y = MathUtil.applyDeadband(-pilot.getRawAxis(LeftYAxis), 0.1) * 4.5;
+                    // double fieldX = MathUtil.applyDeadband(-pilot.getRawAxis(LeftXAxis), 0.1) * 4.5;
+                    // double fieldY = MathUtil.applyDeadband(-pilot.getRawAxis(LeftYAxis), 0.1) * 4.5;
+                    // double robotY = 0;
                     // double rot = MathUtil.applyDeadband(-pilot.getRawAxis(RightXAxis), 0.1) * 5;
                     // if (pilotLeftBumper.getAsBoolean()) {
-                    //     return ControlVector.fromRobotRelative(-X, -Y, rot);
+                    //     robotY += 0.5;
                     // }
-                    // return ControlVector.fromFieldRelative(X, Y, rot);
+                    // return ControlVector.fromFieldRelative(fieldX, fieldY, rot).setSwerveRobotY(-robotY);
+
+                    double X = MathUtil.applyDeadband(-pilot.getRawAxis(LeftXAxis), 0.1) * 4.5;
+                    double Y = MathUtil.applyDeadband(-pilot.getRawAxis(LeftYAxis), 0.1) * 4.5;
+                    double rot = MathUtil.applyDeadband(-pilot.getRawAxis(RightXAxis), 0.1) * 5;
+                    if (pilotLeftBumper.getAsBoolean()) {
+                        return ControlVector.fromRobotRelative(-X, -Y, rot);
+                    }
+                    return ControlVector.fromFieldRelative(X, Y, rot);
                     
                 },
                 // TValue describes how much influence the Teleop Driver component has
