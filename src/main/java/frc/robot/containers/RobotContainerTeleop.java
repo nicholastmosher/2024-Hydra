@@ -222,10 +222,14 @@ public class RobotContainerTeleop {
         blendedControl.addComponent(
                 () -> ControlVector.fromFieldRelative(0, 0, VisionSubsystem.getAngleToShootAngle()),
                 () -> {
-                    double t = MathUtil.applyDeadband(pilot.getRawAxis(RightTriggerAxis), 0.1);
+                    double t = 0;
+                    double t1 = MathUtil.applyDeadband(pilot.getRawAxis(RightTriggerAxis), 0.1);
+                    double t2 = MathUtil.applyDeadband(copilot.getRawAxis(RightTriggerAxis), 0.1);
                     SmartDashboard.putBoolean("modeIntakeAimActive", shootAimOverideToggle.get());
                     if (shootAimOverideToggle.get()) {
                         t = 0;
+                    } else {
+                        t = (t1 > t2) ? t1 : t2;
                     }
                     return modes.interpolate(modeShootAimInactive, modeShootAimActive, t);
                 }
