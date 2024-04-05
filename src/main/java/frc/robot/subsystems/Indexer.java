@@ -19,16 +19,16 @@ public class Indexer extends SubsystemBase {
     }
 
     public void indexNote() {
-        indexerMotor.set(config.shooterIntakeSpeed);
+        indexerMotor.set(-config.shooterIntakeSpeed);
     }
     public void feedNote() {
-        indexerMotor.set(-0.5);
+        indexerMotor.set(0.5);
     }
     public void stopIndexer() {
         indexerMotor.stopMotor();
     }
     public void sendBack() {
-        indexerMotor.set(0.25);
+        indexerMotor.set(-0.25);
     }
 
     public boolean isIndexerStopped() {
