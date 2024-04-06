@@ -10,7 +10,7 @@ import frc.robot.subsystems.*;
 
 public class IntakeCommandGroup extends SequentialCommandGroup {
     public IntakeCommandGroup(Indexer indexer, Intake intake, Shooter shooter, Light light) {
-        super(new IntakeNoteCommandGroup(intake, indexer), new InstantCommand(light::setRed), new SendBackCommandGroup(indexer, shooter).withTimeout(0.3));
+        super(new IntakeNoteCommandGroup(intake, indexer), new InstantCommand(light::setRed), new SendBackCommandGroup(indexer, shooter).withTimeout(0));
     }
 }
 

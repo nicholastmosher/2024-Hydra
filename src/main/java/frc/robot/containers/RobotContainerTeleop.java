@@ -390,6 +390,7 @@ public class RobotContainerTeleop {
     public Command scoreCenterNote() {
         Command backupAndIntake = new ParallelDeadlineGroup(
             backupToCenterNote(),
+            sendNoteBack().withTimeout(0.5),
             new IntakeNoteCommandGroup(IntakeSubsystem, IndexerSubsystem).withTimeout(2)
         );
 
