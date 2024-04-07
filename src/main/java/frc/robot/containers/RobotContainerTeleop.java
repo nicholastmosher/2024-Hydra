@@ -83,7 +83,7 @@ public class RobotContainerTeleop {
     private final Arm ArmSubsystem;
     private final Intake IntakeSubsystem;
     private final Shooter ShooterSubsystem;
-    private final Climber ClimberSubsystem;
+    // private final Climber ClimberSubsystem;
     private final Indexer IndexerSubsystem;
     private final Light LightSubsystem;
     private final Vision VisionSubsystem;
@@ -96,8 +96,7 @@ public class RobotContainerTeleop {
     private final ColorSensorController colorSensorController;
     private final ToggleHandler shootAimOverideToggle;
     private final ToggleHandler intakeAimOverideToggle;
-    private final ToggleHandler shortRangeOverrideToggle;
-    private final ToggleHandler longRangeOverrideToggle;
+    private final ToggleHandler beamBreakToggle;
     
     //private final AutoCommands autoCommandsConstructor;
 
@@ -120,12 +119,11 @@ public class RobotContainerTeleop {
     public RobotContainerTeleop(RobotConfig robotConfig) {
 
         /* Util Classes */
-        colorSensorController = new ColorSensorController(Constants.colorSensorConfig);
         shootAimOverideToggle = new ToggleHandler();
         intakeAimOverideToggle = new ToggleHandler();
-        shortRangeOverrideToggle = new ToggleHandler();
-        longRangeOverrideToggle = new ToggleHandler();
+        beamBreakToggle = new ToggleHandler();
         Pigeon2 gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
+        colorSensorController = new ColorSensorController(Constants.colorSensorConfig, beamBreakToggle);
 
         DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
         if (DriverStation.getAlliance().isPresent()) {
@@ -138,7 +136,7 @@ public class RobotContainerTeleop {
         IntakeSubsystem = new Intake(Constants.intakeConfig, colorSensorController);
         ShooterSubsystem = new Shooter(Constants.shooterConfig);
         IndexerSubsystem = new Indexer(Constants.indexerConfig);
-        ClimberSubsystem = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
+        //ClimberSubsystem = new Climber(Constants.climberConfig, robotConfig.dashboardConfig);
         LightSubsystem = new Light(Constants.lightConfig, colorSensorController);
         VisionSubsystem = new Vision(Constants.visionConfig, alliance);
         CPXSubsystem = new CPX(3); // TODO create CpxConfig
@@ -306,9 +304,9 @@ public class RobotContainerTeleop {
         HybridSwerve hybridSwerve = new HybridSwerve(SwerveSubsystem, blendedControl);
         SwerveSubsystem.setDefaultCommand(hybridSwerve);
 
-        ClimberSubsystem.setDefaultCommand(
-                new InstantCommand(() -> ClimberSubsystem.joystickControl(MathUtil.applyDeadband(copilot.getRawAxis(RightYAxis), 0.1)), ClimberSubsystem)
-        );
+        // ClimberSubsystem.setDefaultCommand(
+        //         new InstantCommand(() -> ClimberSubsystem.joystickControl(MathUtil.applyDeadband(copilot.getRawAxis(RightYAxis), 0.1)), ClimberSubsystem)
+        // );
 
         ArmSubsystem.setDefaultCommand(new InstantCommand(() -> {
             ControlVector control = blendedControl.solve();
@@ -333,6 +331,7 @@ public class RobotContainerTeleop {
         copilotPOVright.onTrue(cpxOn);
         copilotPOVup.onTrue(new InstantCommand(shootAimOverideToggle::toggle));
         copilotPOVdown.onTrue(new InstantCommand(intakeAimOverideToggle::toggle));
+        copilotPOVright.onTrue(new InstantCommand(() -> beamBreakToggle.toggle()));
         copilotRightTrigger.whileTrue(secondprepareShootCommand);
         copilotaButton.onTrue(shuffleNote);
         

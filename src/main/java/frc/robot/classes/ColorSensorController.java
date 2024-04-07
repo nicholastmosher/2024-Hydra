@@ -8,16 +8,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.config.ColorSensorConfig;
 
 public class ColorSensorController {
-    private final DigitalInput colorSensor = new DigitalInput(6);
+    private final DigitalInput colorSensor = new DigitalInput(0);
     private final ColorSensorConfig config;
+    private ToggleHandler toggler;
 
-    public ColorSensorController(ColorSensorConfig colorSensorConfig) {
+    public ColorSensorController(ColorSensorConfig colorSensorConfig, ToggleHandler toggle) {
         config = colorSensorConfig;
+        this.toggler = toggle;
         
     }
 
     public boolean isSeen() {
         SmartDashboard.putBoolean("isIntaked", colorSensor.get());
+        if (this.toggler.get()) {
+            return false;
+        }
         return colorSensor.get();
     }
 
