@@ -212,7 +212,7 @@ public class RobotContainerTeleop {
                     ControlVector aimBlend = modes.interpolate(modeDriverActive, modeDriverInactive, aimT);
 
                     double armT = ArmSubsystem.percentRaised();
-                    ControlVector armBlend = aimBlend.interpolate(ControlVector.fromFieldRelative(0.25,0.15,0.25), armT);
+                    ControlVector armBlend = aimBlend.interpolate(ControlVector.fromFieldRelative(0.25,0.25,0.25), armT);
                     return armBlend;
                 }
         );
