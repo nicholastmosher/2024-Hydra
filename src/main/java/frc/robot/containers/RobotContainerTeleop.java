@@ -19,6 +19,7 @@ import frc.lib.Constants.AutonomousOptions;
 import frc.lib.config.RobotConfig;
 import frc.lib.config.krakenTalonConstants;
 import frc.robot.classes.ColorSensorController;
+import frc.robot.classes.Pigeon2Handler;
 import frc.robot.classes.ToggleHandler;
 import frc.robot.commands.Arm.AmpPosition;
 import frc.robot.commands.Auto.RevAuto;
@@ -122,9 +123,8 @@ public class RobotContainerTeleop {
         shootAimOverideToggle = new ToggleHandler();
         intakeAimOverideToggle = new ToggleHandler();
         beamBreakToggle = new ToggleHandler();
-        Pigeon2 gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
+        Pigeon2Handler gyro = new Pigeon2Handler(krakenTalonConstants.Swerve.pigeonID);
         colorSensorController = new ColorSensorController(Constants.colorSensorConfig, beamBreakToggle);
-
         DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
         if (DriverStation.getAlliance().isPresent()) {
             alliance = DriverStation.getAlliance().get();
@@ -256,7 +256,7 @@ public class RobotContainerTeleop {
         PIDController gyroController = new PIDController(.1,0,0);
         blendedControl.addComponent(
                 () -> {
-                    double rotation = gyroController.calculate(gyro.getRotation2d().getDegrees(),0);;
+                    double rotation = gyroController.calculate(gyro.getPigeon().getRotation2d().getDegrees(),0);;
                     return ControlVector.fromFieldRelative(0,0,rotation);
                 },
                 () -> {
