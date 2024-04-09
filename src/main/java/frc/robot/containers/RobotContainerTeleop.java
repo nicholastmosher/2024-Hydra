@@ -147,14 +147,14 @@ public class RobotContainerTeleop {
 
         /* Teleop Commands */
         intakeCommand = new IntakeCommandGroup(IndexerSubsystem, IntakeSubsystem, ShooterSubsystem, LightSubsystem, pilot);
-        prepareShootCommand = new PrepareShootCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
-        feedNoteCommand = new FeedNote(IndexerSubsystem);
+        prepareShootCommand = new PrepareShootCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem, pilot);
+        feedNoteCommand = new FeedNote(IndexerSubsystem, pilot);
         manualFeedBackCommand = new SendBackCommandGroup(IndexerSubsystem, ShooterSubsystem);
         rejectNoteIntakeCommand = new RejectNoteIntake(IntakeSubsystem);
         cpxOn = new CpxSet(CPXSubsystem, true);
         cpxOff = new CpxSet(CPXSubsystem, false);
         shuffleNote = new ShuffleNote(IndexerSubsystem, ShooterSubsystem);
-        secondprepareShootCommand = new PrepareShootCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
+        secondprepareShootCommand = new PrepareShootCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem, pilot);
         passNoteCommand = new PassNote(ShooterSubsystem);
 
 

@@ -60,9 +60,9 @@ public class AutoCommands {
         return new AutoSwerve(swerveSubsystem, x, y, rot, true);
     }
 
-    public Command getPrepareShootingCommand() {
-        return new PrepareShootCommandGroup(armSubsystem, indexerSubsystem, intakeSubsystem, shooterSubsystem);
-    }
+    // public Command getPrepareShootingCommand() {
+    //     return new PrepareShootCommandGroup(armSubsystem, indexerSubsystem, intakeSubsystem, shooterSubsystem);
+    // }
 
     public Command getShootCommand() {
         return new ParallelDeadlineGroup(getToShootPosCommand().withTimeout(1.3), getPrepareShootingCommand());
