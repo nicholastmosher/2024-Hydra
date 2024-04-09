@@ -146,7 +146,7 @@ public class RobotContainerTeleop {
         robotStateMachine = new RobotStateMachine();
 
         /* Teleop Commands */
-        intakeCommand = new IntakeCommandGroup(IndexerSubsystem, IntakeSubsystem, ShooterSubsystem, LightSubsystem);
+        intakeCommand = new IntakeCommandGroup(IndexerSubsystem, IntakeSubsystem, ShooterSubsystem, LightSubsystem, pilot);
         prepareShootCommand = new PrepareShootCommandGroup(ArmSubsystem, IndexerSubsystem, IntakeSubsystem, ShooterSubsystem);
         feedNoteCommand = new FeedNote(IndexerSubsystem);
         manualFeedBackCommand = new SendBackCommandGroup(IndexerSubsystem, ShooterSubsystem);
