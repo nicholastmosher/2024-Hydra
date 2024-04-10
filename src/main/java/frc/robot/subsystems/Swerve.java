@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.CtreConfigs;
 import frc.lib.Constants;
@@ -25,20 +26,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
-    public Pigeon2Handler gyro;
+    public Pigeon2 gyro;
 
     private ChassisSpeeds latestSpeeds;
 
     /**
      * Default constructor uses SwerveModuleTalonNeo
      */
-    public Swerve(CtreConfigs ctreConfigs, Pigeon2Handler gyro) {
+    public Swerve(CtreConfigs ctreConfigs, Pigeon2 gyro) {
         this(new SwerveModule[]{
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod3backrightConfig, 3),
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod1frontrightConfig, 1),
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod2backleftConfig, 2),
                 new SwerveModuleKrakenFalcon(ctreConfigs, Constants.mod0frontleftConfig, 0)
-        }, gyro.getPigeon());
+        }, gyro);
     }
 
     /**
@@ -46,7 +47,7 @@ public class Swerve extends SubsystemBase {
      */
     public Swerve(SwerveModule[] modules,Pigeon2 gyro) {
         this.mSwerveMods = modules;
-        this.gyro = new Pigeon2Handler(gyro);
+        this.gyro = gyro;
 
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
@@ -141,7 +142,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getGyroYaw() {
-        return Rotation2d.fromDegrees(-gyro.getPigeon().getYaw().getValue());
+        return Rotation2d.fromDegrees(-gyro.getYaw().getValue());
     }
 
     public void resetModulesToAbsolute() {

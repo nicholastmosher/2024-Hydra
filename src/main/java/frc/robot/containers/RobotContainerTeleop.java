@@ -123,8 +123,14 @@ public class RobotContainerTeleop {
         shootAimOverideToggle = new ToggleHandler();
         intakeAimOverideToggle = new ToggleHandler();
         beamBreakToggle = new ToggleHandler();
+<<<<<<< HEAD
         Pigeon2Handler gyro = new Pigeon2Handler(krakenTalonConstants.Swerve.pigeonID);
         colorSensorController = new ColorSensorController(Constants.colorSensorConfig, beamBreakToggle);
+=======
+        Pigeon2 gyro = new Pigeon2(krakenTalonConstants.Swerve.pigeonID);
+        colorSensorController = new ColorSensorController(Constants.colorSensorConfig, beamBreakToggle);
+
+>>>>>>> fc789ff (DCMP FINAL CODE)
         DriverStation.Alliance alliance = DriverStation.Alliance.Blue;
         if (DriverStation.getAlliance().isPresent()) {
             alliance = DriverStation.getAlliance().get();
