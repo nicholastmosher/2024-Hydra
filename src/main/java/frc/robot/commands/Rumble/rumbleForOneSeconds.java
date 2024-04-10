@@ -24,7 +24,7 @@ public class rumbleForOneSeconds extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    this.controller.getHID().setRumble(RumbleType.kLeftRumble, 0.5);
+    this.controller.getHID().setRumble(RumbleType.kLeftRumble, 0.7);
   }
 
   // Called once the command ends or is interrupted.

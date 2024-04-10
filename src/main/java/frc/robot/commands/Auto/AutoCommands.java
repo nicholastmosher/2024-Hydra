@@ -64,9 +64,9 @@ public class AutoCommands {
     //     return new PrepareShootCommandGroup(armSubsystem, indexerSubsystem, intakeSubsystem, shooterSubsystem);
     // }
 
-    public Command getShootCommand() {
-        return new ParallelDeadlineGroup(getToShootPosCommand().withTimeout(1.3), getPrepareShootingCommand());
-    }
+    // public Command getShootCommand() {
+    //     return new ParallelDeadlineGroup(getToShootPosCommand().withTimeout(1.3), getPrepareShootingCommand());
+    // }
 
 //    public Command getIntakingCommand() {
 //        return new IntakeCommandGroup(indexerSubsystem, intakeSubsystem, shooterSubsystem);

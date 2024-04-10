@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean isRevved() {
-        return true;//shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
+        return false;//shooterTopMotor.getEncoder().getVelocity() > (config.targetVelocity - 200) && shooterTopMotor.getEncoder().getVelocity() < (config.targetVelocity + 200);
     }
 
     public boolean isShooterStopped() {
