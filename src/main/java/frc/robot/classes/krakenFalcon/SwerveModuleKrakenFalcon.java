@@ -71,7 +71,7 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
 //        }
         //frameCount++;
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
-        mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()).withEnableFOC(true));
+        mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()));
         setSpeed(desiredState, isOpenLoop);
     }
 
@@ -120,12 +120,12 @@ public class SwerveModuleKrakenFalcon implements SwerveModule {
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if(isOpenLoop){
             driveDutyCycle.Output = desiredState.speedMetersPerSecond / krakenTalonConstants.Swerve.maxSpeed;
-            mDriveMotor.setControl(driveDutyCycle.withEnableFOC(true));
+            mDriveMotor.setControl(driveDutyCycle);
         }
         else {
             driveVelocity.Velocity = Conversions.MPSToRPS(desiredState.speedMetersPerSecond, krakenTalonConstants.Swerve.driveTrainConfig.wheelCircumference);
             driveVelocity.FeedForward = driveFeedForward.calculate(desiredState.speedMetersPerSecond);
-            mDriveMotor.setControl(driveVelocity.withEnableFOC(true));
+            mDriveMotor.setControl(driveVelocity);
         }
     }
 
